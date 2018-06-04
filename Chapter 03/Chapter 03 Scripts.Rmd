@@ -1,0 +1,280 @@
+---
+title: "R4DS"
+author: "Ray Nelson"
+date: "6/4/2018"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(cowplot)
+theme_set(theme_grey())
+```
+
+## 3.2 First steps
+
+### 3.2.1 The mpg data frame
+
+```{r mpg data frame}
+mpg
+```  
+Typing in the name of an object outputs the object to the console.
+
+### 3.2.2 Creating a ggplot
+
+```{r ggplot of highway vs displacement}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy))
+```  
+
+### 3.2.4 Exercises
+
+#### 1. Run ggplot(data = mpg). What do you see?  
+```{r 3.2 problem 1}
+ggplot(data = mpg)
+```
+This creates a graph but doesn't put any information on the graph using the layers that are inherent in geom constructs.  
+
+#### 2. What are the dimensions of mpg?  
+```{r dimensions of mpg}
+mpg %>% dim()
+mpg %>% ncol()
+mpg %>% nrow()
+```
+
+#### 2. What does the drv variable describe?
+```{r drv variable}
+? mpg
+```  
+
+#### 4. Make a scatterplot of hwy versus cyl
+```{r scatterplot of numerical variables, continuous versus discrete}
+ggplot(data = mpg) +
+  geom_point(aes(x = cyl, y = hwy))
+```  
+
+#### 5. What happens if you make a scatterplot of class vs drv?  
+
+```{r scatterplot of two categorical variables}
+ggplot(data = mpg) +
+  geom_point(aes(x = drv, y = class))
+```  
+
+## 3.3 Aesthetic mappings
+
+```{r aesthetics introductory mapping}
+ggplot(data = mpg %>% filter(class != "2seater")) +
+  geom_point(aes(x = displ, y = hwy)) +
+  geom_point(data = mpg %>% filter(class == "2seater"),
+             aes(x = displ, y = hwy), color = "red") +
+  geom_smooth(aes(x = displ, y = hwy), method = "loess")
+```  
+Possible aesthetics include size, shape, color,fill, opacity, or linetype.  
+
+```{r class of vehicle as an aesthetic}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, color = class)) +
+  labs(
+    title = "Scatterplot of Mileage and Engine Displacement",
+    x = "Displacement",
+    y = "Highway MPG",
+    color = "Class of Vehicle"
+  )
+```  
+
+```{r class as a size aesthetic}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, size = class))
+```  
+
+```{r class as transparency and shape aesthetics}
+left <- ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, alpha = class)) +
+  labs(
+    title = "Transparency aesthetic",
+    x = "Displacement",
+    y = "MPG"
+  )
+right <- ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, shape = class)) +
+  labs(
+    title = "Shape aesthetic",
+    x = "Displacement",
+    y = "MPG"
+  )
+plot_grid(left, right, nrow = 2, align = "v")
+```
+
+```{r arbitrary color for points}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
+```
+
+#### 3.3.1 Exercises  
+
+##### 1. What's gone wrong with this code?
+```{r why points are blue}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, color = "blue"))
+```  
+
+##### 2. Which variables in mpg are categorical? Which variables are continuous?
+
+```{r types of variables}
+? mpg
+mpg %>% summary()
+```  
+
+##### 3.  Map a continuous variable to color, size, and shape. How do these aesthetics behave differently for categorical versus continuous variables?  
+
+```{r categorical and continuous aesthetics}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, color = hwy))
+
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, size = hwy))
+
+#ggplot(data = mpg) +
+  #geom_point(mapping = aes(x = displ, y = hwy, shape = hwy))
+```  
+Shape can't be mapped to a continuous variable. The mapping for color and size is possible.  
+
+##### 4. What happens if you map the same variable to multiple aesthetics?
+
+```{r same variable to multiple aesthetics}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, color = fl, shape = fl))
+```  
+
+##### 5. What does the stroke aesthetic do? What shapes does it work with?  
+
+```{r stroke aesthetic}
+? geom_point
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, color = class), stroke = 2, shape = 21)
+```  
+
+##### 6. What happens when you map an aesthetic to something other than a variable name.
+
+```{r mapping to something other than a variable name}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, color = displ < 5))
+```
+
+#### 3.5 Facets
+
+```{r facet example}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_wrap(~ class, nrow = 2)
+```  
+
+```{r facet example with two variables}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_wrap(drv ~ cyl)
+``` 
+
+##### 3.5.1 Exercises
+
+##### 1. What happens if you facet on a continuous variable?  
+
+```{r faceting on a continuous variable}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(displ ~ drv)
+```  
+A plot is create for each value of the continuous variable. This isn't very helpful.  
+
+##### 2. What do the empty cells in the plot with facet_grid(drv ~ cyl) mean?  
+
+```{r empty cells}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(drv ~ cyl)
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = drv, y = cyl))
+```  
+The empty cells in the grid indicate the the combinations of drive and cylinders that don't contain any observations.
+
+##### 3. What plots do the the follow code create? What does . do?  
+
+```{r effect of the . notation}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(drv ~ .)
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(. ~ cyl)
+```  
+The . notation gives a grid with only one category. The variable to the left of the ~ gives the rows of the grid, just like matrix notation. The variable to the left of the ~ gives the columns. The . refers to all possible rows that satisfy the dimension in the column.  
+
+##### 4. What are the advantages and disadvantages of the first faceted plot in this section?  
+
+```{r advantages of faceting versus color}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class))
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_wrap(~ class, nrow = 2)
+```  
+Facets allow analysts to concentrate on the patterns for each category without the distractions of all the other data.
+
+##### 5. Read ?facet_wrap. What does nrow do? What does ncol do? What other options control the layout of the individual panels? Why doesn’t facet_grid() have nrow and ncol argument?  
+
+With facet_wrap, the number of columns or rows that are created before starting to wrap are given the nrow and ncol parameters. With the facet_grid, the number of columns and rows is determined by the number of categories for the variable(s) of interest.
+
+##### 6. When using facet_grid() you should usually put the variable with more unique levels in the columns. Why?
+
+The larger number of categories should be rows because we have more flexibility to create a large number of rows that columns.  
+
+#### Geometric objects
+
+```{r different geometric objects, message = FALSE}
+# left
+left <- ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+
+# right
+right <- ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+
+plot_grid(left, right, align = "h")
+```
+ 
+```{r linetype aesthetic, message = FALSE}
+ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv))
+```
+
+```{r overlay of point and smooth, message = FALSE}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv, linetype = drv)) + 
+  geom_smooth() +
+  geom_point()
+```
+
+```{r group aesthetic}
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+              
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy, group = drv))
+    
+ggplot(data = mpg) +
+  geom_smooth(
+    mapping = aes(x = displ, y = hwy, color = drv),
+    show.legend = FALSE
+  )
+```
+
+
+
+
+
+
