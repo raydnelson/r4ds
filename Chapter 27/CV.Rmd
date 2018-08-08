@@ -1,0 +1,25 @@
+---
+title: "Vitae"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Ray Nelson  
+#### Romney Institute of Public Management  
+#### Brigham Young University  
+
+### Education
+* Economics, Brigham Young University
+* Applied Statistics, University of California, Berkeley
+* Agricultural and Resource Economics, University of California, Berkeley
+
+### Teaching
+* Money and Banking
+* Forcasting
+
+### Research
+* Rainy Day Funds
+* Forecasting

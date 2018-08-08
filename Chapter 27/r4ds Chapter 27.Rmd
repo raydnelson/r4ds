@@ -1,0 +1,54 @@
+---
+title: "r4ds Chapter 27: R Markdown"
+author: "Ray Nelson"
+date: "6/6/2018"
+output:
+   html_document:
+     code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+#### 27.2.1 Exercises
+
+##### Problem 1  
+
+>Create a new notebook using File > New File > R Notebook. Read the instructions. Practice running the chunks. Verify that you can modify the code, re-run it, and see modified output.  
+
+See the file in the Chapter 27 directory.
+
+##### Problem 2  
+>Create a new R Markdown document with File > New File > R Markdown… Knit it by clicking the appropriate button. Knit it by using the appropriate keyboard short cut. Verify that you can modify the input and see the output update.  
+
+See the file in the Chapter 27 directory.
+
+##### Problem 3  
+>Compare and contrast the R notebook and R markdown files you created above. How are the outputs similar? How are they different? How are the inputs similar? How are they different? What happens if you copy the YAML header from one to the other?  
+
+In the YAML header, the notebook output is html_notebook. In the YAML header, the rMarkdown document says html_document in the YAML. Otherwise the inputs and outputs are very similar. Outputs in the notebook don't include the results of the R code if they haven't been run previously. The R markdown files include all of the R results as the entire file is run when creating the outputed files.
+
+##### Problem 4  
+>Create one new R Markdown document for each of the three built-in formats: HTML, PDF and Word. Knit each of the three documents. How does the output differ? How does the input differ? (You may need to install LaTeX in order to build the PDF output — RStudio will prompt you if this is necessary.)  
+
+The output is different when you have code folding. The Word document doesn't allow for code folding. One way that you can create a pdf file is by creating a Word document and then letting Word convert the file into a PDF document.
+
+##### 27.3.1 Exercises
+
+##### Problem 1   
+>Practice what you’ve learned by creating a brief CV. The title should be your name, and you should include headings for (at least) education or employment. Each of the sections should include a bulleted list of jobs/degrees. Highlight the year in bold.
+
+##### Problem 2  
+
+>Using the R Markdown quick reference, figure out how to:
+
+>1. Add a footnote.
+2. Add a horizontal rule.
+3. Add a block quote.  
+
+##### Problem 3  
+
+>Copy and paste the contents of diamond-sizes.Rmd from https://github.com/hadley/r4ds/tree/master/rmarkdown in to a local R markdown document. Check that you can run it, then add text after the frequency polygon that describes its most striking features.
+

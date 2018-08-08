@@ -1,0 +1,28 @@
+---
+title: "Section 3 Problem 2"
+author: "Ray Nelson"
+date: "6/6/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### 1. Footnote  
+
+This is a sentence with a footnote. [^footnote]  
+
+[^footnote]: [Government Finance](http://govfinance.byu.edu)  
+
+#### 2. We are using Pandoc's Markdown rules  
+
+***  
+---  
+
+You can use *** or --- to create horizontal rules  
+
+
+#### 3. Blockquote  
+
+>Blockquotes are very hand

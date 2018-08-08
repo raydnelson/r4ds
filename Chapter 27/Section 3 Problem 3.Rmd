@@ -1,0 +1,29 @@
+---
+title: "Diamond Sizes"
+author: "Ray Nelson"
+date: "6/6/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+```
+
+Downloading the document from github isn't quite straight-forward because you need to remember to copy the raw file. Otherwise it doesn't come in quite correctly.
+
+```{r create file smaller, echo = FALSE}
+smaller <- diamonds %>% 
+  filter(carat <= 2.5)
+```
+  
+We have data about `r nrow(diamonds)` diamonds. Only `r nrow(diamonds) - nrow(smaller)` are larger than 2.5 carats. The distribution of the remainder is shown below:
+
+```{r look at the distribution of small diamond sizes, echo = FALSE}
+smaller %>% 
+  ggplot(aes(carat)) + 
+    geom_freqpoly(binwidth = 0.01)
+```  
+
+There seems to be rounding in the weight of the diamonds as they clump around certain values.
