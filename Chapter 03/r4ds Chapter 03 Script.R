@@ -1,6 +1,6 @@
 # R for Data Science Chapter 03
 # Initial: May 16, 2018
-# Revision: May 17, 2018
+# Revision: September 12, 2018
 # Ray Nelson
 
 library(tidyverse)
@@ -67,6 +67,7 @@ ggplot(data = mpg) +
 
 # 2
 ? mpg
+mpg %>% glimpse()
 
 # 3
 ggplot(data = mpg) +
@@ -84,13 +85,10 @@ ggplot(data = mpg) +
                            color = drv,
                            shape = drv,
                            size = drv))
-
-
 # 5
-
 ggplot(data = mpg) +
-  geom_point(mapping = aes(x = displ, y = hwy),  stroke = 3, size = 2,
-             color = "white", fill = "red", shape = 22)
+  geom_point(mapping = aes(x = displ, y = hwy),  stroke = 2, size = 2,
+             color = "blue", fill = "red", shape = 21)
 
 # 6
 ggplot(data = mpg) +
@@ -105,7 +103,15 @@ ggplot(data = mpg) +
 
 ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_wrap(vars(class), nrow = 2)
+
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
   facet_grid(drv ~ cyl)
+
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(rows = vars(drv), cols = vars(cyl))
 
 # 3.5.1 Exercises
 
@@ -193,7 +199,12 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
   geom_point(mapping = aes(color = class)) + 
   geom_smooth(data = filter(mpg, class == "subcompact"), se = FALSE,
-              method = "loess")
+              method = "loess") +
+  labs(title = "Scatterplot of Highway Miles Per Gallon on Engine Displacement",
+       subtitle = "Smooth for subcompact cars",
+       x = "Displacement",
+       y = "Highway MPG", 
+       color = "Automobile Classification")
 
 # 3.6.1 Exercises
 

@@ -1,6 +1,6 @@
 # R for Data Science Chapter 05
 # Initial: May 17, 2018
-# Revision: May 24, 2018
+# Revision: September 19, 2018
 # Ray Nelson
 
 
@@ -280,17 +280,22 @@ flights %>%
 # 5.6.1 Multiple operations with pipes
 ## No pipes
 by_dest <- group_by(flights, dest)
+by_dest
+
 delay <- summarise(by_dest,
                    count = n(),
                    dist = mean(distance, na.rm = TRUE),
                    delay = mean(arr_delay, na.rm = TRUE)
                    )
-delay <- filter(delay, count > 20, dest != "HNL")
+delay
 
-## With pipes
+delay <- filter(delay, count > 20, dest != "HNL")
+delay
 
 ggplot(data = delay, mapping = aes(x = dist, y = delay)) +
   geom_point(aes(size = count), alpha = 1/3)
+
+## With pipes
 
 flights %>%
   group_by(dest) %>%
@@ -337,6 +342,9 @@ delays <- not_cancelled %>%
 ggplot(data = delays, mapping = aes(x = delay)) +
   geom_freqpoly(bindwith = 10)
 
+delays %>% ggplot(mapping = aes(x = delay)) +
+  geom_density(fill = "lightblue")
+
 delays <- not_cancelled %>% 
   group_by(tailnum) %>% 
   summarise(
@@ -359,9 +367,11 @@ batting <- as_tibble(Lahman::Batting)
 batters <- batting %>% 
   group_by(playerID) %>% 
   summarise(
-    ba = sum(H, na.rm = TRUE) / sum(AB, na.rm = TRUE),
-    ab = sum(AB, na.rm = TRUE)
+    ab = sum(AB, na.rm = TRUE),
+    ba = sum(H, na.rm = TRUE) / ab
   )
+
+batters %>% filter (ab > 5000) %>% arrange(ba %>% desc())
 
 batters %>% 
   filter(ab > 100) %>% 
