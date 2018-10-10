@@ -1,0 +1,126 @@
+---
+title: "Midterm I"
+author: "Fall 2018"
+date: "Due: Wednesday, October 17" 
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+load("C:/Users/rdn3.BYU/Documents/GitHub/r4ds/Midterm I/titanic.RData")
+```
+
+## I. Summary of all the variables in the tibble  
+  
+```{r summary}
+titanic %>% summary()
+```
+1.  Define each of the following types of variables and give an example from the Titanic tibble:  
+    + Categorical nominal
+    + Categorical ordinal
+    + Numerical  
+2.  Explain some of the challenges that exist with missing observations.  
+
+## II.  Covariation among passenger class, survival, and gender
+
+```{r covariation with counts}
+titanic %>% ggplot(aes(x = pclass, fill = survived)) +
+  geom_bar() +
+  facet_grid(rows = vars(sex)) +
+  labs(
+    title = "Bar Chart by Count",
+    x = "Passengers Classification",
+    y = "Count"
+  )
+```  
+
+```{r covariation with proportions}
+titanic %>% ggplot(aes(x = pclass, fill = survived)) +
+  geom_bar(position = "fill") +
+  facet_grid(rows = vars(sex)) +
+  labs(
+    title = "Bar Chart by Proportion",
+    x = "Passengers Classification",
+    y = "Proportion"
+  )
+```
+
+1.  Why do we use bar charts to look for covariation with these variables?
+2.  What conclusions do you reach from these graphs that would help us predict who survived?
+3.  Write the R code that creates these two difference sets of bar charts.
+
+ 
+## III. Comparison of distributions of fares by passenger class
+
+```{r fare distribution comparison, warning = FALSE}
+titanic %>% ggplot(aes(x = pclass, y = fare)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Fare Paid by Titanic Passengers",
+       subtitle = "All passengers",
+       x = "Passenger Class",
+       y = "Dollars") +
+  coord_flip()
+```  
+
+1. Explain the parts of the violin plots. 
+2. Compare the distributions of the fares of the different passenger classes.
+    + Location
+    + Scale
+    + Symmetry
+    + Outliers
+3.  Write the R code that creates the above boxplot plot.
+
+##  IV. Comparison of means and medians   
+
+
+```{r mean and median comparison}
+titanic %>%
+  group_by(pclass) %>% 
+  summarise(median = median(fare, na.rm = TRUE),
+            mean = mean(fare, na.rm = TRUE))
+```  
+1.  Compare the means and the medians of the fares paid by each passenger class.
+2.  Do you prefer to use the means or the medians? Why?
+3.  How do missing observations complicate our calculations?
+4.  Write the code that creates this table.
+
+
+## V.  Covariation between age and fare
+
+```{r covariation between numerical variables, warning = FALSE}
+titanic %>%
+  filter(fare < 200) %>% 
+  ggplot(aes(x = age, y = fare, color = survived)) +
+    geom_point() +
+    geom_smooth(method = "loess") +
+    labs(
+      title = "Relationship between age and fare",
+      subtitle = "Passengers who paid less than $200",
+      x = "Years",
+      y = "Dollars"
+    )
+```  
+
+1.  Describe the relationship between fare and age for those who survived and those that didn't.
+2.  Write the R code that will create this diagram.  
+
+## VI. Age by passenger class, gender, and survival  
+
+```{r covariation categorical and numerical, warning = FALSE}
+titanic %>%
+  ggplot(aes(x = pclass, y = age, fill = sex)) +
+    geom_boxplot() +
+    facet_grid(rows = vars(survived, sex)) +
+    labs(title = "Comparison of fares by passenger class, gender, and survival",
+      subtitle = "All passengers",
+      x = "Passenger Class",
+      y = "Dollars") +
+  coord_flip()
+```  
+
+1.  Find some patterns from the boxplot that would help you predict whether a given passenger survived or didn't survive.  
+2.  Write the R code that constructs this graph.  
+
+
+
