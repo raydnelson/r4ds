@@ -61,6 +61,7 @@ telco %>%
 
 # quitters
 quitters <- telco %>% filter(Churn == "Yes")
+retained <- telco %>% filter(Churn == "No")
 
 # Grouping
 telco %>% group_by(Churn) %>% summarise(median = median(tenure), IQR = IQR(tenure))
