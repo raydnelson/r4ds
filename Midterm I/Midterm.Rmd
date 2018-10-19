@@ -112,10 +112,10 @@ titanic %>%
   ggplot(aes(x = pclass, y = age, fill = sex)) +
     geom_boxplot() +
     facet_grid(rows = vars(survived, sex)) +
-    labs(title = "Comparison of fares by passenger class, gender, and survival",
+    labs(title = "Comparison of age by passenger class, gender, and survival",
       subtitle = "All passengers",
       x = "Passenger Class",
-      y = "Dollars") +
+      y = "Years") +
   coord_flip()
 ```  
 

@@ -1,0 +1,235 @@
+---
+title: "Gathering and Spreading"
+author: "Ray Nelson"
+date: "10/17/2018"
+output:
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load libraries
+library(tidyverse)
+library(fImport)
+library(zoo)
+library(Quandl)
+```
+
+## Different Tibble structures for the same data 
+
+```{r alternative structures}
+table1
+table2
+table3
+table4a # cases
+table4b # population
+```
+
+## Examples of the value of tidy data  
+
+### Cases per 10,000 in population  
+
+```{r cases relative to population}
+table1 %>% 
+  mutate(rate = cases / population * 10000)
+```  
+
+### Cases per year
+
+```{r annual cases}
+table1 %>% 
+  count(year, wt = cases)
+```  
+
+### Visualization of changes over time  
+
+```{r changes of time}
+table1 %>% 
+  ggplot(aes(x = year, y = cases)) +
+    geom_line(aes(group = country), colour = "grey50", size = 1) +
+    geom_point(aes(colour = country), size = 2) +
+    labs(
+      title = "Tuberculosis Cases",
+      subtitle = "1999 and 2000",
+      x = "",
+      y = "Number of Cases"
+    )
+```  
+
+## Gathering
+
+### Turn Table 4a and 4b into one like Table 1  
+
+```{r gather for table4}
+
+# table 4a
+table4a
+table4a %>%
+  gather(`1999`, `2000`, key = year, value = cases)
+
+# table 4b
+table4b
+table4b %>% 
+  gather(`1999`, `2000`, key = year, value = population)
+
+# All the data together into a tidy tibble
+tidy4a <- table4a %>%
+  gather(`1999`, `2000`, key = year, value = cases)
+
+tidy4b <- table4b %>%
+  gather(`1999`, `2000`, key = year, value = population)
+
+left_join(tidy4a, tidy4b)
+```  
+
+## Spread Table 2  
+
+```{r spread table2, message = FALSE}
+table2
+cases <- table2[table2$type == "cases", ] %>% select(-type)
+colnames(cases) <- c("country", "year", "cases")
+population <- table2[table2$type == "population", ] %>% select(-type)
+colnames(population) <- c("country", "year", "population")
+
+left_join(cases, population)
+
+# Same operation using spread
+
+table2 %>%
+  spread(key = type, value = count)
+```
+
+
+## Example of how time series gathering  
+
+### Use FRED as the data source 
+
+#### Load functions for time series calculations
+
+```{r ts manipulation functions}
+# Get time series functions
+"http://govfinance.byu.edu/govfinance/quantTools/R/manipulations.R" %>%
+  url() %>%
+  source()
+```  
+
+#### Get Data from FRED
+
+```{r FRED}
+# Time series of income and sales taxes in Utah using from FRED using fImport
+revenue <- fredSeries(c("UTSLGRTAX", "UTINCTAX"), from = "1992-01-01") %>%
+  as.zoo() %>% 
+  pca()
+colnames(revenue) <- c("sales", "income")
+revenue
+revenue %>% str()
+```
+
+#### Create tibbles and data frames from the FRED data  
+
+```{r create tibbles and data frames from FRED data}
+# Extract the date from the zoo object
+dates <- revenue %>%
+  time() %>%
+  as.Date()
+
+# Create a tibble
+revenue_tbl <- tibble(dates, as.vector(revenue$sales), as.vector(revenue$income))
+colnames(revenue_tbl) <- c("dates", "sales", "income")
+revenue_tbl
+
+# Create a data frame
+revenue_df <- data.frame(dates, revenue)
+colnames(revenue_df) <- c("dates", "sales", "income")
+revenue_df
+```  
+
+### Use Quandl to accomplish the same thing
+
+```{r create tibbles and data frames with Quandl data}
+# Time series of income and sales taxes in Utah using Quandl
+revenue <- Quandl(c("FRED/UTSLGRTAX", "FRED/UTINCTAX"),
+                  transform = "rdiff") %>% as.tibble()
+colnames(revenue) <- c("dates", "sales", "income")
+revenue_tbl <- revenue %>% mutate(sales = sales * 100, income = income * 100)
+revenue_tbl %>% str()
+revenue_tbl
+```  
+
+### Time series graphs sales an income taxes by themselves  
+
+```{r sales and income by themselves}
+# Graph of sales by itself
+revenue_tbl %>% 
+  ggplot(aes(x = dates, y = sales)) +
+    geom_line() +
+    geom_hline(yintercept = 0, color = "red") +
+    labs(title = "Utah Sales Tax Growth Rate",
+         subtitle = "1992 - 2016",
+         x = "",
+         y = "Percentage Change")
+
+revenue_tbl %>% 
+  ggplot(aes(x = dates, y = income)) +
+  geom_line() +
+  geom_hline(yintercept = 0, color = "red")  +
+  labs(title = "Utah Income Tax Growth Rate",
+       subtitle = "1992 - 2016",
+       x = "",
+       y = "Percentage Change")
+```  
+
+### Use graphs to compare sales and income  
+
+```{r gather sales and revenue}  
+# Gather the data together
+plot_data <- revenue_tbl %>% 
+  gather(sales, income, key = "tax", value = "revenue")
+```  
+
+```{r comparison of sales and income}
+# Time series plot of both in the same graph
+plot_data %>% 
+  ggplot(aes(x = dates, y = revenue, color = tax)) +
+    geom_line() +
+    geom_hline(yintercept = 0, color = "red") +
+    labs(title = "Utah Sales and Income Tax Growth Rates",
+         subtitle = "1992 - 2016",
+         x = "",
+         y = "Percentage Change")
+
+# Time series plot of each in its own panel
+plot_data %>% 
+  ggplot(aes(x = dates, y = revenue)) +
+    geom_line(aes(color = tax), show.legend = FALSE) +
+    facet_grid(rows = vars(tax)) +
+    geom_hline(yintercept = 0, color = "red", alpha = 0.25) +
+    labs(title = "Utah Sales and Income Tax Growth Rates",
+         subtitle = "1992 - 2016",
+         x = "",
+         y = "Percentage Change")
+```  
+
+### Violin plots to compare the distribution of sales and income tax revenues  
+
+```{r violin plot comparison}
+# Violin Plot
+plot_data %>%
+   ggplot(aes(x = tax, y = revenue)) +
+    geom_violin(fill = "lightgreen") +
+    geom_boxplot(width = 0.25, fill = "lightblue") +
+    labs(title = "Comparison of Sales and Income Tax Growth Rates",
+         subtitle = "State of Utah, 1992 - 2016",
+      x = "Tax",
+      y = "Percentage Change") +
+    coord_flip()
+```  
+
+
+
+
+
+
+
+
