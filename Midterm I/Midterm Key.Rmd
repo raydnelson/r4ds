@@ -1,0 +1,208 @@
+---
+title: "Midterm I Key"
+author: "Fall 2018"
+date: "October 25, 2018" 
+output:
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+load("C:/Users/rdn3.BYU/Documents/GitHub/r4ds/Midterm I/titanic.RData")
+```
+
+### I. Summary of all the variables in the tibble  
+  
+```{r summary}
+titanic %>% summary()
+```
+#### 1.  Define each of the following types of variables and give an example from the Titanic tibble:
+
+##### Categorical nominal  
+
+Variables whose values take on one of a limited number of possible values or categories. The values do not have a natural ordering. Some possible illustrations in the Titanic dataset are survived, sex, embarked, boat, and home.dest.   
+
+##### Categorical ordinal
+
+A variable whose values take on one of a limited number of possible values or categories. The values have a natural ordering. An example would be pclass (passenger class) since first class is better than second or third class.  
+
+##### Numerical  
+
+A variable whose values are numerical. They can be integers or double precision real numbers. Examples in the Titanic dataset include age and fare. 
+
+
+#### 2.  Explain some of the challenges that exist with missing observations.  
+
+Many of the R functions refuse to complete calculations when data values are missing. We usually need to explicitly tell R to complete the calculations by excluding the observations that have missing values. This is usually accomplished by using na.rm = TRUE.
+
+### II.  Covariation among passenger class, survival, and gender
+
+```{r covariation with counts}
+titanic %>% ggplot(aes(x = pclass, fill = survived)) +
+  geom_bar() +
+  facet_grid(rows = vars(sex)) +
+  labs(
+    title = "Bar Chart by Count",
+    x = "Passengers Classification",
+    y = "Count"
+  )
+```  
+
+```{r covariation with proportions}
+titanic %>% ggplot(aes(x = pclass, fill = survived)) +
+  geom_bar(position = "fill") +
+  facet_grid(rows = vars(sex)) +
+  labs(
+    title = "Bar Chart by Proportion",
+    x = "Passengers Classification",
+    y = "Proportion"
+  )
+```
+
+#### 1.  Why do we use bar charts to look for covariation with these variables?  
+
+We use bar charts to look for covariation among class, survival, and gender because all three of these variables are categorical variables. It doesn't make sense to draw scatterplots.   
+
+#### 2.  What conclusions do you reach from these graphs that would help us predict who survived?  
+
+Female passengers had a much higher chance of surviving than males. If you were a female in first or second class, then the probability of survival was large. A very large number and proportion of male, third class passengers drowned and didn't survive.  
+
+#### 3.  Write the R code that creates these two difference sets of bar charts.
+
+See the code above.  
+
+
+### III. Comparison of distributions of fares by passenger class
+
+```{r fare distribution comparison, warning = FALSE}
+titanic %>% ggplot(aes(x = pclass, y = fare)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Fare Paid by Titanic Passengers",
+       subtitle = "All passengers",
+       x = "Passenger Class",
+       y = "Dollars") +
+  coord_flip()
+```  
+
+#### 1. Explain the parts of the box plots.  
+
+Box: The area defined by a lower limit of the first quartile (the 25th percentile of the data) and an upper limit of the third quartile (the 75th percentile of the data). The median is contained within the box of the boxplot at the 50th percentile of the data.
+
+Whiskers: This contains the data not included in the box. The way they are calculated is by determining 1.5*IQR. You go above the 3rd quartile and below the 1st quartile by that value and move back toward the box until you hit a data point. If any points are left outside this range, they are considered outliers.
+
+The boxplot is a graphical representation of Tukey’s five number summary. These numbers are minimum, 1st quartile, median, 3rd quartile, maximum. The minimum and maximum are the lowest and highest data points, respectively. The other values are mentioned above.
+
+#### 2. Compare the distributions of the fares of the different passenger classes.  
+
+##### Location  
+
+The location or center of the distribution is usually measured by the mean and median. As would be expected, first class passengers have the largest fare and the third class passengers have the smallest.  
+
+##### Scale  
+
+The scale is also known as spread. We usually measure a distribution's scale by using the standard deviation or interquartile range (IQR). As mentioned, the IQR is represented in the boxplot by the length of the box or rectangle. The spread of fares paid by the first class passengers is much larger than the second and third classes. The spread for second class passengers is slightly larger than the third class.  
+
+##### Symmetry
+
+We use two different aspects of the boxplot to judge a distribution's symmetry. First, we look at the median relative to the lower and upper hinges of the boxplot. When the median is closer to the lower hinge (first quartile), then we usually have a positively skewed distribution. When the median is closer to the upper hinge (third quartile), then we often have a negatively skewed distribution.  
+
+The length of the whiskers also helps us assess symmetry. A longer right whisker and shorter left whisker is associated with positive skewness. A longer left whisker relative to the right whisker usually indicates negative skewness.  
+
+Using these indicators, we conclude that the distributions for all three of the passenger classes are positively skewed.  
+
+##### Outliers
+
+Outliers are extreme observations which lie outside the whiskers of the boxplots. Some first class passengers paid extremely large amounts for their tickets. Only two second class passengers qualify as outliers. There are a significant number of third class passengers that paid abnormally large amounts for their tickets.  
+
+Because the outliers are all positive, this corresponds to a positive or right skewed distribution.
+
+#### 3.  Write the R code that creates the above boxplot plot.  
+
+See the R code above the diagrams.
+
+###  IV. Comparison of means and medians   
+
+
+```{r mean and median comparison}
+titanic %>%
+  group_by(pclass) %>% 
+  summarise(median = median(fare, na.rm = TRUE),
+            mean = mean(fare, na.rm = TRUE))
+```  
+#### 1.  Compare the means and the medians of the fares paid by each passenger class.  
+
+The means for each passenger class are much bigger than their corresponding medians. This happens when we have a positively skewed distribution with positive outliers. The large values of the outliers don't affect the median but they do affect the median.  
+
+#### 2.  Do you prefer to use the means or the medians? Why?  
+
+Usually medians are much better indicators of location or central tendency. The median is a resistant statistic because it isn't influenced by extreme observations. Very large or small values can significantly alter the mean.  
+
+#### 3.  How do missing observations complicate our calculations?  
+
+As mentioned, many of the R functions won't complete calculations when data values are not available.  
+
+#### 4.  Write the code that creates this table.  
+
+Please find code above the table.  
+
+### V.  Covariation between age and fare  
+
+```{r covariation between numerical variables, warning = FALSE}
+titanic %>%
+  filter(fare < 200) %>% 
+  ggplot(aes(x = age, y = fare, color = survived)) +
+    geom_point() +
+    geom_smooth(method = "loess") +
+    labs(
+      title = "Relationship between age and fare",
+      subtitle = "Passengers who paid less than $200",
+      x = "Years",
+      y = "Dollars"
+    )
+```  
+
+#### 1.  Describe the relationship between fare and age for those who survived and those that didn't.  
+
+In general, the loess smoothing in this graph finds nonlinear relationships between fares paid for both those that survived and those that perished. The distance of the points from the lines indicate that the relationships are weak. Correlations are low because of the dispersion about the estimated lines and because of the nonlinear patterns.  
+
+Between the ages of 0 and 20, those that survived paid about the same price. As age increased for those that survived, they paid higher fares.  
+
+The fares of young passengers that perished declined as they got older. For passengers who perished, there is a flat spot between the ages of 20 and 40 years. Older passengers who perished also seemed to have paid higher fares.  
+
+Even if we had observed a stronger relationship, it probably would not be valid until we investigated potential lurking variables. Passenger class and gender might possibly exert significant confounding influences.  
+
+#### 2.  Write the R code that will create this diagram.  
+
+See the code above the figure.  
+
+### VI. Age by passenger class, gender, and survival  
+
+```{r covariation categorical and numerical, warning = FALSE}
+titanic %>%
+  ggplot(aes(x = pclass, y = age, fill = sex)) +
+    geom_boxplot() +
+    facet_grid(rows = vars(survived, sex)) +
+    labs(title = "Comparison of age by passenger class, gender, and survival",
+      subtitle = "All passengers",
+      x = "Passenger Class",
+      y = "Years") +
+  coord_flip()
+```  
+
+#### 1.  Find some patterns from the boxplot that would help you predict whether a given passenger survived or didn't survive. 
+
+* First class males and females (who obviously paid more for their tickets) had a higher chance of survival.   
+* Second class males who surived didn't pay very much for their tickets. It appears that second class males who perished paid more for their tickets than the second class survivors.  
+* Surviving third class males actually paid more for their tickets than those in second class.  
+* For females, the distributions of fares for survivors and deceased seem very similar.  
+
+
+#### 2.  Write the R code that constructs this graph.  
+
+See the code above the figure.  
+
+
+
+
