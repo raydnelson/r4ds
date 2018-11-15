@@ -133,7 +133,7 @@ titanic %>%
 ```  
 #### 1.  Compare the means and the medians of the fares paid by each passenger class.  
 
-The means for each passenger class are much bigger than their corresponding medians. This happens when we have a positively skewed distribution with positive outliers. The large values of the outliers don't affect the median but they do affect the median.  
+The means for each passenger class are much bigger than their corresponding medians. This happens when we have a positively skewed distribution with positive outliers. The large values of the outliers don't affect the median but they do affect the mean.  
 
 #### 2.  Do you prefer to use the means or the medians? Why?  
 
