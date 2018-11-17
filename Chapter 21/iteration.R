@@ -1,10 +1,11 @@
 # Iteration
 # Initial: 12 Oct 2018
-# Revision: 14 Oct 2018
+# Revision: 16 Oct 2018
 # Ray Nelson
 
 # Libraries
 library(tidyverse)
+library(broom)
 
 # 21.2 For loops ---------------------------------------------------------------
 
@@ -22,9 +23,9 @@ median(df$b)
 median(df$c)
 median(df$d)
 
-output <- vector("double", ncol(df))
-for (i in seq_along(df)) {
-  output[[i]] <- median(df[[i]])
+output <- vector("double", ncol(df))  #1. Output
+for (i in seq_along(df)) {            #2. Sequence
+  output[[i]] <- median(df[[i]])      #3. Body
 }
 output
 
@@ -58,11 +59,12 @@ for (i in seq_along(df)) {
 }
 
 # 21.3.2 Looping patterns
-x <- df
 
 (results <- vector("list", length(x)))
-names(results) <- names(x)
+names(results) <- names(df)
 results
+
+## Looping with an index
 
 for (i in seq_along(x)) {
   name <- names(x)[[i]]
@@ -71,16 +73,31 @@ for (i in seq_along(x)) {
   paste("The mean of ", name, "is: ", value) %>% print()
 }
 
-#21.3.2 Unknown output length
+## looping over elements
+df_names <- c("a", "b", "c", "d")
+for (nm in df_names) {
+  value <- x[[nm]] %>% mean() %>% round(2)
+  paste("The mean of ", name, "is: ", value) %>% print()
+}
 
+## Looping over names
+for (nm in names(x)) {
+  means <- x[[nm]] %>% mean %>% round(2)
+  paste("The mean of ", nm, "is: ", means) %>% print()
+}
+
+#21.3.2 Unknown output length
 means <- c(0, 1, 2)
 
+# Progressive growing of vector
 output <- double()
 for (i in seq_along(means)) {
   n <- sample(100, 1)
   output <- c(output, rnorm(n, means[[i]]))
 }
 str(output)
+
+# Explicit declaration of output size
 
 out <- vector("list", length(means))
 for (i in seq_along(means)) {
@@ -92,6 +109,26 @@ str(out)
 str(unlist(out))
 
 # 21.3.4 Unknown sequence length
+
+## Coin flip example
+
+flip <- function() sample(c("T", "H"), 1)
+
+flips <- 0
+nheads <- 0
+
+while (nheads < 3) {
+  if (flip() == "H") {
+    nheads <- nheads + 1
+  } else {
+    nheads <- 0
+  }
+  flips <- flips + 1
+}
+flips
+
+
+## Function
 sample(c("T", "H"), 4, replace = TRUE) %>% 
   table()
 
@@ -195,6 +232,8 @@ z <- list(x = 1:3, y = 4:5)
 map_int(z, length)
 
 # 21.5.1 Shortcuts
+
+## What are the possible values for cyl
 mtcars %>% 
   count(cyl)
 
@@ -202,10 +241,8 @@ models <- mtcars %>%
   split(.$cyl) %>% 
   map(function(df) lm(mpg ~ wt, data = df))
 
-models %>% str()
-
 models <- mtcars %>% 
-  splot(.$cyl) %>% 
+  split(.$cyl) %>% 
   map(~lm(mpg ~ wt, data = .))
 
 models %>% 
@@ -216,15 +253,24 @@ models %>%
   map(summary) %>% 
   map_dbl("r.squared")
 
+# You can also use integer to extract by position
+
 x <- list(list(1, 2, 3), list(4, 5, 6), list(7, 8, 9))
 x %>% map_dbl(2)
 
 # 21.5.2 Base R
+
+## The apply functions
+
+mtcars %>% apply(2, mean)
+mtcars %>% apply(1, mean)
+
 x1 <- list(
   c(0.27, 0.37, 0.57, 0.91, 0.20),
   c(0.90, 0.94, 0.66, 0.63, 0.06), 
   c(0.21, 0.18, 0.69, 0.38, 0.77)
 )
+
 x2 <- list(
   c(0.50, 0.72, 0.99, 0.38, 0.78), 
   c(0.93, 0.21, 0.65, 0.13, 0.27), 
@@ -232,10 +278,13 @@ x2 <- list(
 )
 
 threshold <- function(x, cutoff = 0.8) x[x > cutoff]
-x1 %>% sapply(threshold) %>% str()
-x2 %>% sapply(threshold) %>% str()
+
+x1 %>% lapply(threshold) %>% str()
+x2 %>% lapply(threshold) %>% str()
+
 
 # 21.6 Dealing with failure ----------------------------------------------------
+
 safe_log <- safely(log)
 str(safe_log(10))
 
