@@ -1,0 +1,143 @@
+---
+title: "Chapter 27 R Markdown"
+author: "Ray Nelson"
+date: "11/30/2018"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# 27.2 R Markdown basics
+
+  1.  YAML header  
+  1.  Code chunks  
+  1.  Text mixed with simple text  
+  
+These basic components are seen in the following example:
+
+The following YAML header sets up a document to have the code available but hidden:
+
+`title: "Diamond sizes"`    
+`output:`      
+`html_document:`  
+`code_folding: hide`  
+    
+The first code chunk often contains libraries  
+
+`{r setup, include = FALSE}`  
+`knitr::opts_chunk$set(echo = TRUE)`  
+`library(tidyverse)`  
+
+We can then mix text with code.  
+
+
+# 27.3 Formatting in RMarkdown  
+
+## Italics, bold, and super and subscripts  
+
+* *italics One*  
+* _italics Two_  
+* **bold One**  
+* __bold Two__  
+* subscript~2~  
+* superscript^2^  
+
+## Lists  
+### Unordered  
+
+* One  
+* Two  
+
+### Ordered
+
+  1.  One
+      i)  i
+      i)  ii
+  1.  Two  
+  
+# Links and Images 
+
+### Put an image in the file  
+
+![Thanks to Hadley Wickman](http://govfinance.byu.edu/govfinance/images/dataScience/DataScience.png)  
+
+### URL reference
+
+<http://govfinance.byu.edu/govfinance/classes/dataScience/dataScienceSyllabus.html>  
+
+### Named URL reference
+
+[Data Science](http://govfinance.byu.edu/govfinance/classes/dataScience/dataScienceSyllabus.html)  
+
+### Image on the web
+
+[Data Science Book](http://govfinance.byu.edu/govfinance/images/dataScience/DataScience.png)
+
+# Equations (Quadradtic formula)
+
+## Inline
+
+This is the quadratic equation: ${{ - b \pm \sqrt {{b^2} - 4ac} } \over {2a}}$
+
+## Display
+
+$${{ - b \pm \sqrt {{b^2} - 4ac} } \over {2a}}$$ 
+
+# Table  
+
+Tables 
+------------------------------------------------------------
+
+First Header  | Second Header
+------------- | -------------
+Content Cell  | Content Cell
+Content Cell  | Content Cell  
+
+# Scatterplot of miles per gallon on car weight
+## Built-in R data set
+
+# Code blocks
+
+## Inline
+
+The number of rows in the mtcars tibble is: `r nrow(mtcars)`.
+
+## Graph
+
+```{r mpg versus wt, echo = TRUE}
+mtcars %>% 
+  ggplot(aes(x = wt, y = mpg)) +
+    geom_point(color = "red", alpha = 0.5) + 
+    geom_smooth(method = "loess", color = "lightgreen", se = FALSE) +
+    geom_smooth(method = "lm", color = "lightblue", se = FALSE) +
+    labs(
+      title = "The relationship between mileage and weight is not linear",
+      x = "Weight in Thousands of Pounds",
+      y = "Miles Per Gallon"
+    )
+```  
+
+## Warnings and Messages
+
+```{r histogram, message = TRUE}
+mtcars %>% 
+  ggplot(aes(x = mpg)) +
+    geom_histogram()
+```
+
+## 27.4.3 Table
+
+```{r table example}
+mtcars %>% head(5)
+mtcars[1:5, ]
+knitr::kable(
+  mtcars[1:5, ], 
+  caption = "A knitr kable."
+)
+```
+

@@ -1,6 +1,6 @@
 # Model basics
 # Initial: 14 November 2018
-# Revision: 14 November 2018
+# Revision: 28 November 2018
 # Ray Nelson
 
 # Libraries
@@ -15,14 +15,19 @@ sim1 %>%
   ggplot(aes(x = x, y = y)) +
     geom_point()
 
+## Random slopes and intercepts
+
 models <- tibble(
   a1 = runif(250, -20, 40),
   a2 = runif(250, -5, 5)
 )
 
-ggplot(sim1, aes(x = x , y = y)) +
+sim1 %>% ggplot(aes(x = x , y = y)) +
   geom_abline(data = models, aes(intercept = a1, slope = a2), alpha = 1/4) +
-  geom_point()
+  geom_point() +
+  labs(
+    title = "Possible Models with Random Slopes and Intercepts"
+  )
 
 model1 <- function(a, data){
   a[1] + data$x * a[2]
@@ -44,14 +49,18 @@ sim1_dist <- function(a1, a2){
 (models <- models %>% 
   mutate(dist = purrr::map2_dbl(a1, a2, sim1_dist)))
 
-ggplot(sim1, aes(x, y)) + 
+sim1 %>% ggplot(aes(x, y)) + 
   geom_point(size = 2, colour = "grey30") + 
   geom_abline(
     aes(intercept = a1, slope = a2, colour = -dist), 
-    data = filter(models, rank(dist) <= 10)
+    data = filter(models, rank(dist) <= 10) 
+  ) +
+  labs(
+    title = "Top Ten Models for Simulated Data",
+    color = "Distance Measure"
   )
 
-ggplot(models, aes(a1, a2)) +
+models %>% ggplot(aes(x = a1, y = a2)) +
   geom_point(data = filter(models, rank(dist) <= 10), size = 4, colour = "red") +
   geom_point(aes(colour = -dist))
 
@@ -66,7 +75,7 @@ grid %>%
   geom_point(data = filter(grid, rank(dist) <= 10), size = 4, colour = "red") +
   geom_point(aes(colour = -dist)) 
 
-ggplot(sim1, aes(x, y)) + 
+sim1 %>% ggplot(aes(x, y)) + 
   geom_point(size = 2, colour = "grey30") + 
   geom_abline(
     aes(intercept = a1, slope = a2, colour = -dist), 
@@ -76,7 +85,7 @@ ggplot(sim1, aes(x, y)) +
 best <- optim(c(0, 0), measure_distance, data = sim1)
 best$par
 
-ggplot(sim1, aes(x, y)) + 
+sim1 %>% ggplot(aes(x, y)) + 
   geom_point(size = 2, colour = "grey30") + 
   geom_abline(intercept = best$par[1], slope = best$par[2])
 
@@ -91,7 +100,7 @@ coef(sim1_mod)
 (grid <- grid %>% 
     add_predictions(sim1_mod))
 
-ggplot(sim1, aes(x)) +
+sim1 %>% ggplot(aes(x)) +
   geom_point(aes(y = y)) +
   geom_line(aes(y = pred), data = grid, colour = "red", size = 1)
 
@@ -100,15 +109,13 @@ ggplot(sim1, aes(x)) +
 
 residuals_freqpoly <- sim1 %>%
   ggplot(aes(x = resid)) +
-    geom_freqpoly(binwidth = 0.5, fill = "lightgreen")
+    geom_freqpoly(binwidth = 0.5)
 
 residuals_density <- sim1 %>%
   ggplot(aes(x = resid)) +
   geom_density(adjust = 1/2, fill = "lightblue")
 
-
 grid.arrange(residuals_freqpoly, residuals_density, nrow = 2)
-
 
 sim1 %>% 
   ggplot(aes(x = x, y = resid)) +
@@ -150,15 +157,16 @@ mod2 <- lm(y ~ x, data = sim2)
   data_grid(x) %>% 
   add_predictions(mod2))
 
-ggplot(sim2, aes(x)) + 
+sim2 %>% ggplot(aes(x = x)) + 
   geom_point(aes(y = y)) +
   geom_point(data = grid, aes(y = pred), colour = "red", size = 4)
-
 
 tibble(x = "e") %>% 
   add_predictions(mod2)
 
 # 23.4.2 Interactions (continuous and categorical)
+
+sim3 %>% glimpse()
 
 sim3 %>% ggplot(aes(x = x1, y = y)) +
   geom_point(aes(colour = x2))
@@ -188,6 +196,8 @@ ggplot(sim3, aes(x1, resid, colour = x2)) +
 head(sim3)
 
 # 23.4.3 Interactions (two continuous)
+
+sim4 %>% glimpse()
 
 mod1 <- lm(y ~ x1 + x2, data = sim4)
 mod2 <- lm(y ~ x1 * x2, data = sim4)
@@ -281,3 +291,4 @@ mod <- lm(y ~ x, data = df)
 
 mod <- lm(y ~ x, data = df, na.action = na.exclude)
 nobs(mod)          
+

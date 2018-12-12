@@ -1,6 +1,6 @@
 # Model Building
 # Initial: 15 November 2018
-# Revision: 15 November 2018
+# Revision: 28 November 2018
 # Ray Nelson
 
 # Libraries --------------------------------------------------------------------
@@ -14,9 +14,16 @@ library(gridExtra)
 
 # 24.2 Why are low quality diamonds more expensive? ----------------------------
 
-diamonds %>% 
-  ggplot(aes(x = cut, y = price)) +
-    geom_boxplot()
+(cut_graph <- diamonds %>% 
+  ggplot(aes(x = cut, y = price, fill = cut)) +
+    geom_boxplot(show.legend = FALSE, alpha = 0.5) +
+    labs(
+      title = "Ideal cut diamonds have a lower price which violates intuition.",
+      x = "",
+      y = "Price (Dollars)"
+    )
+)
+
 diamonds %>% 
   ggplot(aes(x = color, y = price)) +
   geom_boxplot()
@@ -37,11 +44,12 @@ ggplot(diamonds2, aes(lcarat, lprice)) +
 
 mod_diamond <- lm(lprice ~ lcarat, data = diamonds2)
 
-grid <- diamonds2 %>% 
+(grid <- diamonds2 %>% 
   data_grid(carat = seq_range(carat, 20)) %>% 
   mutate(lcarat = log2(carat)) %>% 
   add_predictions(mod_diamond, "lprice") %>% 
   mutate(price = 2 ^ lprice)
+)
 
 ggplot(diamonds2, aes(carat, price)) + 
   geom_hex(bins = 50) + 
@@ -53,10 +61,18 @@ diamonds2 <- diamonds2 %>%
 ggplot(diamonds2, aes(lcarat, lresid)) + 
   geom_hex(bins = 50)
 
-diamonds2 %>% 
-  ggplot(aes(cut, lresid)) +
-  geom_ref_line(h = 0, colour = "grey70", size = 1.25) +
-    geom_boxplot()
+(cut_residuals <- diamonds2 %>% 
+  ggplot(aes(x = cut, y = lresid, fill = cut)) +
+    geom_ref_line(h = 0, colour = "grey70", size = 1.25) +
+    geom_boxplot(show.legend = FALSE, alpha = 0.5) +
+    labs(
+      title = "After controlling for diamond size,the ideal cut diamonds have a higher price.",
+      x = "",
+      y = "Residuals (Base 2 Logarithms)"
+    )
+)
+
+grid.arrange(cut_graph, cut_residuals, nrow = 2)
 
 diamonds2 %>%
   ggplot(aes(color, lresid)) +

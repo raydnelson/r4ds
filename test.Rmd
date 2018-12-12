@@ -1,8 +1,10 @@
 ---
-title: "Word Format"
+title: "Untitled"
 author: "Ray Nelson"
-date: "6/6/2018"
-output: word_document
+date: "12/12/2018"
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}

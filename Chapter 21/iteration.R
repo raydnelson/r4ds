@@ -66,18 +66,20 @@ results
 
 ## Looping with an index
 
+x <- df
+
 for (i in seq_along(x)) {
   name <- names(x)[[i]]
   # print(name)
-  value <- x[[i]] %>% mean() %>% round(2)
-  paste("The mean of ", name, "is: ", value) %>% print()
+  means <- x[[i]] %>% mean() %>% round(2)
+  paste("The mean of ", name, "is: ", means) %>% print()
 }
 
 ## looping over elements
 df_names <- c("a", "b", "c", "d")
 for (nm in df_names) {
-  value <- x[[nm]] %>% mean() %>% round(2)
-  paste("The mean of ", name, "is: ", value) %>% print()
+  means <- x[[nm]] %>% mean() %>% round(2)
+  paste("The mean of ", nm, "is: ", means) %>% print()
 }
 
 ## Looping over names
@@ -284,7 +286,6 @@ x2 %>% lapply(threshold) %>% str()
 
 
 # 21.6 Dealing with failure ----------------------------------------------------
-
 safe_log <- safely(log)
 str(safe_log(10))
 

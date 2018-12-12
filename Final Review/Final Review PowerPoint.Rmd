@@ -1,0 +1,127 @@
+---
+title: "Final Review PowerPoint"
+author: "Ray Nelson"
+date: "12/12/2018"
+output: powerpoint_presentation
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(readxl)
+library(gridExtra)
+```
+
+## Description of Data
+
+```{r read in the data}
+companies <- read_excel("Companies.xlsx")
+```  
+
+The data set Companies.xlsx contains the following variables:
+
+- type: Type of company, Computer or Pharmaceutical
+- size: Categorical variable small or big
+- sales: In millions of dollars
+- profits: In millions of dollars
+- employees: Numeric
+- profit_per_employee: Numeric
+- assets: In millions of dollars
+- profit_sales_percent: Numeric
+
+## Variables in the data set
+
+```{r variables in companies tibble}
+companies %>% glimpse()
+```  
+
+### Relationship between sales and profits linear?
+
+The linear model suggests that there is a strong relationship between sales and profits but there is one very large company that is exerting undue influence on the estimated equation.
+
+```{r sales and profits scatterplot, message = FALSE}
+companies %>% 
+  ggplot(aes(x = sales, y = profits)) +
+    geom_point() +
+    geom_smooth(color = "hotpink") +
+    geom_smooth(method = "lm", color = "lightblue")
+```  
+
+## The linear model
+
+The linear model has a large R-Squared.  
+
+```{r linear model for all data}
+lm(profits ~ sales, data = companies) %>% 
+  summary()
+``` 
+
+## Let's exclude the very large company from our analysis  
+
+```{r remove large company from scatterplot, message = FALSE}
+companies %>% 
+  filter(sales < max(sales)) %>% 
+  ggplot(aes(x = sales, y = profits)) +
+    geom_point() +
+    geom_smooth(color = "hotpink") +
+    geom_smooth(method = "lm", color = "lightblue")
+```
+
+## Model without the large company
+
+```{r linear model without the large company}
+lm(profits ~ sales, data = companies %>% filter(sales < max(sales))) %>%
+  summary()
+```  
+
+## Distribution of profit with the large company   
+
+There is one company with really large profits in absolute terms.
+
+```{r large company effect on distribution}
+companies %>%
+  ggplot(aes(x = profits)) +
+    geom_density(fill = "lightblue")
+```
+
+## Distribution of profit per employee  
+
+The large company also has large sales. What happens if we look at profit relative to employees.  
+
+```{r sales relative to employees}
+companies %>%
+  ggplot(aes(x = profit_per_employee)) +
+    geom_density(fill = "lightblue")
+```
+
+## Distribution of profit as a percentage of sales  
+
+The large company also has large sales. What happens if we look at profit relative to sales.
+
+```{r sales as a percentage of profits}
+companies %>%
+  ggplot(aes(x = profit_sales_percent)) +
+    geom_density(fill = "lightblue")
+```
+
+## Control Distribution of Sales with Log Transformation   
+
+The large company also has large sales. What happens to the distribution if we take the natural log of sales?  
+
+```{r comparison of sales}
+untransformed <- companies %>%
+  ggplot(aes(x = sales)) +
+    geom_density(fill = "lightblue") +
+    labs(
+      title = "(a) Untransformed Data"
+    )
+transformed <- companies %>%
+  ggplot(aes(x = log(sales))) +
+    geom_density(fill = "lightblue") +
+    labs(
+      title = "(b) Transformed Data"
+    )
+grid.arrange(untransformed, transformed, nrow = 1)
+```
+
+

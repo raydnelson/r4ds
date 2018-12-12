@@ -11,10 +11,14 @@ knitr::opts_chunk$set(echo = TRUE)
 Text formatting 
 ------------------------------------------------------------
 
-*italic*  or _italic_
-**bold**   __bold__
-`code`
-superscript^2^ and subscript~2~
+*italic*  or _italic_  
+
+**bold**   __bold__  
+
+`code`  
+
+superscript^2^ and  
+subscript~2~  
 
 Headings
 ------------------------------------------------------------
@@ -43,11 +47,12 @@ Lists
 Links and images
 ------------------------------------------------------------
 
-<http://example.com>
+<http://govfinance.byu.edu/govfinance/classes/dataScience/dataScienceSyllabus.html>
 
-[linked phrase](http://example.com)
+[Class Web Site](http://govfinance.byu.edu/govfinance/classes/dataScience/dataScienceSyllabus.html)
 
-![optional caption text](path/to/img.png)
+
+![Thanks to Hadley Wickman](http://govfinance.byu.edu/govfinance/images/dataScience/Data%20Science.png)
 
 Tables 
 ------------------------------------------------------------
