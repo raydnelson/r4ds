@@ -1,0 +1,147 @@
+---
+title: "Final Exam"
+author: "Ray Nelson"
+date: "12/19/2018"
+output: powerpoint_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+movies <- readxl::read_excel("Movies.xlsx")
+```
+
+## 1)	A comparison of the distributions of domestic and foreign revenue. Use gather to create one graph. Interpret your graphics and summary statistics. List your conclusions in bulleted lists. 
+
+## Violin Plot
+
+```{r domestic and foreign revenue violin plot}
+movies %>%
+  select(domestic, worldwide) %>% 
+  gather(key = "Scope", value = "Revenue") %>% 
+  ggplot(aes(x = Scope, y = Revenue)) +
+    geom_violin(fill = "lightgreen") +
+    geom_boxplot(fill = "lightblue", width = 0.1, ) +
+    coord_flip() +
+    labs(
+      x = "Revenue Category",
+      y = "Millions of Dollars"
+    )
+```  
+
+## Summary Statistics
+
+```{r summary statistics for }
+movies %>%
+  select(domestic, worldwide) %>% 
+  gather(key = "Scope", value = "Revenue") %>%
+  group_by(Scope) %>% 
+  summarise(
+    Mean = mean(Revenue),
+    Median = median(Revenue),
+    SD = sd(Revenue),
+    IQR_Revenue = IQR(Revenue)
+  )
+```
+
+
+## Summary of findings about domestic and worldwide revenue
+
+- Location: Both the violin plots and the summary statistics suggest that revenue is larger for worldwide revenues. This is indicated by the median in the violin plot and means and medians in the summary statistics. This would be as expected because domestic revenue is almost certainly included as part of the worldwide revenues.  
+
+- Scale: Worldwide revenue is more spread out than domestic revenue. The IQR and length of the whiskers in the boxplots show this to be true. The summary statistics give a similar conclusion as both the standard deviation and interquartile ranges are larger for worldwide.  
+
+- Symmetry: The violin plots show that both domestic and worldwide revenue are positively skewed. Domestic revenues are very positively skewed as shown by the median aligning more closely to the bottom hinge. The right whisker is much longer than the left whisker. Worldwide revenue is also positively skewed but the median locates more centrally relative to the lower and upper hinges. A natural bounding occurs on the left side of the distribution since revenues can't be negative.  
+
+- Outliers:  Both distributions have many outliers. Some movies, like Titanic, are extremely successful in both the domestic and worldwide markets.  
+
+## 2)	A comparison of the distributions of domestic revenue for each rating category. Interpret your graphics and summary statistics. List your conclusions in bulleted lists.  
+
+## Violin Plot Comparison of Domestic Revenue by Rating Category
+
+```{r distributions of domestic revenue by rating}
+movies %>% 
+  ggplot(aes(x = rating, y = domestic)) +
+    geom_violin(fill = "lightgreen") +
+    geom_boxplot(width = 0.1, fill = "lightblue") +
+    coord_flip() +
+    labs(
+      x = "Rating",
+      y = "Millions of Dollars"
+    )
+```  
+
+## Summary Statistics
+
+```{r summary statistics by rating}
+movies %>%
+  group_by(rating) %>% 
+  summarise(
+    Mean = mean(domestic),
+    Median = median(domestic),
+    SD = sd(domestic),
+    IQR_Revenue = IQR(domestic)
+  )
+```  
+
+## Summary of findings about domestic revenue by rating
+
+- Location: Comparisons of the means and the medians show that PG-13 movies have the highest revenue. R movies have the lowest. Because it was so successful, the Titanic makes the mean very different from the median for the PG-13 movies. The outliers also significantly increase the mean for PG movies.
+
+- Scale: The ranking of the variability of G, PG and PG-13 is not consistent over the standard deviation and IQR measures. Using the standard deviation, PG movies are more variable whereas the IQR measure indicates that G  movies have the larger scale. Both PG and PG-13 have more outliers which causes the larger values for the standard deviations.
+
+- Symmetry: The violin plots all four of the different ratings are positively skewed. In all cases, the median is closer to the lower hinge than the upper. The right whiskers are also longer than those on the left.
+
+- Outliers:  All four of the distributions have outliers that correspond to successful movies. The number of outliers in PG-13 movies is especially significant and strongly impacts the mean and standard deviation measures.  
+## 3)	An analysis of the scatterplot of worldwide revenue on domestic revenue. Make sure that you include commentary and explanations of what you have done.  
+
+## a) Linear Relationship
+
+The comparison of the simple regression line with the loess smoothed line suggests that the relationship might not be linear. We might worry about the influence of the Titanic when estimating this relationship.
+
+```{r linear relationship of domestic and worldwide revenue}
+movies %>% 
+  ggplot(aes(x = domestic, y = worldwide)) +
+    geom_point() +
+    geom_smooth(method = "lm", color = "blue") +
+    geom_smooth(color = "red")
+```
+
+## b) Same slopes and intercepts  
+
+If we include the very successful movies, it appears that rating gives simple regression lines with very different slopes and interecepts.  
+
+```{r slope and intercept comparison}
+movies %>% 
+  ggplot(aes(x = domestic, y = worldwide, color = rating)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+```
+
+## c) An analysis of the scatterplot of worldwide revenue on domestic revenue. Make sure that you include commentary and explanations of what you have done.
+
+## Model with different slopes and different intercepts
+
+```{r linear model comparison of slopes and intercepts}
+different_slope_intercept <- lm(worldwide ~ domestic * rating, data = movies)
+different_slope_intercept %>% summary()
+different_slope_intercept %>% anova()
+```
+## Model with different intercepts but the same slope
+
+```{r linear model comparison of intercepts}
+different_intercept <- lm(worldwide ~ domestic + rating, data = movies)
+different_intercept %>% summary()
+different_intercept %>% anova()
+```  
+
+## Model with the same slope and same intercept
+
+```{r linear model same slope and same intercept}
+same <- lm(worldwide ~ domestic, data = movies)
+same %>% summary()
+```  
+
+## Summary of Regression models  
+
+Looking at the R-Squared values and the t-statistic p-values suggests that the slopes and intercepts aren't very different. An ANOVA (which we didn't have time to cover), however, suggests that even though we are measuring the individual coefficients imprecisely, we can detect differences in the main effects and interactions as a whole. This matches what we see in the scatterplot.  

@@ -1,0 +1,146 @@
+---
+title: "Final Exam Key"
+author: "Ray Nelson"
+date: "12/19/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+movies <- readxl::read_excel("Movies.xlsx")
+```
+
+## Definitions and Concepts  
+
+1.  Carefully explain the differences between exploratory data analysis (EDA) and confirmatory modeling.  
+
+Exploratory data analysis is similiar to being a detective. We are looking for patterns and facts. We don't have specific hypotheses. In exploratory data analysis, we "generate questions about our data, search for answers by visualising, transforming, and modelling." We then "... use what we learn to refine our questions and/or generate new questions." (r4ds, section 7.1)  
+
+Confirmatory modeling seeks to formally investigate a specific question or hypothesis. Some liken confirmatory modelling to being a trial lawyer trying to establish guilt or innocence. If we aren't focused on prediction, models are often constructed to investigate the validity of a conjecture. Whenever we engage in confirmatory hypothesis tests, we can only use our data one time. As soon as we reuse our data, we are engaging in data exploration.  
+
+2.	Explain the advantages of declaring a categorical variable as a factor.  
+
+Factors are variables whose values encompass a fixed set of known possible character or integer values. A regular practice in base R is to convert character variables into factors. R stores factors efficiently by assigning each category a level. A table stores the numbered level and the string that describes that level. Factors allow us to distinguish between nominal and ordinal categorical variables. We do this by instructing R about the order of the factor values.  
+
+3.	Explain the process of first defining a family of models and then how you generate a fitted model.  
+
+A family of models is defined by a precise, mathematical functional form or definition. Possible equations include linear, higher order polynomials, transcendental (exponential and logarithmic), etc.  
+
+By defining a family of models, we identify parameters that we need to estimate by using our data. In order to estimate the parameters of our family of models, we must define an error criterion (like least squares) and then use an optimization routine to estimate the values of our parameters that minimizes (or maximizes) our error criterion.  
+
+4.	Explain how  left_join differs from semi_join.  
+
+A left_join is a mutating join, meaning that it creates a new data frame that is composed of values from both the left and right data frames (tibbles). A left-join takes each row in the left data frame and then looks for all of the rows in the right data frame that match using the specified keys (primary and foreign). If an observation in the left data frame has no corresponding value in the right, then it creates a NA value. "When you join duplicate keys, you get all possible combinations."  
+
+A semi_join is a filtering join, which means that it will add new information from the right data frame to a subset of observations from the left data frame. If an observation in the left data frame doesn't have any corresponding observations in the right data frame, then that observation is excluded from the new dataframe.  
+
+5.	Explain how gather from tidyr might be used in conjunction with facets in ggplot.  
+
+In ggplot, faceting create multiple graphs that are conditional on values of a categorical variable. The data frame must be long rather than wide. Often we need to use gather to create the categorical variable. This stack variables on top of each other as we transform from wide data frames into one that is long. This is the purpose of the gather function from the dplyr library.  
+
+## Line by Line Code Interpretation   
+
+### Function definition and application   
+
+The purpose of this code is to identify outliers.  
+
+```{r scaling}
+scaled <- function(x){
+ (x - median(x)) / IQR(x)
+}
+
+movies %>% 
+  ggplot(aes(x = domestic, y = worldwide)) +
+    geom_point()
+
+movies %>% 
+  ggplot(aes(x = scaled(domestic), y = scaled(worldwide))) +
+    geom_point()
+
+movies %>%
+  mutate(scaled_domestic = scaled(domestic), scaled_worldwide = scaled(worldwide)) %>% 
+  filter(scaled_domestic <= 3) %>% 
+  ggplot(aes(x = scaled_domestic, y = scaled_worldwide, color = type)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+```  
+
+First 3 lines: create a function that scales a vector by subtracting the median and divides by the interquartile range. This standardizes the location and scale of the variable.  
+
+The next three lines create a scatterplot with all of the data.  
+
+The next three lines create a scatterplot with the scaled data by using the function that was defined in the first three lines.  
+
+The next 6 lines accomplish the following:  
+1.  Two new variables are created which scale domestic and worldwide revenues by using our scaled function.  
+2. Next we filter out the observations that have a scales value greater than 3. This excludes the very successful movies.  
+3.  Finally, we draw a scatterplot with the successful movies excluded. We use a linear model in the geom_smooth which allows for different slopes and intercepts because we scale color to represent different types of movies.  
+
+### Iteration  
+
+```{r iteration}
+revenue <- movies %>% 
+  select(domestic, worldwide)
+
+output <- vector("double", 2)
+
+for(i in seq_along(revenue)){
+  output[[i]] <- mean(scaled(revenue[[i]]))
+}
+
+output %>% print()
+
+```  
+
+The first two lines create a new tibble called revenue that only contains the columns domestic and worldwide.   
+
+The next line creates an object where we will store the results of our interation. The object is a vector of real numerical values with length 2.  
+
+The first part of the loop defines the index i over which we will interate for each column in revenue. The seq_along(revenue) means that i will take on the values 1 and 2 since we only have two columns in revenue.  
+
+When i = 1, the output[[i]] is assigned the value of the mean scaled domestic revenue.  
+
+When i = 2, output[[i]] is assigned the value of the mean scaled worldwide revenue.  
+
+Finally, we print out the results of output by piping into print().  
+
+### Modeling  
+
+```{r modeling}
+regular_movies <- movies %>% 
+  mutate(ranking = min_rank(desc(domestic))) %>% 
+  filter(ranking > 20)
+
+regular_movies %>% 
+  ggplot(aes(x = domestic, y = worldwide, color = rating)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+
+lm(worldwide ~ domestic, data = regular_movies) %>%
+  summary()
+  
+lm(worldwide ~ domestic + rating, data = regular_movies) %>%
+  summary()
+
+lm(worldwide ~ domestic * rating, data = regular_movies) %>%
+  summary()
+
+```  
+
+The first two lines create a new variable which assigns each observation a rank from the highest to the lowest.  The next line filters out the 20 highest grossing movies so that we don't have any outliers.  
+
+The next four lines use the new tibble to create a scatterplot where each rating can have a different intercept and slope in the linear regression. This is accomplished through scaling color to rating in the aesthetics part of the ggplot function call.  
+
+The first linear model, worldwide ~ domestic, means that all movies, no matter what their rating, share the same slope and intercept.  
+
+The second linear model, worldwide ~ domestic + rating, have different intercepts for each rating but all movies share the same slope.  
+
+The third and last linear model, worldwide ~ domestic * rating, allows each rating to have different slopes and intercepts.  
+
+The summary() function at the end of each linear model gives the basic results from the regression.  
+
+
+
+
+
