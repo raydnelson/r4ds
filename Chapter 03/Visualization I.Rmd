@@ -1,0 +1,124 @@
+---
+title: "Data Visualization I"
+author: "Ray Nelson"
+date: "1/11/2019"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Basic smoothed scatterplot  
+* Highway miles per gallon (hwy) on displacement (displ)  
+
+```{r basic smoothed scatterplot, message = FALSE}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_smooth()
+```
+
+## Regression scatterplot    
+*  Highway miles per gallon on displacement  
+*  Color by drive train (drv)  
+*  Linetype by drive train  
+*  Linear regression with no confidence interval  
+*  Increase the size of the lines  
+
+```{r linear regression}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) +
+  geom_point() +
+  geom_smooth(mapping = aes(linetype = drv), method = "lm", se = FALSE, size = 2)
+```
+
+## Loess smoothed scatterplot with points of various sizes
+*  Highway miles per gallon on displacement    
+*  Color points by car class  
+*  Point size by city miles per gallon (cty)  
+*  Large red loess line for all point and no confidence interval  
+
+```{r linear regression for all points, message = FALSE}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(mapping = aes(color = class, size = cty)) +
+  geom_smooth(se = FALSE, size = 2, color = "red")
+```
+
+## Linear regression of highway on displacement
+*  Color by vehicle class
+*  Simple regression by vehicle class
+*  Show all points
+
+```{r regression by vehicle class}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
+  geom_point(position = "jitter") +
+  geom_smooth(method = "lm")
+```
+
+## Linear regression of highway on displacement
+*  Color by vehicle class
+*  Simple regression by vehicle class
+*  Each class has its own scatterplot
+*  Show all the points  
+*  No Legend
+
+```{r regression by vehicle class with separate scatterplots}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
+  geom_point(position = "jitter", show.legend = FALSE) +
+  geom_smooth(method = "lm", show.legend = FALSE) +
+  facet_wrap(vars(class))
+```  
+
+## Linear regression of highway on displacement
+*  Color by drivetrain type
+*  Simple regression by drive train type and number of cylinders
+*  Draw a larger, black regression line
+*  Each drive train and number of cylinders has its own scatterplot
+*  Show all the points  
+*  No Legend
+
+```{r regression by vehicle class with drive train by cylinders }
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) +
+  geom_point(position = "jitter", show.legend = FALSE) +
+  geom_smooth(method = "lm", show.legend = FALSE, color = "black", size = 1) +
+  facet_grid(rows = vars(as.factor(cyl)), cols = vars(drv))
+```  
+
+## Linear regression of highway on displacement
+*  Color by drive train
+*  Simple regression by vehicle class
+*  Each drive train and number of cyclinders has its own scatterplot
+*  Show all the points  
+*  No Legend
+
+## Bar chart of car classes  
+*  Bar colored by car class  
+*  No legend  
+
+```{r bar chart by car class}
+ggplot(data = mpg, mapping = aes(x = class, fill = class)) +
+  geom_bar(show.legend = FALSE)
+```
+
+## Bar chart of car classes  
+*  Bar colored by car class  
+*  Stack bar in each by drive type  
+*  Proportion of drive for each class of vehicle  
+
+```{r bar chart by car class and drive type}
+ggplot(data = mpg, mapping = aes(x = class, fill = drv)) +
+  geom_bar(position = "fill")
+```  
+
+## Bar chart of car classes  
+*  Vertical orientation  
+*  Number of by drive train type for each vehicle class  
+
+```{r bar chart by car class and drive type number of vehicles}
+ggplot(data = mpg, mapping = aes(x = class, fill = drv)) +
+  geom_bar(position = "dodge")
+```  
+
+
