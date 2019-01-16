@@ -73,7 +73,7 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
 
 ## Linear regression of highway on displacement
 *  Color by drivetrain type
-*  Simple regression by drive train type and number of cylinders
+*  Simple regression (hwy on displacement) by drive train type and number of cylinders
 *  Draw a larger, black regression line
 *  Each drive train and number of cylinders has its own scatterplot
 *  Show all the points  
@@ -85,13 +85,6 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) +
   geom_smooth(method = "lm", show.legend = FALSE, color = "black", size = 1) +
   facet_grid(rows = vars(as.factor(cyl)), cols = vars(drv))
 ```  
-
-## Linear regression of highway on displacement
-*  Color by drive train
-*  Simple regression by vehicle class
-*  Each drive train and number of cyclinders has its own scatterplot
-*  Show all the points  
-*  No Legend
 
 ## Bar chart of car classes  
 *  Bar colored by car class  
@@ -120,5 +113,3 @@ ggplot(data = mpg, mapping = aes(x = class, fill = drv)) +
 ggplot(data = mpg, mapping = aes(x = class, fill = drv)) +
   geom_bar(position = "dodge")
 ```  
-
-
