@@ -12,9 +12,32 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
-## Bar versus col geoms: How do we summarize categorical data?
+## The grammar of graphics includes the following seven elements:
+*  Data
+*  Mapping
+*  Geometric object
+*  Stats
+*  Position
+*  Coordinate system
+*  Facets
 
-### Bar
+## Today we will focus on the geometric objects. We will talk about:
+1.  Graphs for categorical variables, both nominal and ordinal
+1.  Graphs for one numerical variables
+1.  Graphs for two numerical variables
+    i)  Plots
+    i)  Densities
+1.  Probability plots
+1.  Polygons and maps
+
+## Graphs for categorical variables
+## Bar versus col geoms: How do we summarize categorical data?  
+
+### Bar  
+
+This is an inline r code chunk. The number of observations in the mpg dataframe is: `r nrow(mpg)`
+
+This is code chunk. The "r" signifies that that it is and R chunk. The second gives the code chunk a name. We can also have additional arguments. For example, messages = FALSE suppresses messages.
 
 ```{r bar}
 ggplot(data = mpg, mapping = aes(x = class, fill = class)) +
@@ -34,42 +57,43 @@ ggplot(data = class_count, mapping = aes(x = class, y = count, fill = class)) +
 
 What is the difference?  
 
+A good reference for this is <https://ggplot2.tidyverse.org/reference/geom_bar.html>. Another good source of such information:  
 
-## Distribution geometric objects
+![Our class textbook](http://govfinance.byu.edu/govfinance/images/dataScience/DataScience.png)
 
-How do we summarize numerical data?
+## Distribution numerical variables
 
-### Histograms
+How do we summarize numerical data?  
+
+### Histograms  
 
 ```{r histogram of highway miles per gallon, message = FALSE}
 ggplot(data = mpg, mapping = aes(x = hwy)) +
   geom_histogram(fill = "blue", binwidth = 2.5)
 ```  
 
-### Frequency Polygons
+### Frequency Polygons  
 
 ```{r frequency polygons of highway miles per gallon, message = FALSE}
 ggplot(data = mpg, mapping = aes(x = hwy)) +
   geom_freqpoly(color = "blue", binwidth = 2.5)
 ``` 
 
-### Densities 
+### Densities  
 
 ```{r density for highway miles per gallon}
 ggplot(data = mpg, mapping = aes(x = hwy)) +
   geom_density(fill = "blue")
 ```  
 
-### Rug
+### Rug  
 
 ```{r rug plots, message = FALSE}
-ggplot(data = faithful, mapping = aes(x = eruptions)) +
-  geom_histogram(fill = "lightblue")
 ggplot(data = faithful, mapping = aes(x = eruptions)) +
   geom_rug()
 ```  
 
-### Combinations of density plots
+### Combinations of density plots  
 
 ```{r combination of density plots, message = FALSE}
 ggplot(data = faithful, mapping = aes(x = eruptions)) +
@@ -86,52 +110,52 @@ ggplot(data = faithful, mapping = aes(x = eruptions)) +
   geom_rug(color = "red")
 ```
 
-### Violin plots
+### Violin plots  
 
 ```{r violin for highway miles per gallon}
 ggplot(data = mpg, mapping = aes(x = class, y = hwy, fill = class)) +
   geom_violin(show.legend = FALSE)
 ```  
 
-### Boxplots  
+### Boxplots   
 
 ```{r boxplots for highway miles per gallon}
 ggplot(data = mpg, mapping = aes(x = class, y = hwy, fill = class)) +
   geom_boxplot(show.legend = FALSE)
 ```  
 
-### True violin plots  
+### True violin plots   
 
 ```{r true violin plots for highway miles per gallon}
 ggplot(data = mpg, mapping = aes(x = class, y = hwy, fill = class)) +
   geom_violin(show.legend = FALSE) +
-  geom_boxplot(mappingshow.legend = FALSE, width = 0.05, fill = "grey")
+  geom_boxplot(show.legend = FALSE, width = 0.05, fill = "grey")
 ```  
 
-### Scatterplot
+## Plots of two numerical variables
 
 Compare and contrast the following graphs.  
 
-#### Scatterplot  
+### Scatterplot  
 
 ```{r scatterplot}
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   geom_point() 
 ```
-#### Jittered Scatterplot  
+### Jittered Scatterplot  
 
 ```{r jitter}
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   geom_jitter()
 ```  
 
-#### Path Plot  
+### Path Plot  
 ```{r path}
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   geom_path()
 ```
 
-#### Line Plot
+### Line Plot
 ```{r line}
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   geom_line() 
@@ -199,7 +223,9 @@ ggplot(data = faithful, aes(x = waiting, y = eruptions)) +
   geom_density2d()
 ```
 
-### Quantile-Quantile Plots
+## Plots that allow us to investigate the family of distributions. The following normal quantile plot allows us to check whether the variable highway mileage is normally distributed.  
+
+### Quantile-Quantile Plots  
 
 ```{r qq plots}
 ggplot(data = mpg, mapping = aes(sample = hwy)) +
@@ -207,13 +233,13 @@ ggplot(data = mpg, mapping = aes(sample = hwy)) +
   geom_qq_line()
 ```  
 
+## Polygon geom allows us to draw shapes. This is especially usefull when drawing maps. Here is an example of how we can use ggplot to draw maps.  
+
 ### Maps
 
 ```{r maps example, messages = FALSE, warning = FALSE}
 crimes <- data.frame(state = tolower(rownames(USArrests)), USArrests)
-crimesm <- gather(crimes, key = variable, value = value, Murder,
-                  Assault, UrbanPop, Rape, -state)
-crimesm$variable <- as.factor(crimesm$variable)
+crimesm <- gather(crimes, key = variable, value = value, -state)
 if (require(maps)) {
   states_map <- map_data("state")
   ggplot(crimes, aes(map_id = state)) +
@@ -226,7 +252,6 @@ if (require(maps)) {
     expand_limits(x = states_map$long, y = states_map$lat) +
     facet_wrap(vars(variable))
 }
-
 ```
 
 

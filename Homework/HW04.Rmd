@@ -1,0 +1,46 @@
+---
+title: 'Homework #4'
+author: "Ray Nelson"
+date: "1/16/2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Concepts  
+
+Explain the sequence whereby a word file is created from a R Markdown document. What is the purpose of the YAML header?
+
+## Interpretation of code  
+
+Interpret the following R code:  
+
+```{r code chunk 1}
+ggplot(data = faithful, mapping = aes(x = eruptions)) +
+  geom_histogram(aes(y = stat(density)), fill = "lightgreen") +
+  geom_density(fill = "blue", alpha = 0.3) +
+  geom_rug(color = "red")
+``` 
+
+```{r code chunk 2}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy, fill = class)) +
+  geom_violin(show.legend = FALSE) +
+  geom_boxplot(show.legend = FALSE, width = 0.05, fill = "grey")
+```
+
+## Compare the distribution of city mileage from the mpg dataframe for each of the three different types of drive trains using:
+
+1.  Facets with a density superimposed on top of a histogram
+1.  Violin plots
+
+```{r facets}
+
+```
+
+```{r violin plots}
+
+```
+

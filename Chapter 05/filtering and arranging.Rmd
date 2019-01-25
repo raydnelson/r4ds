@@ -1,0 +1,155 @@
+---
+title: "Filtering and Arranging"
+author: "Ray Nelson"
+date: "1/22/2019"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load the tidyverse and nycflights13 libraries  
+
+Usually this step would occur in the setup code chunk. We use include = FALSE option so that we don't see the code in our document or the output from this operation.
+
+```{r load libraries, include = FALSE}
+library(tidyverse)
+library(nycflights13)
+```  
+
+
+## Investigate the flights dataset so become acquainted with the variables. The following are ways to become familiar with a dataset:
+*  data() puts the dataset into the environment
+*  colnames() lists the names of the variables
+*  glimpse() gives an overview
+*  summary() gives a summary of each variable
+*  View() opens the dataset in a window
+*  Typing in the name prints out the data
+*  head() gives the first 10 observations
+*  tail() gives the last 10 observations
+
+```{r flights dataset}
+data(flights)
+glimpse(flights)
+summary(flights)
+head(flights)
+tail(flights)
+```  
+
+## Use a violin plot to compare the departure delays for the three different airports for New Years Day flights 
+
+```{r New Years departure delays, warning = FALSE}
+new_years <- filter(flights, month == 1, day == 1)
+ggplot(data = new_years, mapping = aes(x = origin, y = dep_delay)) +
+  geom_violin(fill = "lightblue") +
+  geom_boxplot(fill = "lightgreen", width = 0.10) +
+  coord_flip()
+```  
+
+## Modify the above plot so that it excludes very long delays or those over an hour.  
+
+```{r exclude New Years outliers}
+no_long_delays <- filter(flights, month == 1, day == 1, dep_delay <= 60)
+ggplot(data = no_long_delays, mapping = aes(x = origin, y = dep_delay)) +
+  geom_violin(fill = "lightblue") +
+  geom_boxplot(fill = "lightgreen", width = 0.10) +
+  coord_flip()
+```  
+
+## Departure delays for Christmas or New Years of less than an hour by New York Airport  
+
+```{r holiday depature delays}
+holiday <- filter(flights, (month == 1 & day == 1) | (month == 12 & day == 25),
+                  dep_delay < 60)
+ggplot(data = holiday, mapping = aes(x = origin, y = dep_delay)) +
+  geom_violin(fill = "lightblue") +
+  geom_boxplot(fill = "lightgreen", width = 0.10) +
+  coord_flip()
+```  
+
+## Total spring departures (spring is defined as March, April, and May)
+
+```{r spring}
+spring <- filter(flights, month %in% 3:5)
+ggplot(data = spring, mapping = aes(x = origin, fill = as.factor(month))) +
+  geom_bar(position = "dodge")
+```  
+
+## Distribution of arrival delays for flights going to Atlanta (ATL), Los Angeles (LAX), and Chicago (ORD) which have an arrival delay of less than 2 hours 
+
+```{r destinations}
+three_airports <- filter(flights, dest %in% c("ATL", "LAX", "ORD"), arr_delay < 120)
+ggplot(data = three_airports, mapping = aes(x = arr_delay)) +
+  geom_density(aes(fill = dest), show.legend = FALSE) +
+  geom_vline(xintercept = 0) +
+  facet_grid(rows = vars(dest))
+ggplot(data = three_airports, mapping = aes(x = dest, y = arr_delay)) +
+  geom_violin(fill = "lightblue") +
+  geom_boxplot(fill = "lightgreen", width = 0.10) +
+  coord_flip()
+```  
+
+## Distribution of arrival delays of less than an hour for American (AA), Delta (DL), and United (UA) flights that left on time
+
+```{r on time departure arrival delays, warning = FALSE}
+not_late <- flights %>% filter(dep_delay <= 0,
+                               carrier %in% c("AA", "UA", "DL"),
+                               arr_delay < 60
+)
+ggplot(data = not_late, mapping = aes(x = carrier, y = arr_delay, fill = carrier)) +
+  geom_violin(show.legend = FALSE) +
+  geom_boxplot(width = .4, fill = "grey") +
+  geom_hline(yintercept = 0, color = "red") +
+  coord_flip()
+```  
+
+
+## Find the flights that were delayed by at least an hour but made up over 30 minutes in flight
+
+```{r made up over 30 minutes in flight}
+make_up <- filter(flights,
+                  dep_delay >= 60,
+                  dep_delay - arr_delay > 30)
+```  
+
+## Top 10 most departure delayed flights
+
+```{r top 20 delays}
+delayed <- arrange(flights, desc(dep_delay))
+head(delayed, 20)
+```  
+
+## Airport for the top 100 delayed flights
+
+```{r airport for delayed flights}
+delayed <- head(arrange(flights, desc(dep_delay)), 100)
+ggplot(data = delayed, mapping = aes(x = origin, fill = origin)) +
+  geom_bar(show.legend = FALSE)
+```  
+
+## Shortest  flight
+
+```{r shortest flight}
+head(arrange(flights, distance), 1)
+head(arrange(flights, air_time), 1)
+flights %>%
+  arrange(distance) %>%
+  head(1)
+flights %>% 
+  arrange(air_time) %>% 
+  head(1)
+```  
+
+## Longest flight
+
+```{r longest flight}
+flights %>%
+  arrange(desc(distance)) %>%
+  head(1)
+flights %>% 
+  arrange(desc(air_time)) %>% 
+  head(1)
+```  

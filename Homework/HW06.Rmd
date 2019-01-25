@@ -1,0 +1,59 @@
+---
+title: 'Homework #6'
+author: "Select and Mutate"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(nycflights13)
+```
+
+## Concepts  
+
+1.  Compare and contrast filter and select.  
+1.  Explain how ":" can be used when selecting variables.
+
+## Interpretation of code  
+
+Interpret the following R code:  
+
+```{r code chunk interpretation, warning = FALSE}
+converted_times <- mutate(
+  flights,
+  hours = dep_time %/% 100,
+  minutes = dep_time %% 100,
+  minutes_after_midnight = 60 * hours + minutes
+)
+ggplot(
+  data = converted_times,
+  mapping = aes(x = origin,
+                y = minutes_after_midnight,
+                fill = origin)
+) +
+  geom_violin(show.legend = FALSE) +
+  geom_boxplot(width = 0.1,
+               fill = "grey",
+               show.legend = FALSE) +
+  coord_flip()
+```
+
+## Coding Problem 1:
+
+1.  Select only those flights going from JFK to Chicago.  
+1.  Create a data frame that includes the following variables: dep_delay and arr_delay.    
+1.  Rename the variables dep_delay to departure and arr_delay to arrival.  
+1.  Draw a scatterplot of arrival on departure with colored loess and linear regression smoothers without confidence intervals.  
+
+
+```{r JFK to Chicago}
+
+```  
+
+## Coding Problem 2: Use mutate and the ranking function to find the 5 most delayed flights departing from JFK. Print out only the rank of the delay, year, month, day, origin, dest, carrier, sched_dep_time, dep_delay, and delay with the most delayed at the top of the table.  
+
+```{r 5 most delayed flights}
+
+```  
+
