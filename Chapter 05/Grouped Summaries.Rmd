@@ -1,0 +1,168 @@
+---
+title: "Grouped Summaries"
+author: "Ray Nelson"
+date: "1/28/2019"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(nycflights13)
+data(flights)
+```
+
+## Average delay for all airports
+
+```{r average delay, warning = FALSE}
+summarise(
+  flights,
+  mean_delay = mean(dep_delay, na.rm = TRUE),
+  median_delay = median(dep_delay, na.rm = TRUE)
+)
+```
+
+## Average and median delay for each airport
+
+```{r airport average median delay, warning = FALSE}
+by_airport <- group_by(flights, origin)
+summarize(
+  by_airport,
+  mean_delay = mean(dep_delay, na.rm = TRUE),
+  median_delay = median(dep_delay, na.rm = TRUE)
+)
+```
+
+## Smoothed scatterplot of average distance and average delay for each destination location
+
+```{r distance and average arrival delay, message = FALSE, warning = FALSE}
+by_dest <- group_by(flights, dest)
+delay <- summarise(
+  by_dest,
+  count = n(),
+  dist = mean(distance, na.rm = TRUE),
+  delay = mean(arr_delay, na.rm = TRUE)
+)
+delay
+ggplot(data = delay, mapping = aes(x = dist, y = delay)) +
+  geom_point(aes(size = count), alpha = 1/3) +
+  geom_smooth(se = FALSE)
+```
+
+## Smoothed scatterplot of average distance and average delay for each location using piping
+
+```{r distance and average arrival delay using piping, message = FALSE, warning = FALSE}
+flights %>%
+  group_by(dest) %>%
+  summarize(
+    count = n(),
+    dist = mean(distance, na.rm = TRUE),
+    delay = mean(arr_delay, na.rm = TRUE)
+  ) %>%
+  ggplot(mapping = aes(x = dist, y = delay)) +
+  geom_point(aes(size = count), alpha = 1 / 3) +
+  geom_smooth(se = FALSE)
+```
+
+## Piping to get average and median delay for each airport
+
+```{r piping to compare airports, warning = FALSE}
+flights %>%
+  group_by(origin) %>%
+  summarize(
+    mean_delay = mean(dep_delay, na.rm = TRUE),
+    median_delay = median(dep_delay, na.rm = TRUE)
+  )
+```
+
+## Location and spread for arrival delays of American, Delta, or United flights and going to Atlanta, Chicago, or Los Angeles from each of the New York Airports
+```{r delta flights from JFK}
+flights %>%
+  filter(dest %in% c("ATL", "ORD", "LAX")) %>%
+  filter(carrier %in% c("AA", "DL", "UA")) %>%
+  group_by(origin, carrier, dest) %>%
+  summarize(
+    number_flights = n(),
+    location = mean(arr_delay, na.rm = TRUE),
+    scale = sd(arr_delay, na.rm = TRUE)
+  )
+```
+
+## Create a new data frame that includes not cancelled flights
+
+```{r only not cancelled flights}
+not_cancelled <- flights %>%
+  filter(!is.na(dep_delay), !is.na(arr_delay))
+```
+
+## Are there some planes that have significantly longer delays?
+
+```{r delayed planes}
+not_cancelled %>% 
+  group_by(tailnum) %>% 
+  summarize(
+    delay = mean(arr_delay),
+    n = n()
+  )
+```
+
+## Bar graph of the number of destinations for each airport
+
+```{r destinations by airport}
+flights %>%
+  group_by(origin) %>%
+  summarize(destinations = n_distinct(dest)) %>% 
+  ggplot(aes(x = origin, y = destinations, fill = origin)) +
+  geom_col(show.legend = FALSE)
+```
+
+## Bar graph of number of destinations by airline and origin
+
+```{r number of destinations by airline}
+flights %>%
+  group_by(origin, carrier) %>%
+  summarize(destinations = n_distinct(dest)) %>% 
+  ggplot(aes(x = carrier, y = destinations, fill = carrier)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  facet_grid(rows = vars(origin))
+```
+
+## Total Number of flights by NYC airport and carrier
+```{r total flights by airport and carrier}
+not_cancelled %>% 
+  group_by(origin) %>% 
+  count(carrier)
+```
+
+## Number of flights that left before 5am for each day
+
+```{r early morning flights }
+not_cancelled %>% 
+  filter(dep_time < 500) %>% 
+  count(month, day)
+
+not_cancelled %>% 
+  group_by(month, day) %>% 
+  summarize(n_early = sum(dep_time < 500))
+```
+
+## Proportion of flights were delayed by more than an hour from the three different airports
+
+```{r proportion of flights with long delay}
+not_cancelled %>% 
+  group_by(origin) %>% 
+  summarize(proportion = mean(dep_delay > 60))
+```
+
+## Worst departure delayed flights for each airport
+
+```{r worse departure delays}
+flights %>% 
+  group_by(origin) %>%
+  mutate(departure_rank = min_rank(desc(dep_delay))) %>% 
+  filter(departure_rank == 1) %>% 
+  select(origin, carrier, dep_delay, month, day, sched_dep_time)
+```

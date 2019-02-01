@@ -1,7 +1,9 @@
 ---
 title: 'Homework #6'
 author: "Select and Mutate"
-output: word_document
+output:
+  html_document: 
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -12,7 +14,7 @@ library(nycflights13)
 
 ## Concepts  
 
-1.  Compare and contrast filter and select.  
+1.  Compare and contrast filter and select.
 1.  Explain how ":" can be used when selecting variables.
 
 ## Interpretation of code  
@@ -39,12 +41,25 @@ ggplot(
   coord_flip()
 ```
 
+The first six lines of code create a new data frame called converted_times from the data frame flights.
+
+*  The first calculation in the mutate function determines the number of hours from dep_time by using %/% in division of two integers. In this case, we throw away the remainder.
+*  The second calculation, dep_time %% 100, determines the number of minutes as the modulus or remainder of integer division.
+*  Finally, we calculate a new variable minutes_after_midnight which is the number of hours multiplied by 60 plus the number of minutes from the remainder.    
+
+The next 11 lines draw a violin plot based on the new data frame converted_times.  
+
+*  The mapping assigns the category origin to x and minutes_after_midnight to y. The fill in all successive geometric objects or layers is mapped to the origin.
+*  We suppress the legend for the violin layer because labeling is inherent in a violin plot.
+*  The boxplot must be made narrower so that it doesn't hide the violin plot. We fill each of the rectangles in the boxplot with grey which supercedes the fill from the aes in the ggplot function call.
+*  Finally, we switch the x and y axes so that the orientation of the violin plot is horizontal rather than vertical.  
+
 ## Coding Problem 1:
 
-1.  Select only those flights going from JFK to Chicago.  
-1.  Create a data frame that includes the following variables: dep_delay and arr_delay.    
-1.  Rename the variables dep_delay to departure and arr_delay to arrival.  
-1.  Draw a scatterplot of arrival on departure with colored loess and linear regression smoothers without confidence intervals.  
+1.  Select only those flights going from JFK to Chicago.
+1.  Create a data frame that includes the following variables: dep_delay and arr_delay. 
+1.  Rename the variables dep_delay to departure and arr_delay to arrival.
+1.  Draw a scatterplot of arrival on departure with colored loess and linear regression smoothers without confidence intervals.
 
 
 ```{r JFK to Chicago, warning = FALSE, message = FALSE}
@@ -58,10 +73,14 @@ flights %>%
   geom_smooth(method = "lm", se = FALSE, color = "red")
 ```  
 
-## Coding Problem 2: Use mutate and the ranking function to find the 5 most delayed flights departing from JFK. Print out only the rank of the delay, year, month, day, origin, dest, carrier, sched_dep_time, dep_delay, and delay with the most delayed at the top of the table.  
+## Coding Problem 2: Use mutate and the ranking function to find the 5 most delayed flights departing from JFK.
+1.  Choose the flights departing from JFK
+1.  Create a new variable called delay which is the rank of the delay with 1 being the longest delay.
+1.  For the five most delayed flights, print the new variable delay along with year, month, day, dest, carrier, and dep_delay with the most delayed at the top of the table.
 
 ```{r 5 most delayed flights}
 flights %>%
+  filter(origin == "JFK") %>%
   mutate(delay = min_rank(desc(dep_delay))) %>%
   select(delay,
          year:day,

@@ -5,7 +5,7 @@ library(shiny)
 # Define UI for application
 shinyUI(fluidPage(
   # Application title
-  titlePanel("Budgeting Under Uncertainty: PERT Distributions"),
+  titlePanel("Distribution Shape: PERT"),
   
   # Sidebar distribution and budgeting decision inputs
   sidebarLayout(
@@ -47,45 +47,6 @@ shinyUI(fluidPage(
         max = 15,
         step = 1
       ),
-      
-      helpText(h4("Recession Distribution Parameters", align = "Center")),
-      
-      numericInput(
-        "recession_min",
-        "Recession Minimum:",
-        value = -10,
-        min = NA,
-        max = NA,
-        step = NA
-      ),
-      
-      numericInput(
-        "recession_mode",
-        "Recession Most Likely:",
-        value = -3,
-        min = NA,
-        max = NA,
-        step = NA
-      ),
-      
-      numericInput(
-        "recession_max",
-        "Recession Maximum:",
-        value = 1,
-        min = NA,
-        max = NA,
-        step = NA
-      ),
-      
-      sliderInput(
-        "recession_shape",
-        "Recession Shape:",
-        value = 4,
-        min = 1,
-        max = 15,
-        step = 1
-      )
-    ),
     
     # Show a plot of the generated distribution
     mainPanel(

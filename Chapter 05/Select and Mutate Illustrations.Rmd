@@ -67,9 +67,12 @@ View(departure_calculations)
 ## Transform scatterplot of diamonds
 
 ### Draw a scatter plot of price on diamond weights
-*  Use diamonds data frame
-*  The price of diamonds is given by price
-*  The weight of the diamonds is given by carat
+*  Use diamonds data frame  
+*  The price of diamonds is given by price  
+*  The weight of the diamonds is given by carat  
+*  Use transparency to help with the overplotting of so many observations  
+*  Add a loess smooth without the confidence interval  
+*  Add a simple regression line without the confidence interval  
 
 ```{r original scatterplot, message = FALSE}
 ggplot(data = diamonds, mapping = aes(x = carat, y = price)) +
@@ -79,6 +82,8 @@ ggplot(data = diamonds, mapping = aes(x = carat, y = price)) +
 ```
 
 ### Scale price and carat by subtracting the mean and dividing by the standard deviation
+*  Create a new data frame that includes scaled values for price and carat
+*  Draw a scatterplot with transparency, loess, and simple regression as before
 
 ```{r scaling, message = FALSE}
 scaled <- transmute(diamonds,
@@ -92,6 +97,8 @@ ggplot(data = scaled, mapping = aes(x = scale_carat, y = scale_price)) +
 ```
 
 ### Try a logarithmic transformation of price and carat
+*  Create a new data frame that includes logarithmic transformed variables for price and carat
+*  Draw a scatterplot with transparency, loess, and simple regression as before
 
 ```{r logarithmic transformation, message = FALSE}
 logged <- transmute(diamonds,
@@ -104,7 +111,7 @@ ggplot(data = logged, mapping = aes(x = log_carat, y = log_price)) +
   geom_smooth(method = "lm", color = "blue", se = FALSE)
 ```
 
-### We often don't need to create new variables because we have functions that accomplish transformations. Two of these often used transformations are the functions scale and log.
+### We often don't need to create new variables because we have functions that accomplish transformations. Two of these often used transformations are the functions scale and log. We can actually use these transformations within ggplot.
 
 ```{r scatterplots of transformed variables, message = FALSE}
 ggplot(data = diamonds, mapping = aes(x = scale(carat), y = scale(price))) +
@@ -118,7 +125,7 @@ ggplot(data = diamonds, mapping = aes(x = log(carat), y = log(price))) +
   geom_smooth(method = "lm", color = "blue", se = FALSE)
 ```
 
-## Consider now the time series data set for AirPassengers
+## Consider the time series data set for AirPassengers
 
 ```{r time series}
 data(AirPassengers)
@@ -126,7 +133,11 @@ AirPassengers
 plot(AirPassengers)
 ```
 
-### Convert AirPassengers into a data frame and use the lag and lead operators
+### Lead and lag functions
+*  Convert the AirPassengers ts object into a data frame
+*  Use mutate to create two new variables: lagging and leading
+*  View the first 10 observations
+*  View the last 10 observations
 
 ```{r leads and lags}
 passengers <- as.data.frame(AirPassengers)
@@ -138,6 +149,9 @@ tail(passengers, 10)
 ```
 
 ## Rank the diamonds by weight and price
+*  Create two new variables called size_rank and price_rank where 1 means the largest
+*  View the largest diamonds by size
+*  View the largest diamonds by price
 
 ```{r rank the diamonds and find the largest}
 largest <- mutate(diamonds,

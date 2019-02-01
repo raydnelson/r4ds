@@ -1,0 +1,208 @@
+---
+title: "Univariate Distributions"
+author: "Ray Nelson"
+date: "2/1/2019"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Prerequisites
+
+The diamonds dataset
+
+```{r diamonds dataset}
+data(diamonds)
+summary(diamonds)
+```
+
+## Exploratory Data Analysis
+
+1.  Formulate questions about your data
+1.  Investigate answers to questions by visualizing, transforming, and modelling
+1.  Evolve and spawn new questions based on what is learned
+
+Data cleaning also involves visualization, transformation, and modelling.  
+
+## Questions  
+
+"The key to asking quality questions is to generate a large quantity of questions."  
+
+Two types of questions:  
+
+1.  How is a variable distributed?
+1.  How are variables related to each other?
+
+### Basic definitions
+
+*  Variable: quantity, quality, or property  
+*  Value:  state or level of a variable when it is measured
+*  Observation:  "a set of measurements under similar conditions"  
+*  Tabular data:  "a set of values, each associated with a variable and an observation."  
+
+## Distribution
+
+*  Possible values
+*  Frequency or probability of observing values
+
+Describing the distribution gives us a basic set of questions to start asking. These in turn provoke additional questions. When considering a distribution, we should organize our preliminary investigation around:
+
+1.  Location or central tendency (mean and median)
+1.  Scale or spread (sd, range, and interquartile range)
+1.  Symmetry   
+1.  Outliers  
+
+## Visualizing Distributions of categorical variables 
+
+### Bar chart for cut using geom_bar
+
+```{r vertical bar chart of cut}
+diamonds %>% 
+  ggplot(aes(x = cut, fill = cut)) +
+  geom_bar(show.legend = FALSE)
+```  
+
+### Horizontal bar chart using count and geom_col
+
+```{r horizontal bar chart of cut}
+diamonds %>% 
+  count(cut) %>% 
+  ggplot(aes(x = cut, y = n, fill = cut)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip()
+```
+## Visualizing the distribution of a numerical variable
+
+### Histogram of carat
+
+```{r histogram of carat}
+diamonds %>%
+  ggplot(aes(x = carat)) +
+  geom_histogram(binwidth = 0.5, fill = "lightblue")
+```
+
+### Density of carat
+
+We can control the amount of smoothing by using the bw argument to geom_density.  
+
+```{r density of carat}
+diamonds %>%
+  ggplot(aes(x = carat)) +
+  geom_density(fill = "lightblue")
+```
+
+### Location or central tendency of the distribution is measured by the mean and the median
+
+```{r location or central tendency}
+mean(diamonds$carat)
+median(diamonds$carat)
+diamonds %>%
+  ggplot(aes(x = carat)) +
+  geom_density(fill = "lightblue") +
+  geom_vline(
+    xintercept = mean(diamonds$carat),
+    color = "red",
+    size = 2
+  ) +
+  geom_vline(
+    xintercept = median(diamonds$carat),
+    color = "blue",
+    size = 2
+  )
+```
+
+### Scale or spread of carats as measured by standard deviation
+
+```{r scale of diamond size}
+carat_mean <- mean(diamonds$carat)
+carat_sd <- sd(diamonds$carat)
+diamonds %>% 
+  ggplot(aes(x = carat)) +
+  geom_density(fill = "lightblue", bw = 0.2) +
+  geom_vline(xintercept = carat_mean, color = "red") +
+  geom_vline(xintercept = carat_mean - carat_sd, color = "blue", size = 2) +
+  geom_vline(xintercept = carat_mean + carat_sd, color = "blue", size = 2)
+```
+
+### Quantiles of diamond size
+
+The Tukey five number summary is the minimum, first quartile, median (second quartile), third quartile, and maximum. The quantile and summary functions give us these values.
+
+```{r quantiles}
+quantile(diamonds$carat)
+summary(diamonds$carat)
+```
+
+### Boxplot of diamond size
+
+```{r boxplot of carat}
+diamonds %>% 
+  ggplot(aes(x = factor(0), y = carat)) +
+  geom_boxplot() +
+  coord_flip()
+```
+
+### Components of the box in the boxplot
+
+```{r box of boxplot}
+Median <- median(diamonds$carat)
+lower_hinge <- quantile(diamonds$carat, 0.25)
+upper_hinge <- quantile(diamonds$carat, 0.75)
+
+diamonds %>% 
+  ggplot(aes(x = factor(0), y = carat)) +
+  geom_hline(yintercept = Median, color = "red") +
+  geom_hline(yintercept = lower_hinge, color = "blue") +
+  geom_hline(yintercept = upper_hinge, color = "blue") +
+  geom_boxplot(fill = "lightgreen") +
+  coord_flip()
+```
+
+### Interquartile range
+
+The length of the box in the boxplot is called the interquartile range. It is the third quartile minus the first quartile.
+
+```{r interquartile range}
+upper_hinge - lower_hinge
+IQR(diamonds$carat)
+```  
+
+### Boxplot whiskers and outliers
+
+The lower whisker of a boxplot starts at the lower hinge. We then move left 1.5 *  IQR and then slide right towards the hinge until we encounter an observation.  
+
+The upper whisker of a boxplot starts at the upper hinge. We then move right 1.5 *  IQR and then slide left towards the hinge until we encounter an observation.  
+
+Outliers are those observations that lie more than 1.5 * IQR from the lower and upper hinges.  
+
+Consider now the four dimensions of the diamond size distribution:  
+1.  Location
+1.  Scale  
+1.  Symmetry
+1.  Outliers
+
+```{r boxplot interpretation}
+diamonds %>% 
+  ggplot(aes(x = factor(0), y = carat)) +
+  geom_boxplot(fill = "lightblue") +
+  coord_flip()
+```
+
+### Now combine the density with the boxplot to get a violin plot  
+
+```{r violin plot}
+diamonds %>% 
+  ggplot(aes(x = factor(0), y = carat)) +
+  geom_violin(fill = "lightgreen") +
+  geom_boxplot(fill = "lightblue", width = 0.1) +
+  coord_flip()
+```
+
+
+
+

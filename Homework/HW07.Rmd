@@ -1,0 +1,53 @@
+---
+title: 'Homework #7'
+author: 'Summarization by Group'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(nycflights13)
+```
+
+## Concepts  
+
+Carefully explain the following:
+1.  The two elements that define the distribution of a random variable
+1.  How the mean measures the location of a distribution
+1.  How the standard deviation measures the scale or spread of a distribution
+
+## Interpretation of code  
+
+Interpret the following R code:  
+
+```{r code chunk interpretation, warning = FALSE, message = FALSE}
+flights %>%
+  group_by(day, month) %>%
+  summarize(cancelled = mean(is.na(dep_time)) * 100,
+            delay = mean(dep_delay, na.rm = TRUE)) %>%
+  ggplot(mapping = aes(x = delay, y = cancelled)) +
+  geom_point() +
+  geom_smooth(color = "red") +
+  labs(
+    title = "Large average delays associate with percentage of cancelled flights",
+    x = "Average Delay in Minutes",
+    y = "Percentage of cancelled flights"
+  )
+```
+
+## Write code that accomplishes the following:
+
+1.  Create a new data frame that excludes cancelled flights
+1.  Rank carriers from best to worst by their average arrival delays
+1.  Rank destination airports from worst to best by their average arrival delays
+1.  Rank NYC airports from best to worst by their average departure delays
+1.  Rank carriers from best to worst by their on time percentage
+
+Is it possible to use the above results to rank carriers? As a hint, think about how the following code might help you consider this question.  
+
+```{r number of flights}
+flights %>% 
+  group_by(carrier, origin) %>%
+  count(dest)
+```  

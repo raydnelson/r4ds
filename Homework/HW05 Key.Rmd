@@ -77,7 +77,9 @@ ggplot(data = flights_subset, mapping = aes(x = carrier, y = dep_delay)) +
   facet_grid(rows = vars(dest)) 
 ```
 
-## Coding Problem 2: Air time and distance travelled are undoubtedly positively related. Investigate this relationship for all April flights from JFK.  
+## Coding Problem 2: Air time and distance travelled are undoubtedly positively related. Investigate this relationship for all April flights from JFK.
+*  Create a new data frame april_jfk
+*  Create a scatterplot
 *  Use jittering and transparency to help with the overplotting.
 *  What might explain the clusters of points in the scatterplot?
 *  Is the relationship linear?  
@@ -92,4 +94,3 @@ ggplot(data = april_jfk, mapping = aes(x = distance, y = air_time)) +
 Destination might be a possible reason why we have clusters of data.  
 
 Comparing the linear regression line with the loess smoothed line suggests that the  relationship might not   be linear.
-

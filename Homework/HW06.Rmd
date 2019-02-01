@@ -51,7 +51,10 @@ ggplot(
 
 ```  
 
-## Coding Problem 2: Use mutate and the ranking function to find the 5 most delayed flights departing from JFK. Print out only the rank of the delay, year, month, day, origin, dest, carrier, sched_dep_time, dep_delay, and delay with the most delayed at the top of the table.  
+## Coding Problem 2: Use mutate and the ranking function to find the 5 most delayed flights departing from JFK.
+1.  Choose the flights departing from JFK
+1.  Create a new variable called delay which is the rank of the delay with 1 being the longest delay.
+1.  For the five most delayed flights, print the new variable delay along with year, month, day, dest, carrier, and dep_delay with the most delayed at the top of the table.  
 
 ```{r 5 most delayed flights}
 
