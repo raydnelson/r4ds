@@ -75,7 +75,8 @@ diamonds %>%
   ggplot(aes(x = cut, y = n, fill = cut)) +
   geom_col(show.legend = FALSE) +
   coord_flip()
-```
+```  
+
 ## Visualizing the distribution of a numerical variable
 
 ### Histogram of carat
@@ -174,9 +175,9 @@ IQR(diamonds$carat)
 
 ### Boxplot whiskers and outliers
 
-The lower whisker of a boxplot starts at the lower hinge. We then move left 1.5 *  IQR and then slide right towards the hinge until we encounter an observation.  
+The lower whisker of a boxplot starts at the lower hinge. We then move left 1.5 * IQR and then slide right towards the hinge until we encounter an observation.  
 
-The upper whisker of a boxplot starts at the upper hinge. We then move right 1.5 *  IQR and then slide left towards the hinge until we encounter an observation.  
+The upper whisker of a boxplot starts at the upper hinge. We then move right 1.5 * IQR and then slide left towards the hinge until we encounter an observation.  
 
 Outliers are those observations that lie more than 1.5 * IQR from the lower and upper hinges.  
 

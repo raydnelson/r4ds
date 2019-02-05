@@ -1,0 +1,52 @@
+---
+title: 'Homework #8'
+author: 'Univariate Distributions'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Concepts  
+
+1.  Carefully explain how visualizing, transforming, and modelling interact in exploratory data analysis.
+
+2.  Identify and explain the ggplot geometric objects that appropriately depict the distributions of
+    a.  Categorical variablles
+    
+## Interpretation of code  
+
+Interpret the following R code:  
+
+```{r code chunk interpretation}
+Median <- median(mpg$cty)
+lower_hinge <- quantile(mpg$cty, 0.25)
+upper_hinge <- quantile(mpg$cty, 0.75)
+
+mpg %>% 
+  ggplot(aes(x = factor(0), y = cty)) +
+  geom_violin(fill = "lightblue") +
+  geom_hline(yintercept = Median, color = "red") +
+  geom_hline(yintercept = lower_hinge, color = "blue") +
+  geom_hline(yintercept = upper_hinge, color = "blue") +
+  geom_boxplot(fill = "lightgreen", width = 0.25) +
+  coord_flip() +
+  labs(
+    title = "City mileage may not be normally distributed.",
+    x = "",
+    y = "Miles Per Gallon"
+  )
+```
+
+## Write code  
+
+The faithful dataset includes 272 observations that report the length of time that the Old Faithful geyser in Yellowstone National Park erupts and the time interval between the eruptions. Use exploratory data analysis to investigate the distributions of each of the two variables, eruptions and waiting. Your code should generate summary statistics and graphs that give you insights into:  
+
+1.  Location
+1.  Scale
+1.  Symmetry 
+1.  Outliers
+
+

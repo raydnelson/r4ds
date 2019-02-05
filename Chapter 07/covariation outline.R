@@ -189,3 +189,28 @@ diamonds %>% ggplot(mapping = aes(x = cut, y = price)) +
   x = "Category",
   y = "Variable") +
   coord_flip()
+
+library(ggmosaic)
+library(tidyverse)
+
+diamonds %>% 
+  group_by(color) %>% 
+  count(cut) %>% 
+  
+  ggplot(data = diamonds) +
+  geom_mosaic(aes(x = product(color, cut), fill = color)) +
+  facet_grid(rows = vars(clarity))
+
+
+ggplot(data = diamonds2) +
+  geom_mosaic()
+
+data(Titanic)
+titanic <- as.data.frame(Titanic)
+titanic$Survived <- factor(titanic$Survived, levels=c("Yes", "No"))
+ggplot(data=titanic) +
+  geom_mosaic(aes(weight=Freq, x=product(Class), fill=Survived))
+# good practice: use
+
+
+

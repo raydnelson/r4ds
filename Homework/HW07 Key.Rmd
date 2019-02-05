@@ -1,7 +1,9 @@
 ---
-title: 'Homework #7'
+title: 'Homework #7 Key'
 author: 'Summarization by Group'
-output:  word_document
+output:
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -42,32 +44,45 @@ flights %>%
 1.  Create a new data frame that excludes cancelled flights
 
 ```{r exclude cancelled flights}
-
+not_cancelled <- flights %>% 
+  filter(!is.na(dep_delay), !is.na(arr_delay))
 ```  
 
 2.  Rank carriers from best to worst by their average arrival delays
 
 ```{r carrier ranking}
 # Rank carriers from best to worst by their average arrival delays
-
+not_cancelled %>% 
+  group_by(carrier) %>% 
+  summarize(arrival_delay = mean(arr_delay)) %>% 
+  arrange(arrival_delay)
 ```  
 
 3.  Rank destination airports from worst to best by their average arrival delays
 
 ```{r destination airport ranking}
-
+not_cancelled %>% 
+  group_by(dest) %>% 
+  summarize(destination_delay = mean(arr_delay)) %>% 
+  arrange(desc(destination_delay))
 ```  
 
 4.  Rank NYC airports from best to worst by their average departure delays
 
 ```{r NYC airport ranking}
-
+not_cancelled %>% 
+  group_by(origin) %>% 
+  summarize(departure_delay = mean(dep_delay)) %>% 
+  arrange(departure_delay)
 ```  
 
 5.  Rank carriers from best to worst by their on time percentage
 
 ```{r time percentage}
-
+not_cancelled %>% 
+  group_by(carrier) %>% 
+  summarize(on_time = mean(arr_delay <= 0)) %>% 
+  arrange(desc(on_time))
 ```
 
 Is it possible to use the above results to rank carriers? As a hint, think about how the following code might help you consider this question.  
