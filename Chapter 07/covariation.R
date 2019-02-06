@@ -58,12 +58,12 @@ diamonds %>% ggplot(mapping = aes(x = price, fill = cut)) +
 
 ## Boxplot
 diamonds %>% ggplot(mapping = aes(x = cut, y = price, fill = cut)) +
-  geom_boxplot() +
+  geom_boxplot(show.legend = FALSE, alpha = 0.5) +
   coord_flip()
 
 ## Violin plot
 diamonds %>% ggplot(mapping = aes(x = cut, y = price)) +
-  geom_violin(mapping = aes(fill = cut)) +
+  geom_violin(mapping = aes(fill = cut), show.legend = FALSE) +
   geom_boxplot(fill = "lightblue", width = 0.05) +
   coord_flip()
 

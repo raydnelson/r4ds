@@ -1,0 +1,199 @@
+---
+title: "Covariation"
+author: "Ray Nelson"
+date: "2/5/2019"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Car Highway Mileage
+### Distribution of mileage
+
+1.  Location
+1.  Scale
+1.  Symmetry
+1.  Outliers
+
+```{r distribution of highway mileage}
+summary(mpg$hwy)
+sd(mpg$hwy)
+IQR(mpg$hwy)
+mpg %>% ggplot(aes(x = hwy)) +
+  geom_density(fill = "lightblue")
+```
+
+## Distribution of class of car
+
+```{r distribution of class of car}
+mpg %>%
+  ggplot(aes(x = class, fill = class)) +
+  geom_bar(show.legend = FALSE)
+```
+
+## Distribution of highway miles per gallon by vehicle class using violin plots
+
+```{r distribution of hwy by vehicle class}
+mpg %>%
+  ggplot(aes(x = reorder(class, hwy, FUN = IQR), y = hwy)) +
+  geom_violin(fill = "lightgreen") +
+  geom_boxplot(width = 0.1, fill = "lightblue") +
+  labs(title = "Violin Plot of Mileage", x = "Class of Vehicle", y = "Miles Per Gallon") +
+  coord_flip()
+```
+
+## Two categorical variables
+
+```{r categorical variables}
+diamonds %>%
+  ggplot(aes(x = cut, y = color)) +
+  geom_point(position = "jitter", alpha = 0.8, shape = 16, size = 0.5)
+
+diamonds %>%
+  ggplot(aes(x = cut, y = color)) +
+  geom_count()
+
+diamonds %>% 
+  count(color, cut) %>% 
+  ggplot(aes(x = cut, y = color)) +
+    geom_tile(aes(fill = n))
+```
+
+# Two continuous variables
+
+# Scatterplot
+
+```{r scatterplot of carat and price}
+diamonds %>% ggplot(aes(x = carat, y = price)) +
+  geom_point(alpha = 1)
+```
+
+# Two Dimensional Density
+
+## choose the smaller diamonds
+
+```{r smaller diamonds}
+set.seed(4393)
+dsmall <- diamonds %>% sample_n(1000)
+dsmall %>%
+  ggplot(aes(x = carat, y = price)) +
+  geom_point()
+
+dsmall %>% 
+  ggplot(aes(x = carat, y = price)) +
+  geom_bin2d()
+
+dsmall %>%
+  ggplot(aes(x = carat, y = price)) +
+  geom_hex()
+
+dsmall %>%
+  ggplot(aes(x = carat, y = price)) +
+  stat_density_2d(aes(fill = stat(level)), geom = "polygon")
+
+dsmall %>%
+  ggplot(aes(x, y)) +
+  stat_density_2d(geom = "raster", aes(fill = stat(density)), contour = FALSE)
+```
+
+## Small diamonds with boxplots
+
+```{r small diamonds with boxplots by various sizes}
+diamonds %>%
+  filter(carat < 3) %>% 
+  ggplot(aes(x = carat, y = price)) +
+  geom_boxplot(aes(group = cut_width(carat, 0.1))) +
+  coord_flip()
+```
+
+## Small number of diamonds with same number of points per bin
+
+```{r small diamonds same number per bin}
+diamonds %>%
+  filter(carat < 3) %>% 
+  ggplot(aes(x = carat, y = price)) +
+  geom_boxplot(aes(group = cut_number(carat, 20))) +
+  coord_flip()
+```
+
+# Patterns
+## Density for eruption length
+```{r density for eruption length}
+faithful %>%
+  ggplot(aes(x = eruptions)) +
+  geom_density(fill = "lightblue")
+```
+
+## Density for waiting
+```{r density for waiting}
+faithful %>%
+  ggplot(aes(x = waiting)) +
+  geom_density(fill = "lightblue")
+```
+
+## Scatterplot for waiting and eruptions
+
+```{r scatterplot for waiting and eruption length}
+faithful %>%
+  ggplot(aes(x = waiting, y = eruptions)) +
+  geom_point()
+```
+
+## Is there a linear pattern in the scatterplot
+```{r linear pattern}
+faithful %>% ggplot(aes(x = waiting, y = eruptions)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+## Is there a nonlinear pattern in the scatterplot
+
+```{r nonlinear pattern}
+faithful %>%
+ggplot(aes(x = waiting, y = eruptions)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Relationship between Old Faithful waiting time and eruption time",
+    x = "Waiting Time in Minutes",
+    y = "Eruption Duration in Minutes"
+  )
+```
+
+## Two dimensional density function (heat map)
+
+```{r heat map}
+faithful %>%
+  ggplot(aes(x = waiting, y = eruptions)) +
+  stat_density_2d(aes(fill = stat(density)), geom = "raster", contour = FALSE) +
+  labs(
+    title = "Relationship between Old Faithful waiting time and eruption time",
+    x = "Waiting Time in Minutes",
+    y = "Eruption Duration in Minutes"
+  )
+```
+
+## Two dimension density function (contour plot)
+
+```{r contour plot}
+faithful %>%
+  ggplot(aes(x = waiting, y = eruptions)) +
+  stat_density_2d(aes(fill = stat(level)), geom = "polygon") +
+  labs(
+    title = "Relationship between Old Faithful waiting time and eruption time",
+    x = "Waiting Time in Minutes",
+    y = "Eruption Duration in Minutes"
+  )
+```
+
+
+
+
+
+
+
