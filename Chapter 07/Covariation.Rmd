@@ -28,7 +28,7 @@ mpg %>% ggplot(aes(x = hwy)) +
   geom_density(fill = "lightblue")
 ```
 
-## Distribution of class of car
+### Distribution of class of car
 
 ```{r distribution of class of car}
 mpg %>%
@@ -36,11 +36,11 @@ mpg %>%
   geom_bar(show.legend = FALSE)
 ```
 
-## Distribution of highway miles per gallon by vehicle class using violin plots
+### Distribution of highway miles per gallon by vehicle class using violin plots
 
 ```{r distribution of hwy by vehicle class}
 mpg %>%
-  ggplot(aes(x = reorder(class, hwy, FUN = IQR), y = hwy)) +
+  ggplot(aes(x = reorder(class, hwy, FUN = median), y = hwy)) +
   geom_violin(fill = "lightgreen") +
   geom_boxplot(width = 0.1, fill = "lightblue") +
   labs(title = "Violin Plot of Mileage", x = "Class of Vehicle", y = "Miles Per Gallon") +
@@ -64,18 +64,20 @@ diamonds %>%
     geom_tile(aes(fill = n))
 ```
 
-# Two continuous variables
+## Two continuous variables
 
-# Scatterplot
+### Scatterplot
 
 ```{r scatterplot of carat and price}
+cov(diamonds$carat, diamonds$price)
+cor(diamonds$carat, diamonds$price)
 diamonds %>% ggplot(aes(x = carat, y = price)) +
   geom_point(alpha = 1)
 ```
 
-# Two Dimensional Density
+### Two Dimensional Density
 
-## choose the smaller diamonds
+#### choose the smaller diamonds
 
 ```{r smaller diamonds}
 set.seed(4393)
@@ -101,42 +103,53 @@ dsmall %>%
   stat_density_2d(geom = "raster", aes(fill = stat(density)), contour = FALSE)
 ```
 
-## Small diamonds with boxplots
+### Small diamonds with boxplots
 
 ```{r small diamonds with boxplots by various sizes}
 diamonds %>%
   filter(carat < 3) %>% 
   ggplot(aes(x = carat, y = price)) +
-  geom_boxplot(aes(group = cut_width(carat, 0.1))) +
+  geom_boxplot(aes(group = cut_width(carat, 0.2))) +
   coord_flip()
 ```
 
-## Small number of diamonds with same number of points per bin
+### Small number of diamonds with same number of points per bin
 
 ```{r small diamonds same number per bin}
 diamonds %>%
   filter(carat < 3) %>% 
   ggplot(aes(x = carat, y = price)) +
-  geom_boxplot(aes(group = cut_number(carat, 20))) +
+  geom_boxplot(aes(group = cut_number(carat, 15))) +
   coord_flip()
+```  
+
+### Small number of diamonds using logarithmic transformation because of non constant variance
+
+```{r non constant variance, message = FALSE}
+diamonds %>%
+  filter(carat < 3) %>% 
+  ggplot(aes(x = log(carat), y = log(price))) +
+  geom_point() +
+  geom_smooth(color = "blue") + 
+  geom_smooth(method = "lm", color = "red")
 ```
 
-# Patterns
-## Density for eruption length
+## Patterns
+### Density for eruption length
 ```{r density for eruption length}
 faithful %>%
   ggplot(aes(x = eruptions)) +
   geom_density(fill = "lightblue")
 ```
 
-## Density for waiting
+### Density for waiting
 ```{r density for waiting}
 faithful %>%
   ggplot(aes(x = waiting)) +
   geom_density(fill = "lightblue")
 ```
 
-## Scatterplot for waiting and eruptions
+### Scatterplot for waiting and eruptions  
 
 ```{r scatterplot for waiting and eruption length}
 faithful %>%
@@ -144,14 +157,15 @@ faithful %>%
   geom_point()
 ```
 
-## Is there a linear pattern in the scatterplot
+### Is there a linear pattern in the scatterplot? 
+
 ```{r linear pattern}
 faithful %>% ggplot(aes(x = waiting, y = eruptions)) +
   geom_point() +
   geom_smooth(method = "lm")
 ```
 
-## Is there a nonlinear pattern in the scatterplot
+### Is there a nonlinear pattern in the scatterplot?
 
 ```{r nonlinear pattern}
 faithful %>%
@@ -165,7 +179,7 @@ ggplot(aes(x = waiting, y = eruptions)) +
   )
 ```
 
-## Two dimensional density function (heat map)
+### Two dimensional density function (heat map)  
 
 ```{r heat map}
 faithful %>%
@@ -178,7 +192,7 @@ faithful %>%
   )
 ```
 
-## Two dimension density function (contour plot)
+### Two dimension density function (contour plot)
 
 ```{r contour plot}
 faithful %>%
@@ -190,10 +204,3 @@ faithful %>%
     y = "Eruption Duration in Minutes"
   )
 ```
-
-
-
-
-
-
-

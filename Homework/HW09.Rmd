@@ -1,0 +1,52 @@
+---
+title: 'Homework #9'
+author: 'Covariation'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Concepts  
+
+1.  Under what conditions is it appropriate to use covariance and correlation as measures of the strength of relationships between variables.
+
+2.  Explain how covariance and correlation are related to each other. Which one do you prefer? Why?
+    
+## Interpretation of code  
+
+Interpret the following R code:  
+
+```{r code chunk interpretation I}
+mpg %>%
+  ggplot(aes(x = reorder(class, cty, FUN = IQR), y = hwy)) +
+  geom_violin(fill = "lightgreen") +
+  geom_boxplot(width = 0.1, fill = "lightblue") +
+  labs(
+    title = "Violin Plot of City Miles Per Gallon",
+    x = "Class of Vehicle",
+    y = "Miles Per Gallon") +
+  coord_flip()
+```
+
+```{r code chunk interpretation II}
+diamonds %>%
+  filter(carat < 3) %>% 
+  ggplot(aes(x = carat, y = price)) +
+  geom_boxplot(aes(group = cut_width(carat, 0.1))) +
+  coord_flip()
+```
+
+
+## Write code  
+
+Using the mpg data set, use covariance, correlation, scatterplots, and heat maps to investigate the relationship between highway and city mileage. Use geom_smooth to determine whether the relationship is linear.
+
+```{r relationship between highway and city mileage}
+
+```
+
+
+
