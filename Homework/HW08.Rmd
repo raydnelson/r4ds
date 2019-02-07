@@ -14,7 +14,8 @@ library(tidyverse)
 1.  Carefully explain how visualizing, transforming, and modelling interact in exploratory data analysis.
 
 2.  Identify and explain the ggplot geometric objects that appropriately depict the distributions of
-    a.  Categorical variablles
+    a.  Categorical variables  
+    b.  Numerical variables  
     
 ## Interpretation of code  
 

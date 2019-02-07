@@ -1,0 +1,122 @@
+---
+title: 'Homework #8'
+author: 'Univariate Distributions'
+output: 
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Concepts  
+
+1.  Carefully explain how visualizing, transforming, and modelling interact in exploratory data analysis.  
+
+The evolution process of formulation in the exploratory approach to data analysis constitutes the dynamic process whereby data can reveal its underlying patterns. Visualizing, transforming, and modelling are all critical elements in that process. There is no particular order of these activities.  They do not constitute steps. The most important aspect of exploratory data analysis is the dynamic way that one discovery leads to another question. 
+
+2.  Identify some of the ggplot geometric objects that appropriately depict the distributions of categorical and numerical variables  
+
+Categorical:  
+
+*  geom_bar
+*  geom_col  
+*  geom_boxplot (category goes with the x aesthetic)
+*  geom_bin2d
+
+Numerical:  
+
+*  geom_boxplot (numerical goes with the y aesthetic)
+*  geom_contour
+*  geom_density
+*  geom_density_2d
+*  geom_dotplot
+*  geom_errorbar
+*  geom_freqpoly
+*  geom_histogram
+*  geom_rug
+*  geom_violin
+    
+## Interpretation of code  
+
+Interpret the following R code:  
+
+```{r code chunk interpretation}
+Median <- median(mpg$cty)
+lower_hinge <- quantile(mpg$cty, 0.25)
+upper_hinge <- quantile(mpg$cty, 0.75)
+
+mpg %>% 
+  ggplot(aes(x = factor(0), y = cty)) +
+  geom_violin(fill = "lightblue") +
+  geom_hline(yintercept = Median, color = "red") +
+  geom_hline(yintercept = lower_hinge, color = "blue") +
+  geom_hline(yintercept = upper_hinge, color = "blue") +
+  geom_boxplot(fill = "lightgreen", width = 0.25) +
+  coord_flip() +
+  labs(
+    title = "City mileage may not be normally distributed.",
+    x = "",
+    y = "Miles Per Gallon"
+  )
+```
+
+Line 1: uses the median function to calculate the median of the cty column in the mpg dataframe.  
+Lines 2 and 3: uses the quantile function to calculate the first quartile and third quartiles.  
+
+Graph  
+Line 1: specifies the mpg data frame as the source for the data    
+Line 2: general ggplot function where the x = factor(0) communicates that there is no categorical variable for the boxplot and y = cty gives the city mileage as the y or numerical variable    
+Lines 3: graphs a violin plot with lightblue as the fill  
+Lines 4 - 6: draws reference lines that correspond to the median, lower hinge, and upper hinge  
+Line 7: gives the boxplot layer and fills the boxplot with light green and decreases the width to 0.25
+Line 8: interchanges the x and y axes to create a horizontal violin plot  
+Lines 9 - 12: labels the axes of the plot  
+
+## Write code  
+
+The faithful dataset includes 272 observations that report the length of time that the Old Faithful geyser in Yellowstone National Park erupts and the time interval between the eruptions. Use exploratory data analysis to investigate the distributions of each of the two variables, eruptions and waiting. Your code should generate summary statistics and graphs that give you insights into:  
+
+1.  Location
+1.  Scale
+1.  Symmetry 
+1.  Outliers
+
+```{r eruption time}
+summary(faithful$eruptions)
+IQR(faithful$eruptions)
+sd(faithful$eruptions)
+
+faithful %>% 
+  ggplot(aes(x = factor(0), y = eruptions)) +
+  geom_violin(fill = "lightblue") +
+  geom_boxplot(fill = "lightgreen", width = 0.05) +
+  coord_flip() +
+  labs(
+    title = "The violin plot reveals unique characteristics for eruption time.",
+    x = "",
+    y = "Minutes"
+  )
+```
+
+```{r waiting time}
+summary(faithful$waiting)
+IQR(faithful$waiting)
+sd(faithful$waiting)
+
+faithful %>% 
+  ggplot(aes(x = factor(0), y = waiting)) +
+  geom_violin(fill = "lightblue") +
+  geom_boxplot(fill = "lightgreen", width = 0.05) +
+  coord_flip() +
+  labs(
+    title = "The violin plot reveals additional information for waiting time.",
+    x = "",
+    y = "Minutes"
+  )
+```
+
+
+
