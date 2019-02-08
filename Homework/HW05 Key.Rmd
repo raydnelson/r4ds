@@ -1,7 +1,9 @@
 ---
 title: 'Homework #5'
 author: "Filtering and Arranging"
-output: word_document
+output:  
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -13,7 +15,8 @@ library(nycflights13)
 ## Concepts  
 
 1.  Explain the differences among "=", "==", and "<-". Give an example of how you would use each of these symbols.  
-The common use of "=" is to assign values within a function call. Example: ggplot(data = mpg, mapping = aes(x = hwy))
+
+The common use of "=" is to assign values within a function call. Example: ggplot(data = mpg, mapping = aes(x = hwy))  
 
 There should be no confusion about "==" since its use is to determine strict equality in comparisons. Example: filter(mpg, class == "compact")  
 

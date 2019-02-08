@@ -16,9 +16,17 @@ library(nycflights13)
 
 Carefully explain the following:  
 
-1.  The two elements that define the distribution of a random variable
-1.  How the mean measures the location of a distribution
-1.  How the standard deviation measures the scale or spread of a distribution
+1.  The two elements that define the distribution of a random variable  
+
+The two elements that define a distribution are all of the possible values that the variable can assume and the frequency at which they occur. The frequency is often interpreted as a probability. We often refer to the distribution of a variable as a pdf (probability distribution function or probability density function).  
+
+2.  How the mean measures the location of a distribution  
+
+The mean of a variable gives its center of gravity or the balance point. If we put a fulcrum at the mean, then the distribution would exactly balance. The mean is the most frequently used measure of central tendency. The mean is the sum of the observations in a sample divided by the sample size.  
+
+3.  How the standard deviation measures the scale or spread of a distribution  
+
+The standard deviation attempts to measure the average size of deviations. A deviation is defined as the distance of an observation from the mean. We can't simply add up the deviations because the sum of the deviations in a sample is always zero. The negative and positive deviations cancel each other out. For this reason we have to square the deviations. We then average these squared deviations and take the square root to get the standard deviation. The standard deviation has the units of the original observations.
 
 ## Interpretation of code  
 
@@ -26,7 +34,7 @@ Interpret the following R code:
 
 ```{r code chunk interpretation, warning = FALSE, message = FALSE}
 flights %>%
-  group_by(day, month) %>%
+  group_by(month, day) %>%
   summarize(cancelled = mean(is.na(dep_time)) * 100,
             delay = mean(dep_delay, na.rm = TRUE)) %>%
   ggplot(mapping = aes(x = delay, y = cancelled)) +
@@ -38,6 +46,21 @@ flights %>%
     y = "Percentage of cancelled flights"
   )
 ```
+
+Lines 1 - 2: group the observations in the flights data set by day and month. Although R doesn't actually sort the observations, the subsequent calcuations act as all of the observations have first been sorted by month and then by day.  
+
+Lines 3: calculate proportion of cancelled flights. The term is.na(dep_time) creates a logical variable. If dep_time is missing, then the expression evaluates as true and receives a value of one. If dep_time isn't missing, then the expression evaluates as false and receives a value of zero. Summing the logical variable gives the number of cancelled flights. Calculating the mean gives the proportion of cancelled flights. Multiplying by 100 converts the proportion into a percentage.  
+
+Line 4: calculates the average delay after removing missing values with the na.rm function.  
+
+Line 5: inputs the new data frame into ggplot  
+
+Line 6: put the average delay on the x axis and the percentage of cancelled flights on the y axis  
+
+Lines 7 - 8: creates a scatterplot using the geom_point with a loess smoothed line that results from the geom_smooth  
+
+The remainder of the code creates the labels on the graph.  
+
 
 ## Write code that accomplishes the following:
 
@@ -92,3 +115,7 @@ flights %>%
   group_by(carrier, origin) %>%
   count(dest)
 ```  
+
+The traditional ranking of airlines doesn't take into consideration advantages and disadvantages of flying from or to highly congested airports. We might find that a given airline has a terrible on-time percentage but flies from significantly difficult airports or flies to particularly difficult destinations. Without information about these difficulties, we cannot rank carriers in a meaningful way.  
+
+When we find that an apparent relationship between two variables changes abruptly when we consider a third variable, then we have an example of Simpson's paradox.  

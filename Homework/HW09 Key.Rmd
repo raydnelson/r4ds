@@ -1,0 +1,92 @@
+---
+title: 'Homework #9 Key'
+author: 'Covariation'
+output:
+   html_document:
+     code_folding: hide
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Concepts  
+
+1.  Under what conditions is it appropriate to use covariance and correlation as measures of the strength of relationships between variables.  
+
+In order for covariance and correlation to accurately capture strength, the relationship should be:
+
+*  Linear
+*  Constant variance (homoscedastic)  
+
+2.  Explain how covariance and correlation are related to each other. Which one do you prefer? Why?  
+
+Correlation is the covariance between the standardized (scaled) values of each of the variables. Standardizing or scaling variables turns them into quantities similar to z-scores. Therefore, a correlation coefficient is the covariance between two z-scores. It is a unitless measure that can assume values between -1 and 1. Because of its interpretability, the correlation is preferred to covariance.   
+    
+## Interpretation of code  
+
+Interpret the following R code:  
+
+```{r code chunk interpretation I}
+mpg %>%
+  ggplot(aes(x = reorder(class, cty, FUN = IQR), y = cty)) +
+  geom_violin(fill = "lightgreen") +
+  geom_boxplot(width = 0.1, fill = "lightblue") +
+  labs(
+    title = "Violin Plot of City Miles Per Gallon",
+    x = "Class of Vehicle",
+    y = "Miles Per Gallon") +
+  coord_flip()
+```  
+
+Lines 1 - 2: initialize the ggplot by using the mpg data frame. Because we are going to draw a violin plot, we need a categorical variable for our x axis and a numerical variable for our y axis. The reordering in the aes specification means that we can to sort the order of our class variables based on the interquartile range of the city miles per gallon. We assign city miles per gallon to the y or numerical variable. The clause reorder(class, cty, FUN = IQR) means that we should reoder class using the IQR function applied to cty.  
+
+Lines 3 - 4: create two layers, one for the violin shape and the other for the boxplot. The fill colors are light green and light blue. The width of the boxplot is diminished to 0.1 so that that the boxplots fit within the violin shapes.  
+
+Lines 5 - 8: label the graph and the axis
+Line 9: flips the x and y axes  
+
+
+```{r code chunk interpretation II}
+diamonds %>%
+  filter(carat < 3) %>% 
+  ggplot(aes(x = carat, y = price)) +
+  geom_boxplot(aes(group = cut_width(carat, 0.1))) +
+  coord_flip()
+```
+
+Lines 1 - 2: chooses only those diamonds that weigh less than 3 carets as a subset of the diamonds data frame  
+
+Line 3: ggplot function call that includes two numerical variables, carat and price. This is different from what we have done previously since we are going to draw a boxplot. Usually a boxplot has one categorical variable and one numerical variable.
+
+Line 4: the aesthetic specification essentially converts the size variable into a category. The cut_width assigns each observation into a bin that has a width of 0.1 which is similar to having a histogram. Grouping by this variable converts the x variable into a category as required by the boxplot.
+
+Line 5: switches the x and y axes.
+
+## Write code  
+
+Using the mpg data set, use covariance, correlation, scatterplots, and heat maps to investigate the relationship between highway and city mileage. Use geom_smooth to determine whether the relationship is linear.
+
+```{r relationship between highway and city mileage}
+cov(mpg$hwy, mpg$cty)
+cor(mpg$hwy, mpg$cty)
+
+mpg %>% 
+  ggplot(aes(x = cty, y = hwy)) +
+  geom_point() +
+  geom_smooth(color = "blue") +
+  geom_smooth(method = "lm", color = "red")
+
+mpg %>%
+  ggplot(aes(x = cty, y = hwy)) +
+  stat_density_2d(aes(fill = stat(density)), geom = "raster", contour = FALSE) +
+  labs(
+    title = "Relationship between city and highway miles per gallong",
+    x = "City Miles Per Gallon",
+    y = "Highway Miles Per Gallon"
+  )
+```
+
+
+

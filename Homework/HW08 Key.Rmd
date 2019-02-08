@@ -15,9 +15,9 @@ library(tidyverse)
 
 1.  Carefully explain how visualizing, transforming, and modelling interact in exploratory data analysis.  
 
-The evolution process of formulation in the exploratory approach to data analysis constitutes the dynamic process whereby data can reveal its underlying patterns. Visualizing, transforming, and modelling are all critical elements in that process. There is no particular order of these activities.  They do not constitute steps. The most important aspect of exploratory data analysis is the dynamic way that one discovery leads to another question. 
+The evolutionary process of question formulation in the exploratory approach to data analysis constitutes the dynamic process whereby data can reveal its underlying patterns. Visualizing, transforming, and modelling are all critical elements in that process. There is no particular order of these activities.  They do not constitute steps. The most important aspect of exploratory data analysis is the dynamic way that one discovery leads to another question. 
 
-2.  Identify some of the ggplot geometric objects that appropriately depict the distributions of categorical and numerical variables  
+2.  Identify some of the ggplot geometric objects that appropriately depict the distributions of categorical and numerical variables.   
 
 Categorical:  
 

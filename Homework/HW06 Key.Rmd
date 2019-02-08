@@ -14,8 +14,13 @@ library(nycflights13)
 
 ## Concepts  
 
-1.  Compare and contrast filter and select.
-1.  Explain how ":" can be used when selecting variables.
+1.  Compare and contrast filter and select.  
+
+Filter is used to choose rows and select is used to choose columns.  
+
+2.  Explain how ":" can be used when selecting variables.  
+
+In R, the ":" symbol generates a range of values. For example, 1:5 gives the numbers 1, 2, 3, 4, 5. You can also select a range of variables. For example, if we have a sequence of contiguous variables in a data frame like A1, A2, and A3, we can reference them as A1:A3.
 
 ## Interpretation of code  
 

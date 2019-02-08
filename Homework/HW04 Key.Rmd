@@ -2,7 +2,9 @@
 title: 'Key Homework #4'
 author: "Ray Nelson"
 date: "1/16/2019"
-output: word_document
+output:
+   html_document:
+     code_folding: hide
 ---
 
 ```{r setup, include=FALSE}

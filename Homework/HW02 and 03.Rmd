@@ -1,0 +1,39 @@
+---
+title: 'Homework #2 and #3'
+author: "Ray Nelson"
+date: "2/8/2019"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Concepts  
+
+Explain how aesthetics, scaling, and mapping are related to each other within the context of the grammar of graphcs and ggplot.  
+
+## Interpretation of code
+
+```{r code chunk, message = FALSE, warning = FALSE}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
+  geom_point(position = "jitter", show.legend = FALSE) +
+  geom_smooth(method = "lm", se = FALSE, show.legend = FALSE,
+              color = "black",
+              size = 0.50) +
+  geom_smooth(se = FALSE, show.legend = FALSE) +
+  facet_wrap(vars(class))
+```  
+
+## Draw a proportional bar chart for class of vehicle (class), drive train (drv), and year
+
+1.  Put class on the x axis
+1.  Fill the bars based on the drive
+1.  Use facet_grid to create a graph for 1999 and 2008.
+
+```{r facets}
+
+```
