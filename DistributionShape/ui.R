@@ -20,7 +20,7 @@ shinyUI(fluidPage(
             numericInput(
                 "Minimum",
                 "Minimum:",
-                value = -1,
+                value = 0,
                 min = NA,
                 max = NA,
                 step = NA
@@ -29,7 +29,7 @@ shinyUI(fluidPage(
             numericInput(
                 "Mode",
                 "Most Likely:",
-                value = 5,
+                value = 4,
                 min = NA,
                 max = NA,
                 step = NA
