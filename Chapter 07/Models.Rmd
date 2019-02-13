@@ -1,7 +1,7 @@
 ---
 title: "Diamond Price Prediction"
 author: "Ray Nelson"
-date: "10/4/2018"
+date: "2/11/2019"
 output:
   html_document:
     code_folding: hide
@@ -20,13 +20,15 @@ Since our tibble has approximately 54,000 observations, we will first draw a ran
 
 ```{r diamonds2}
 set.seed(1234) # Needed so all get the sample random choice of observations
-diamonds2 <- diamonds %>% sample_n(1000)
+diamonds2 <- diamonds %>%
+  sample_n(1000)
 ```  
 
 ## First Step Scatterplot: Initial assessment of linear relationship and constant variance
 
 ```{r first scatterplot, messages = FALSE}
-diamonds2 %>% ggplot(aes(x = carat, y = price)) +
+diamonds2 %>%
+  ggplot(aes(x = carat, y = price)) +
   geom_point() +
   geom_smooth(method = "loess", color = "red") +
   geom_smooth(method = "lm", color = "blue") +
@@ -38,62 +40,67 @@ diamonds2 %>% ggplot(aes(x = carat, y = price)) +
   )
 ```  
 
-Our data exploration reveals that we have a linear relationship between price and diamond size. It also introduces the challenge that the variation in the price increases as the weight of the diamond increases.  
+Our data exploration reveals that the relationship between price and diamond size is approximately linear. It also introduces the challenge that the variation in the price increases as the weight of the diamond increases. 
 
 ## Look for relationships between price versus clarity, color, and cut
 
-### Clarity
+### Price and clarity
 
-First let's look at the distribution of clarity in our sample.  
+```{r price and clarity}
+diamonds2 %>%
+  count(clarity)
 
-```{r clarity distribution}
-diamonds2 %>% count(clarity)
-```  
-Notice that the most desirable clarity is IF, which category has only 37 out of 1000 observations in our sample.    
-Now we can look at the violin plot with clarity ordered by the median price.  
-
-```{r clarity violin}
-diamonds2 %>% ggplot(aes(x = reorder(clarity, price, FUN = median), y = price)) +
+diamonds2 %>%
+  ggplot(aes(x = reorder(clarity, price, FUN = median), y = price)) +
   geom_violin(aes(fill = clarity), show.legend = FALSE) +
   geom_boxplot(width = 0.05, fill = "lightblue") +
   labs(title = "Possible effect of clarity on price",
   x = "Clarity",
-  y = "Price") +
-  coord_flip()
+  y = "Price")
 ```  
 
-This gives the non-intuitive result that the most desirable category has the lowest price.
+First let's look at the distribution of clarity in our sample.  
 
-### Color
-```{r color distribution}
-diamonds2 %>% count(color)
-```  
+Observations and inferences:  
 
-```{r color violin}
-diamonds2 %>% ggplot(aes(x = reorder(color, price, FUN = median), y = price)) +
+*  Notice that the most desirable clarity is IF, which category has only 37 out of 1000 observations in our sample.    
+*  Now we can look at the violin plot with clarity ordered by the median price. 
+*  This gives the non-intuitive result that the most desirable category has the lowest price.  
+
+
+### Price and color
+
+```{r price and color}
+diamonds2 %>%
+  count(color)
+
+diamonds2 %>%
+  ggplot(aes(x = reorder(color, price, FUN = median), y = price)) +
   geom_violin(aes(fill = color), show.legend = FALSE) +
   geom_boxplot(width = 0.05, fill = "lightblue") +
   labs(title = "Possible effect of color on price",
        x = "Color",
-       y = "Price") +
-  coord_flip()
+       y = "Price")
 ```  
+
+The relationship between color matches expectations.  
 
 ### Cut
 
-```{r cut distribution}
-diamonds2 %>% count(cut)
-```  
+```{r price and cut}
+diamonds2 %>%
+  count(cut)
 
-```{r cut violin}
-diamonds2 %>% ggplot(aes(x = reorder(cut, price, FUN = median), y = price)) +
+diamonds2 %>%
+  ggplot(aes(x = reorder(cut, price, FUN = median), y = price)) +
   geom_violin(aes(fill = cut), show.legend = FALSE) +
   geom_boxplot(width = 0.1, fill = "lightblue") +
   labs(title = "Possible effect of cut on price",
        x = "Cut",
-       y = "Price") +
-  coord_flip()
-``` 
+       y = "Price")
+```  
+
+We observe that the most desirable cut has the lowest price, as measured by the median.  
 
 ## Three Potential Problems  
   + Unexpected relationship between price and clarity  
@@ -107,25 +114,25 @@ Let's see if size is a lurking or confounding variable for the price versus clar
 ### Size by clarity  
 
 ```{r size by clarity}
-diamonds2 %>% ggplot(aes(x = reorder(clarity, carat, FUN = median), y = carat)) +
+diamonds2 %>%
+  ggplot(aes(x = reorder(clarity, carat, FUN = median), y = carat)) +
   geom_violin(aes(fill = clarity), show.legend = FALSE) +
   geom_boxplot(width = 0.1, fill = "lightblue") +
   labs(title = "Possible effect of clarity on weight",
        x = "Clarity",
-       y = "Weight in Carats") +
-  coord_flip()
+       y = "Weight in Carats") 
 ```  
 
 ### Size by cut  
 
 ```{r size by cut}
-diamonds2 %>% ggplot(aes(x = reorder(cut, carat, FUN = median), y = carat)) +
+diamonds2 %>%
+  ggplot(aes(x = reorder(cut, carat, FUN = median), y = carat)) +
   geom_violin(aes(fill = cut), show.legend = FALSE) +
   geom_boxplot(width = 0.1, fill = "lightblue") +
   labs(title = "Possible effect of cut on weight",
        x = "Cut",
-       y = "Weight in Carats") +
-  coord_flip()
+       y = "Weight in Carats")
 ```  
 
 ## Fix the nonconstant variance problem first.    
@@ -135,7 +142,8 @@ See if a logarithmic transformation will cause variance to be similar.
 ### Natural Log of Price  
 
 ```{r log price scatter, message = FALSE}
-diamonds2 %>% ggplot(aes(x = carat, y = log(price))) +
+diamonds2 %>%
+  ggplot(aes(x = carat, y = log(price))) +
   geom_point() +
   geom_smooth()
 ```  
@@ -143,7 +151,8 @@ diamonds2 %>% ggplot(aes(x = carat, y = log(price))) +
 ### Natural Log of Carat  
 
 ```{r log carat scatter, message = FALSE}
-diamonds2 %>% ggplot(aes(x = log(carat), y = price)) +
+diamonds2 %>%
+  ggplot(aes(x = log(carat), y = price)) +
   geom_point() +
   geom_smooth()
 ```    
@@ -151,7 +160,8 @@ diamonds2 %>% ggplot(aes(x = log(carat), y = price)) +
 ### Natural Log of Price and Natural Log of Carat  
 
 ```{r log log scatter, message = FALSE}
-diamonds2 %>% ggplot(aes(x = log(carat), y = log(price))) +
+diamonds2 %>%
+  ggplot(aes(x = log(carat), y = log(price))) +
   geom_point() +
   geom_smooth()
 ```    
@@ -173,7 +183,8 @@ diamonds2 <- diamonds2 %>%
 ### Scatterplot of residuals by diamond size  
 
 ```{r residual scatterplot, message = FALSE}
-diamonds2 %>% ggplot(mapping = aes(x = carat, y = resid)) +
+diamonds2 %>%
+  ggplot(mapping = aes(x = carat, y = resid)) +
   geom_point() +
   geom_smooth()
 ```  
@@ -181,32 +192,33 @@ diamonds2 %>% ggplot(mapping = aes(x = carat, y = resid)) +
 ### Violin plot of prices by cut after the effect of weight has been removed  
 
 ```{r residuals by cut}
-diamonds2 %>% ggplot(aes(x = reorder(cut, resid, FUN = median), y = resid)) +
+diamonds2 %>%
+  ggplot(aes(x = reorder(cut, resid, FUN = median), y = resid)) +
   geom_violin(aes(fill = cut), show.legend = FALSE) +
   geom_boxplot(width = 0.1, fill = "lightblue") +
   labs(title = "Prices with the effect of diamonds weight removed",
        x = "Cut of Diamond",
-       y = "Residuals in Dollars") +
-  coord_flip()
+       y = "Residuals in Dollars")
 ```  
 
 ### Violin plot of prices by clarity after the effect of diamond weight has been removed  
 
 ```{r residuals by clarity}
-diamonds2 %>% ggplot(aes(x = reorder(clarity, resid, FUN = median), y = resid)) +
+diamonds2 %>%
+  ggplot(aes(x = reorder(clarity, resid, FUN = median), y = resid)) +
   geom_violin(aes(fill = clarity), show.legend = FALSE) +
   geom_boxplot(width = 0.08, fill = "lightblue") +
   labs(title = "Prices with the effect of diamond weight",
        x = "Category",
-       y = "Variable") +
-  coord_flip()
+       y = "Variable")
 ```    
 
 ## Do regression lines by categories share the same intercept and slope?  
 ### Scatterplots of price on weight for each clarity category.  
 
 ```{r regression by clarity, message = FALSE}
-diamonds2 %>% ggplot(aes(x = log(carat), y = log(price), color = clarity)) +
+diamonds2 %>%
+  ggplot(aes(x = log(carat), y = log(price), color = clarity)) +
   geom_point() +
   geom_smooth(method = "lm")
 ```    
@@ -214,7 +226,8 @@ diamonds2 %>% ggplot(aes(x = log(carat), y = log(price), color = clarity)) +
 ### Scatterplots of price on weight for each color category.  
 
 ```{r regression by color, message = FALSE}
-diamonds2 %>% ggplot(aes(x = log(carat), y = log(price), color = color)) +
+diamonds2 %>%
+  ggplot(aes(x = log(carat), y = log(price), color = color)) +
   geom_point() +
   geom_smooth(method = "lm")
 ```  
@@ -222,7 +235,8 @@ diamonds2 %>% ggplot(aes(x = log(carat), y = log(price), color = color)) +
 ### Scatterplots of price on weight for each cut category.  
 
 ```{r regression by cut, message = FALSE}
-diamonds2 %>% ggplot(aes(x = log(carat), y = log(price), color = cut)) +
+diamonds2 %>%
+  ggplot(aes(x = log(carat), y = log(price), color = cut)) +
   geom_point() +
   geom_smooth(method = "lm")
 ```  
@@ -252,7 +266,4 @@ cut <- "Ideal"
 
 new_data <- data.frame(carat, cut, color, clarity)
 predict(object = model, newdata = new_data, interval = "predict") %>% exp()
-```  
-
-
-
+```   

@@ -1,0 +1,71 @@
+---
+title: "Midterm I Winter 2019"
+author: "Ray Nelson"
+date: "2/12/2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(nycflights13)
+```
+
+In order to get full credit, your R Markdown document must knit properly.  
+
+## Problem 1
+
+Please write code that completes the following:
+
+*  Create a new variable called departure hour from the scheduled departure time variable
+*  Calculate the number of flights that leave during each hour and each airport
+*  Draw a bar chart for each of the three New York airports
+*  Color the bars based on their origin airport
+*  It is not required that your graph replicate the graph labels. We will cover that in Chapter 28.
+
+```{r problem 1}
+flights %>% 
+  mutate(
+    dep_hour = sched_dep_time %/% 100
+  ) %>% 
+  group_by(origin, dep_hour) %>%
+  summarise(
+    number_flights = n()
+  ) %>% 
+  ggplot(aes(dep_hour, number_flights, fill = origin)) +
+  geom_col(show.legend = FALSE) +
+  facet_grid(rows = vars(origin)) +
+  labs(
+    title = "Number of flights leaving each New York airport by departure hour",
+    subtitle = "Departure hour calculated from the scheduled departure time",
+    x = "Departure hour",
+    y = "Total number of flights\n"
+  )
+```
+
+## Problem 2
+
+Please write code that completes the following:
+
+*  Determine the number of destinations for each NYC airport
+*  Create a bar chart that depicts the number of destinations
+*  Color the bars based on the airport
+*  Order the bars from smallest to largest number of destinations.  (This is called a Pareto Chart)
+*  It is not required that your graph replicate the graph labels. We will cover that in Chapter 28.
+
+```{r Problem 2}
+flights %>% 
+  group_by(origin) %>% 
+  summarise(
+    destinations = n_distinct(dest)
+  ) %>% 
+  ggplot(aes(x = reorder(origin, destinations, FUN = sum), y = destinations)) +
+  geom_col(aes(fill = origin), show.legend = FALSE) +
+  labs(
+    title = "Number of distinations for each New York airport",
+    subtitle = "Sorted by number of destinations",
+    x = "New York Airport",
+    y = "Number of Destinations"
+  )
+```
+

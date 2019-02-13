@@ -1,0 +1,38 @@
+---
+title: "Midterm I Winter 2019"
+author: "Ray Nelson"
+date: "2/12/2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(nycflights13)
+```
+## Problem 1
+
+Please write code that completes the following:
+
+*  Create a new variable called departure hour from the scheduled departure time variable
+*  Calculate the number of flights that leave during each hour and each airport
+*  Draw a bar chart for each of the three New York airports
+*  Don't worry about replicating the graph labels. We will cover that in Chapter 28
+
+```{r problem 1}
+
+```
+
+## Problem 2
+
+Please write code that completes the following:
+
+*  Determine the number of destinations for each NYC airport
+*  Create a bar chart that depicts the number of destinations
+*  Order the bars from smallest to largest number of destinations  
+   (This is called a Pareto Chart)
+
+```{r Problem 2}
+
+```
+
