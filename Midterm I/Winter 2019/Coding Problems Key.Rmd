@@ -1,7 +1,7 @@
 ---
 title: "Midterm I Winter 2019"
-author: "Ray Nelson"
-date: "2/12/2019"
+author: "Data Science for Managers"
+date: "Due by class: 2/19/2019"
 output: word_document
 ---
 
@@ -11,17 +11,18 @@ library(tidyverse)
 library(nycflights13)
 ```
 
-In order to get full credit, your R Markdown document must knit properly.  
+Submit an R Markdown for the following two problems. In order to get full credit, your R Markdown document must knit properly.  
 
 ## Problem 1
 
 Please write code that completes the following:
 
-*  Create a new variable called departure hour from the scheduled departure time variable
+*  Create a new variable for the departure hour from the scheduled departure time variable
 *  Calculate the number of flights that leave during each hour and each airport
 *  Draw a bar chart for each of the three New York airports
 *  Color the bars based on their origin airport
 *  It is not required that your graph replicate the graph labels. We will cover that in Chapter 28.
+
 
 ```{r problem 1}
 flights %>% 
@@ -49,8 +50,8 @@ Please write code that completes the following:
 
 *  Determine the number of destinations for each NYC airport
 *  Create a bar chart that depicts the number of destinations
-*  Color the bars based on the airport
-*  Order the bars from smallest to largest number of destinations.  (This is called a Pareto Chart)
+*  Color the bars based on the departure airport
+*  Order the bars from smallest to largest number of destinations (This is called a Pareto Chart)
 *  It is not required that your graph replicate the graph labels. We will cover that in Chapter 28.
 
 ```{r Problem 2}
