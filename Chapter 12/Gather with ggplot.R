@@ -1,12 +1,15 @@
 # Gathering and Sreading
-# Initial: October 22, 2018
-# Revision: October 22, 2018
+# Initial: 22 Oct 2018
+# Revision: 19 Feb 2019
 # Ray Nelson
 
 # Libraries
 library(tidyverse)
 
-# Import Data
+# Load workspace
+fitness <- read_csv(url("http://govfinance.byu.edu/govfinance/classes/dataScience/lectures/illustrations/Fitness.csv"))
+movies <- read_csv(url("http://govfinance.byu.edu/govfinance/classes/dataScience/lectures/illustrations/Movies.csv"))
+load(url("http://govfinance.byu.edu/govfinance/classes/dataScience/lectures/illustrations/movies_fitness.RData"))
 
 # Movies
 Movies %>% glimpse()
@@ -64,9 +67,12 @@ movies %>%
 
 # Fitness
 ## Explore Fitness
-Fitness %>% glimpse()
-Fitness %>% summary()
-Fitness %>% count(Sex)
+Fitness %>%
+  glimpse()
+Fitness %>%
+  summary()
+Fitness %>%
+  count(Sex)
 
 ## Comparison of pulse by Sex
 Fitness %>% 
