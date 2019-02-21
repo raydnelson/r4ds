@@ -1,0 +1,65 @@
+---
+title: 'Homework #11'
+author: 'Gathering, Spreading, Separating, and Uniting'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Concepts  
+
+1.  Explain the difference between wide and long data frames.
+
+2.  Explain why you need a long data frame when using ggplot.
+    
+## Interpretation of code  
+
+Compare and interpret the following two R code chunks: 
+
+### Code chunk #1
+
+```{r code chunk interpretation 1}
+mpg %>% 
+  select(cty, hwy) %>% 
+  gather(cty, hwy, key = type_of_driving, value = mileage) %>% 
+  group_by(type_of_driving) %>% 
+  summarise(
+    Means= mean(mileage),
+    Medians = median(mileage),
+    IRQs = IQR(mileage),
+    Standard_Deviations = sd(mileage)
+  )
+```  
+
+### Code chunk #2
+
+```{r code chunk interpretation 2}
+mpg %>%
+  summarise(
+    mean_city = mean(cty),
+    mean_highway = mean(hwy),
+    median_city = median(cty),
+    median_highway = median(hwy),
+    IQR_city = IQR(cty),
+    IQR_highway = IQR(hwy),
+    sd_city = sd(cty),
+    sd_highway = sd(hwy)
+  )
+```
+
+## Write code  
+
+```{r homework image, echo = FALSE}
+homework_graph <- "http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW11 Graph.png"
+```
+
+With the mpg data set, use select and gather to create horizontal violin plot that allows you to compare city and highway mileage. Your graph should be similar to the following:  
+
+![](`r homework_graph`)
+
+```{r relationship between highway and city mileage}
+
+```  

@@ -1,0 +1,51 @@
+---
+title: 'Homework #10'
+author: 'Creating Tibbles'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Find a dataset of interest from Kaggle, import the data into R, and then explore the following:
+
+1.  The distribution of a categorical variable.
+1.  The distribution of a numerical variable.
+1.  Covariation between a categorical variable and a numerical variable
+1.  Covariation between two numerical variables
+
+## Import data from Kaggle
+
+```{r import data into a tibble}
+
+```
+
+
+## Distribution of categorical variable
+
+```{r categorical distribution}
+
+```
+
+## Distribution of a numerical variable  
+
+```{r numerical distribution }
+
+```
+
+
+## Covariation between a categorical variable and a numerical variable
+
+```{r covariation categorical and numerical}
+
+```
+
+
+## Covariation between two numerical variables  
+
+```{r covariation two numerical variables}
+
+```
+

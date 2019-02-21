@@ -19,9 +19,12 @@ library(zoo)
 
 ```{r alternative structures}
 # Load workspace
+fitness <- read_csv(url("http://govfinance.byu.edu/govfinance/classes/dataScience/lectures/illustrations/Fitness.csv"))
 movies <- read_csv(url("http://govfinance.byu.edu/govfinance/classes/dataScience/lectures/illustrations/Movies.csv"))
 load(url("http://govfinance.byu.edu/govfinance/classes/dataScience/lectures/illustrations/movies_fitness.RData"))
-```  
+```
+
+## Movies data frame
 
 ### Explore Movies
 
@@ -30,19 +33,20 @@ Movies %>% glimpse()
 Movies %>% summary()
 ```
 
-### Gathering with all variables
+### Distributions of Type and Rating
 
-```{r gather all}
-Movies %>% 
-  gather(Domestic, Worldwide, key = source, value = revenue)
-```
+```{r distribution of Type and Rating}
+Movies %>% count(Type)
+Movies %>%
+  ggplot(aes(x = Type, fill = Type)) +
+  geom_bar(show.legend = FALSE) +
+  labs(title = "Distribution of Type")
 
-### Gathering with a subset of variables
-
-```{r gather subset}
-Movies %>% 
-  select(Year, Domestic, Worldwide) %>% 
-  gather(Domestic, Worldwide, key = source, value = revenue)
+Movies %>% count(Rating)
+Movies %>%
+  ggplot(aes(x = Rating, fill = Rating)) +
+  geom_bar(show.legend = FALSE) +
+  labs(title = "Distribution of Rating")
 ```
 
 ### Time series trends of revenue
@@ -52,7 +56,7 @@ Movies %>%
   group_by(Year) %>% 
   summarize(Domestic_median = median(Domestic),
             Worldwide_median = median(Worldwide)) %>% 
-  gather(Domestic_median, Worldwide_median, key = Source, value = Revenue) %>% 
+  gather(key = Source, value = Revenue, -Year) %>% 
   ggplot(aes(x = Year, y = Revenue, color = Source)) +
   geom_point() +
   geom_smooth(se = FALSE)
@@ -63,7 +67,7 @@ Movies %>%
 ```{r domestic and worldwide revenue by rating}
 movies <- Movies %>%
   select(Rating, Year, Domestic, Worldwide) %>% 
-  gather(Domestic:Worldwide, key = Source, value = Revenue)
+  gather(key = Source, value = Revenue, -c("Rating", "Year"))
 
 movies %>% ggplot(aes(x = Source, y = Revenue, fill = Source)) +
   geom_boxplot(show.legend = FALSE) + 
@@ -96,18 +100,19 @@ Fitness %>%
 ```{r boxplot comparison of pulse by sex}
 Fitness %>% 
   select(Sex, RunPulse, RstPulse, MaxPulse) %>% 
-  gather(RunPulse:MaxPulse, key = Pulse_Type, value = Pulse) %>% 
+  gather(key = Pulse_Type, value = Pulse, -Sex) %>% 
   ggplot(aes(x = Sex, y = Pulse, fill = Sex)) +
     geom_boxplot(show.legend = FALSE) +
     facet_grid(rows = vars(Pulse_Type)) +
     coord_flip()
 ```
 
+
 ### Violin plot of MaxPulse and RunPulse with facet by pulse type
 ```{r faceting by pulse type}
 Fitness %>% 
   select(Sex, RunPulse, MaxPulse) %>% 
-  gather(RunPulse, MaxPulse, key = Pulse_Type, value = Pulse) %>% 
+  gather(key = Pulse_Type, value = Pulse, -Sex) %>% 
   ggplot(aes(x = Sex, y = Pulse, fill = Sex)) +
     geom_violin(fill = "grey") +
     geom_boxplot(width = 0.25, show.legend = FALSE) +
@@ -120,7 +125,7 @@ Fitness %>%
 ```{r faceting with Sex}
 Fitness %>% 
   select(Sex, RunPulse, MaxPulse) %>% 
-  gather(RunPulse, MaxPulse, key = Pulse_Type, value = Pulse) %>% 
+  gather(key = Pulse_Type, value = Pulse, -Sex) %>% 
   ggplot(aes(x = Pulse_Type, y = Pulse, fill = Sex)) +
     geom_violin(fill = "grey") +
     geom_boxplot(width = 0.25, show.legend = FALSE) +
@@ -161,52 +166,112 @@ plot_data %>%
 
 ## Example of how time series gathering  
 
-### Get time series functions, get Data from FRED, and create a data frame
+### Load functions for time series calculations
 
-```{r FRED}
-
+```{r ts manipulation functions}
 # Get time series functions
 "http://govfinance.byu.edu/govfinance/quantTools/R/manipulations.R" %>%
   url() %>%
   source()
+```  
+
+### Get Data from FRED
+
+```{r FRED}
 # Time series of income and sales taxes in Utah using from FRED using fImport
 revenue <- fredSeries(c("UTSLGRTAX", "UTINCTAX"), from = "1992-01-01") %>%
   as.zoo() %>% 
   pca()
 colnames(revenue) <- c("sales", "income")
+revenue
+```
 
-# Get the dates variable
+### Create tibbles and data frames from the FRED data  
+
+```{r create tibbles and data frames from FRED data}
+# Extract the date from the zoo object
 dates <- revenue %>%
   time() %>%
   as.Date()
 
+# Create a tibble
+revenue_tbl <- tibble(dates, as.vector(revenue$sales), as.vector(revenue$income))
+colnames(revenue_tbl) <- c("dates", "sales", "income")
+revenue_tbl
+
 # Create a data frame
-revenue <- data.frame(dates, revenue)
-colnames(revenue) <- c("dates", "sales", "income")
-```
+revenue_df <- data.frame(dates, revenue)
+colnames(revenue_df) <- c("dates", "sales", "income")
+revenue_df
+```  
 
-### This is the data frame that is the result of the R code
+### Time series graphs sales an income taxes by themselves  
 
-```{r revenue}
-revenue
-```
+```{r sales and income by themselves}
+# Graph of sales by itself
+revenue_tbl %>% 
+  ggplot(aes(x = dates, y = sales)) +
+    geom_line() +
+    geom_hline(yintercept = 0, color = "red") +
+    labs(title = "Utah Sales Tax Growth Rate",
+         subtitle = "1992 - 2016",
+         x = "",
+         y = "Percentage Change")
+
+revenue_tbl %>% 
+  ggplot(aes(x = dates, y = income)) +
+  geom_line() +
+  geom_hline(yintercept = 0, color = "red")  +
+  labs(title = "Utah Income Tax Growth Rate",
+       subtitle = "1992 - 2016",
+       x = "",
+       y = "Percentage Change")
+```  
+
+### Use graphs to compare sales and income  
+
+```{r gather sales and revenue}  
+# Gather the data together
+plot_data <- revenue_tbl %>% 
+  gather(sales, income, key = "tax", value = "revenue")
+```  
+
+```{r comparison of sales and income}
+# Time series plot of both in the same graph
+plot_data %>% 
+  ggplot(aes(x = dates, y = revenue, color = tax)) +
+    geom_line() +
+    geom_hline(yintercept = 0, color = "red") +
+    labs(title = "Utah Sales and Income Tax Growth Rates",
+         subtitle = "1992 - 2016",
+         x = "",
+         y = "Percentage Change")
+
+# Time series plot of each in its own panel
+plot_data %>% 
+  ggplot(aes(x = dates, y = revenue)) +
+    geom_line(aes(color = tax), show.legend = FALSE) +
+    facet_grid(rows = vars(tax)) +
+    geom_hline(yintercept = 0, color = "red", alpha = 0.25) +
+    labs(title = "Utah Sales and Income Tax Growth Rates",
+         subtitle = "1992 - 2016",
+         x = "",
+         y = "Percentage Change")
+```  
 
 ### Violin plots to compare the distribution of sales and income tax revenues  
 
 ```{r violin plot comparison}
 # Violin Plot
-revenue %>%
-  gather(sales, income, key = "tax", value = "revenue") %>%
-  ggplot(aes(x = tax, y = revenue)) +
-  geom_violin(fill = "lightgreen") +
-  geom_boxplot(width = 0.25, fill = "lightblue") +
-  labs(
-    title = "Comparison of Sales and Income Tax Growth Rates",
-    subtitle = "State of Utah, 1992 - 2016",
-    x = "Tax",
-    y = "Percentage Change"
-  ) +
-  coord_flip()
+plot_data %>%
+   ggplot(aes(x = tax, y = revenue)) +
+    geom_violin(fill = "lightgreen") +
+    geom_boxplot(width = 0.25, fill = "lightblue") +
+    labs(title = "Comparison of Sales and Income Tax Growth Rates",
+         subtitle = "State of Utah, 1992 - 2016",
+      x = "Tax",
+      y = "Percentage Change") +
+    coord_flip()
 ```  
 
 

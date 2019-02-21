@@ -1,0 +1,70 @@
+---
+title: 'Homework #9'
+author: 'Covariation'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Concepts  
+
+1.  Explain the difference between wide and long data frames.
+
+2.  Explain why you need a long data frame when using ggplot.
+    
+## Interpretation of code  
+
+Compare and interpret the following R code:  
+
+```{r code chunk interpretation I}
+mpg %>% 
+  select(cty, hwy) %>% 
+  gather(cty, hwy, key = type_of_driving, value = mileage) %>% 
+  group_by(type_of_driving) %>% 
+  summarise(
+    Means= mean(mileage),
+    Medians = median(mileage),
+    IRQs = IQR(mileage),
+    Standard_Deviations = sd(mileage)
+  )
+```
+
+```{r code chunk interpretation II}
+mpg %>%
+  summarise(
+    mean_city = mean(cty),
+    mean_highway = mean(hwy),
+    median_city = median(cty),
+    median_highway = median(hwy),
+    IQR_city = IQR(cty),
+    IQR_highway = IQR(hwy),
+    sd_city = sd(cty),
+    sd_highway = sd(hwy)
+  )
+```
+
+
+## Write code  
+
+Using the mpg data set, use select and gather to create the following violin plot.  
+
+
+```{r relationship between highway and city mileage, echo = FALSE}
+
+mpg %>%
+  select(cty, hwy) %>%
+  gather(cty, hwy, key = type_of_driving, value = mileage) %>%
+  ggplot(aes(x = type_of_driving, y = mileage)) +
+  geom_violin(fill = "lightgreen") +
+  geom_boxplot(width = 0.25, fill = "lightblue") +
+  labs(title = "Highway mileage is larger than city mileage",
+       x = "Type of Driving",
+       y = "Miles Per Gallon") +
+  coord_flip()
+```
+
+
+
