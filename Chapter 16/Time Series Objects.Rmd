@@ -1,0 +1,106 @@
+---
+title: "Time Series Example"
+author: "Ray Nelson"
+date: "3/1/2019"
+output:
+   html_document:
+     code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load libraries
+library(tidyverse)
+library(lubridate)
+library(forecast)
+library(timeSeries)
+library(zoo)
+library(xts)
+library(fImport)
+```
+
+## [Forecasting: Principles and Prace (free online book)](https://otexts.com/fpp2/) 
+
+## Time series objects and analysis
+
+The following are four different types of time series objects
+
+*  ts (base R)
+*  zoo
+*  xts
+*  timeSeries (Incoporates date-time (POSIXct) for use with financial markets)
+
+### Get retail sales from FRED
+
+```{r retail sales as timeSeries, ts, zoo, and xts}
+retail <- fredSeries("RSAFSNA", from = "1992-01-01") / 1000
+retail %>% str()
+retail %>% head(12)
+retail %>% as.ts() %>% window(end = c(1992, 12))
+retail %>% as.xts() %>% head(12)
+retail %>% as.zoo() %>% head(12)
+```
+
+
+### Extract components from timeSeries objects
+
+```{r functions to get dates and data from timeSeries objects}
+retail %>% time() %>% head(12)
+retail %>% series() %>% head(12)
+```
+
+### Using components to construct time series plots using ggplot  
+
+```{r time series components}
+tibble(Time = retail %>% time() %>% date(),
+                    Retail = retail %>% series()) %>%
+  ggplot(aes(Time, Retail / 1000)) +
+  geom_line() +
+  labs(
+    title = "Total Retail Sales",
+    subtitle = "US 1992 - Present",
+    x = "",
+    y = "Billions of Dollars"
+  )
+```
+
+### Stl or season and trend with loess decomposes a time series into trend\cycle, seasonality, and remainder components.
+
+```{r stl}
+retail %>% 
+  as.ts() %>% 
+  stl(s.window = "periodic") %>% 
+  autoplot() +
+  ggtitle("STL Decomposition of Retail Sales, Not Seasonally Adjusted")
+```  
+
+### Exponential smoothing using ETS (Error, Trend, Seasonality). Tableau, PowerBi, and Exel all use a similar algorithm for exponential smoothing.
+
+```{r exponential smoothing forecast}
+retail %>%
+  forecast(h = 12) %>% 
+  autoplot() +
+  labs(
+    title = "ETS forecast for retail sales extrapolates trend and seasonal patterns.",
+    subtitle = "US Retail Sales, Not Seasonally Adjusted",
+    x = "",
+    y = "Billions of Dollars"
+  )
+```  
+
+### ARIMA
+
+```{r arima model}
+retail %>% 
+  auto.arima() %>% 
+  forecast(h = 12) %>% 
+  autoplot() +
+  labs(
+    title = "ARIMA forecast for retail sales",
+    subtitle = "US Retail Sales, Not Seasonally Adjusted",
+    x = "",
+    y = "Billions of Dollars"
+  )
+```
+
+

@@ -1,0 +1,40 @@
+---
+title: "Modifying Factor Levels"
+author: "Ray Nelson"
+date: "27 Feb 2019"
+output:
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load libraries
+library(tidyverse)
+library(forcats)
+```
+
+## Extra file because for some unknown reason, these won't knit when put into the other file.
+
+## Lumping together factors
+
+```{r computer optimum}
+gss_cat %>%
+  mutate(relig = fct_lump(relig)) %>%
+  ggplot(aes(relig, fill = relig)) +
+  geom_bar(show.legend = FALSE)
+```
+
+```{r user specified}
+gss_cat %>%
+  mutate(relig = fct_lump(relig, n = 10)) %>%
+  ggplot(aes(relig %>% fct_infreq() %>% fct_rev(), fill = relig)) +
+  geom_bar(show.legend = FALSE) +
+  coord_flip() +
+  labs(
+    title = "Protestants are the largest group",
+    x = "Religion",
+    y = "Number of Respondents"
+  )
+```
+

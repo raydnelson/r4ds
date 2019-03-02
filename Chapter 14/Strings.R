@@ -1,6 +1,6 @@
 # Chapter 14 Strings
-# Initial: 14 December 2018
-# Revision: 14 December 2018
+# Initial: 14 Dec 2018
+# Revision: 27 Feb 2019
 # Ray Nelson
 
 # Libraries
@@ -10,7 +10,7 @@ library(stringr)
 # 14.2 String basics
 
 string1 <- "This is a string"
-string2 <- 'IF I want to include a "quote" inside a string, I use single quotes'
+string2 <- 'If I want to include a "quote" inside a string, I use single quotes'
 
 double_quote <- "\""
 single_quote <- '\''
@@ -151,3 +151,24 @@ no_vowels_1 <- !str_detect(words, "[aeiou]")
 no_vowels_2 <- str_detect(words, "^[^aeiou]+$")
 
 identical(no_vowels_1, no_vowels_2)
+
+# Glue and paste
+library(glue)
+library(nycflights13)
+
+## Calculate the average delay from JFK that didn't leave on time
+(
+  average_delay <- flights %>%
+    filter(origin == "JFK") %>%
+    filter(dep_delay >= 0) %>%
+    summarise(average_delay = mean(dep_delay)) %>%
+    as.numeric() %>%
+    round(0)
+)
+
+# Print out the average delay in a sentence
+
+paste("The average delay from JFK in New York City is:", average_delay, "minutes.")
+glue("The average delay from JFK in New York City is:", average_delay, "minutes.")
+
+paste0("Var", 1:10)

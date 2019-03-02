@@ -1,6 +1,6 @@
 # Factors
-# Initial: October 25, 2018
-# Revision: October 29, 2018
+# Initial: 25 Oct 2018
+# Revision: 25 Feb 2019
 # Ray Nelson
 
 # Libraries

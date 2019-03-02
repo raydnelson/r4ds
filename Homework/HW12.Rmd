@@ -1,0 +1,71 @@
+---
+title: 'Homework #12'
+author: 'Relational Data '
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(nycflights13)
+library(viridis)
+```
+
+## Concepts  
+
+1.  Explain the differences between inner and full joins.
+
+2.  Explain the differences between mutating and filtering joins.
+    
+## Interpretation of code  
+
+Compare and interpret the following two R code chunks: 
+
+### Code chunk #1  
+
+Note: In order to run this code, you will probably need to install the viridis library.  
+
+```{r code chunk interpretation 1, warning = FALSE, message = FALSE}
+flights %>%
+  filter(year == 2013, month == 6, day == 13) %>%
+  group_by(dest) %>%
+  summarise(delay = mean(arr_delay, na.rm = TRUE)) %>%
+  inner_join(airports, by = c("dest" = "faa")) %>%
+  ggplot(aes(y = lat, x = lon, size = delay, colour = delay)) +
+  borders("state") +
+  geom_point() +
+  coord_quickmap() +
+  scale_color_viridis()
+```  
+
+### Code chunk #2
+
+```{r code chunk interpretation 2, message = FALSE}
+planes_gt100 <- flights %>% 
+  group_by(tailnum) %>%
+  count() %>%
+  filter(n > 100)
+
+flights %>%
+  semi_join(planes_gt100, by = "tailnum")
+```
+
+## Write code
+
+### Problem 1
+
+Add the location of the destination (i.e. the latitude and longitude) to flights. The lat and lon variables are in the airports tibble.   
+
+```{r destination location}
+
+```  
+
+### Problem 2
+
+Filter flights to show only those on planes that have less than 100 flights.
+
+```{r planes with less than 100 flights}
+
+```  
+
+If you need a hint, consider code chunk #2.  

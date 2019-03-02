@@ -1,7 +1,7 @@
 ---
 title: "Relational Data"
 author: "Ray Nelson"
-date: "10/24/2018"
+date: "24 Feb 2019"
 output:
   html_document:
     code_folding: "hide"
@@ -20,7 +20,6 @@ library(nycflights13)
 
 ```{r airlines table}
 airlines
-
 ```  
 
 ### Airports Table
@@ -41,7 +40,7 @@ weather
 
 ## Keys: Primary and Foreign  
 
-### Check to see if keys are unique  
+### Check to see if keys are unique for planes and weather tibbles
 
 ```{r check planes and weather}
 planes %>% 
@@ -103,25 +102,25 @@ y <- tribble(
 )
 ```  
 
-#### inner Join
+#### inner join
 ```{r inner join}
 x %>% 
   inner_join(y, by = "key")
 ```  
 
-#### left Join
+#### left join
 ```{r left join}
 x %>% 
   left_join(y, by = "key")
 ```  
 
-#### inner Join
+#### right join
 ```{r right join}
 x %>% 
   right_join(y, by = "key")
 ```  
 
-#### inner Join
+#### full join
 ```{r full join}
 x %>% 
   full_join(y, by = "key")
@@ -146,7 +145,8 @@ y <- tribble(
   3, "y4"
 )
 
-x %>% left_join(y, by = "key")
+x %>%
+  left_join(y, by = "key")
 ```  
 
 ### Defining the key columns  
@@ -194,19 +194,3 @@ flights %>%
   anti_join(planes, by = "tailnum") %>%
   count(tailnum, sort = TRUE)
 ```  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
