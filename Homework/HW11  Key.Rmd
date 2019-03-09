@@ -1,7 +1,9 @@
 ---
 title: 'Homework #9'
 author: 'Covariation'
-output: word_document
+output:
+  html_document:
+    code_folding: show
 ---
 
 ```{r setup, include=FALSE}
@@ -11,15 +13,23 @@ library(tidyverse)
 
 ## Concepts  
 
-1.  Explain the difference between wide and long data frames.
+1.  Explain the difference between wide and long data frames.  
 
-2.  Explain why you need a long data frame when using ggplot.
-    
-## Interpretation of code  
+A wide data set puts each variable in a separate column. For example, if we were recording the height and weight of an individual, then each row would have a column for the name or identifier for the individual and then we would have one column for height and another column for weight.  
 
-Compare and interpret the following R code:  
+A long or stacked data set has a column that identifies the individual or observation, another column that gives the variable (height or weight), and a third column that gives the value.  
 
-```{r code chunk interpretation I}
+For an example of wide and long, go to [Wikipedia.com](https://en.wikipedia.org/wiki/Wide_and_narrow_data)  
+
+2.  Explain why you often need a long data frame when using ggplot.  
+
+In ggplot, we need categorical variables to use for the assignment of aesthetics. For example, a boxplot requires that our x variable be categorical. Other aesthetics such as color, fill, size, shape, etc. also are set based on categorical variables. Converting a data frame into a long format facilities the assignment of aesthetics.  
+
+## Code Interpretation
+
+### Code Chunk #1
+
+```{r code chunk interpretation 1}
 mpg %>% 
   select(cty, hwy) %>% 
   gather(cty, hwy, key = type_of_driving, value = mileage) %>% 
@@ -27,12 +37,21 @@ mpg %>%
   summarise(
     Means= mean(mileage),
     Medians = median(mileage),
-    IRQs = IQR(mileage),
+    IQRs = IQR(mileage),
     Standard_Deviations = sd(mileage)
   )
 ```
 
-```{r code chunk interpretation II}
+Line 2:  chooses the city and highway miles per gallon columns  
+
+Line 3:  creates a new tibble with two_columns. The first, type_of_driving, is either cty or hwy. The second, mileage, is the value that corresponds to either cty or hyw mileage.  
+
+Line 4:  groups the long tibble by type of driving  
+
+Lines 5 - 9:  Calculates the mean, median, IQR, and standard deviation for city and highway driving. The result is a tibble with two observations, cty and hwy, and four columns Means, Medians, IQRs, and Standard_Deviations.  
+
+
+```{r code chunk interpretation 2}
 mpg %>%
   summarise(
     mean_city = mean(cty),
@@ -46,13 +65,13 @@ mpg %>%
   )
 ```
 
+Lines 2 - 9: Accomplishes the very same thing as code chunk #1 except the means, medians, IQRs, and standard deviations are calculated separately for each column. The result is a tibble with one row and eight columns. This makes comparisons of the means, medians, IQRs, and standard deviations more difficult in comparison with the table created in code chunk #1.
 
 ## Write code  
 
-Using the mpg data set, use select and gather to create the following violin plot.  
+The following code uses gather to create a violin plot that compares the distributions of city and highway mileage.  
 
-
-```{r relationship between highway and city mileage, echo = FALSE}
+```{r relationship between highway and city mileage}
 
 mpg %>%
   select(cty, hwy) %>%

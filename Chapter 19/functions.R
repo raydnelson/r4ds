@@ -1,11 +1,14 @@
 # Functions
-# Initial: October 30, 2018
-# Revision: October 31, 2018
+# Initial: 5 March 2019
+# Revision: 5 March 2019
 # Ray Nelson
 
-# Libraries --------------------------------------------------------------------
+# Libraries
 library(tidyverse)
-library(moments)
+library(conflicted)
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+
 
 # Scaling function -------------------------------------------------------------
 ## Create x vector
@@ -163,3 +166,116 @@ dist_compare <- function(df){
 
 # Run the function
 dist_compare(5)
+
+
+# Calculate the mean
+
+set.seed(1234)
+(x <- rnorm(100, mean = 10, sd = 10))
+
+# Base R functions for location or central tendency
+mean(x)
+median(x)
+
+# Own Mean function
+
+sum(x) / length(x)
+
+Mean <- function(x) {
+  sum(x) / length(x)
+}
+
+x %>% Mean()
+
+# Deviations
+
+x - Mean(x)
+(x - Mean(x)) %>% sum()
+
+# Standard deviation
+x %>% sd()
+
+SD <- function(x) {
+  ((x - Mean(x))^2 %>% sum() / (length(x) - 1) ) %>% sqrt()
+}
+
+# Standardizing function
+x %>% scale() %>% mean() %>% round(5)
+x %>% scale() %>% sd()
+
+Standardize <- function(x) {
+  (x - Mean(x)) / SD(x)
+}
+
+x %>% Standardize() %>% Mean() %>% round(5)
+x %>% Standardize() %>% SD()
+
+# Covariance
+set.seed(1234)
+y <- rnorm(100, mean = 100, sd = 100)
+
+# Covariance
+cov(x, y)
+
+Cov <- function(x, y) {
+  ((x - Mean(x)) * (y - Mean(y))) %>% sum() / (length(x) - 1)
+}
+
+Cov(x, y)
+
+# Correlation
+cor(x, y)
+
+Cor <- function(x, y) {
+  Cov(Standardize(x), Standardize(y))
+}
+
+# Function to draw a violin plot of x
+set.seed(Sys.time())
+sample_size <- 100
+mu <- 10
+sigma <- 10
+
+
+rnorm(sample_size, mu, sigma) %>% 
+  tibble() %>% 
+  ggplot(aes(x = factor(0), y = x)) +
+  geom_violin(fill = "lightblue") +
+  geom_boxplot(width = 0.25, fill = "lightgreen") + 
+  labs(
+    title = "Box Plot of a Single Variable",
+    x = "", 
+    y = "Normally Distributed random variable"
+  ) + 
+  coord_flip()
+
+
+
+normal <- tibble(x = rnorm(sample_size, mu, sigma))
+normal %>% 
+  ggplot(aes(x = factor(0), y = x)) +
+  geom_violin(fill = "lightblue") +
+  geom_boxplot(width = 0.25, fill = "lightgreen") + 
+  labs(
+    title = "Box Plot of a Single Variable",
+    x = "", 
+    y = "Normally Distributed random variable"
+  ) +
+  coord_flip()
+
+normal_violin <- function(sample_size, mu, sigma) {
+  normal <- tibble(x = rnorm(sample_size, mu, sigma))
+  normal %>% 
+    ggplot(aes(x = factor(0), y = x)) +
+    geom_violin(fill = "lightblue") +
+    geom_boxplot(width = 0.25, fill = "lightgreen") + 
+    labs(
+      title = "Box Plot of a Single Variable",
+      x = "", 
+      y = "Normally Distributed random variable"
+    ) +
+    coord_flip()
+}
+
+normal_violin(10, 10, 100)
+

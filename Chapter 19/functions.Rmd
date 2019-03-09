@@ -1,0 +1,291 @@
+---
+title: "Functions"
+author: "Ray Nelson"
+date: "6 March 2019"
+output:
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load libraries
+library(tidyverse)
+library(nycflights13)
+library(lubridate)
+```
+
+## Create a function that calculates the mean
+
+### Create a vector of normally distributed values
+
+```{r base r mean}
+# Generate observations from a normal distribution
+set.seed(1234)
+(x <- rnorm(n = 100, mean = 10, sd = 10))
+```  
+
+### Replication of the mean function calculations
+
+```{r replication of mean function}
+sum(x) / length(x)
+mean(x)
+```
+
+### Own Mean function
+
+```{r Mean function}
+Mean <- function(x){
+  sum(x) / length(x)
+}
+Mean(x)
+mean(x)
+```
+
+## Deviations
+
+### Deviations and the sum of deviations
+
+```{r deviations and their sum}
+x - Mean(x)
+(x - Mean(x)) %>%
+  sum() %>% 
+  round(5)
+```
+
+### Standard deviation calculations
+
+```{r standard deviation calculations}
+((x - Mean(x))^2 %>%
+  sum() / (length(x) - 1) ) %>%
+  sqrt()
+sd(x)
+```
+
+### Standard deviation function
+
+```{r standard deviation function}
+SD <- function(x) {
+  ((x - Mean(x))^2 %>%
+    sum() / (length(x) - 1) ) %>%
+    sqrt()
+}
+SD(x)
+sd(x)
+```
+
+## Standardizing function that creates a z-score
+
+### The base R scale function creates a variable which has a zero mean and a standard deviation of 1. It accomplishes this by subtracting the mean and dividing by the standard deviation.  
+
+```{r investigate how the scale function works, warning = FALSE}
+x %>% scale() %>% t()
+x %>%
+  scale() %>%
+  mean() %>%
+  round(5)
+x %>%
+  scale() %>%
+  sd()
+```
+
+### Standardize function
+
+```{r standardize function}
+Standardize <- function(x) {
+  (x - Mean(x)) / SD(x)
+}
+
+x %>%
+  Standardize() %>%
+  Mean() %>% 
+  round(5)
+x %>%
+  Standardize() %>%
+  SD()
+```
+
+## Calculate the covariance
+
+### A second randomly distributed normal variable
+
+```{r y as a normally distributed random variable}
+y <- rnorm(100, mean = 100, sd = 100)
+```
+
+### Covariance calculations  
+
+```{r covariance calculations}
+((x - Mean(x)) * (y - Mean(y))) %>%
+  sum() / (length(x) - 1)
+cov(x, y)
+```
+
+### Covariance function
+
+```{r covariance function}
+Cov <- function(x, y){
+  ((x - Mean(x)) * (y - Mean(y))) %>%
+    sum() / (length(x) - 1)
+}
+Cov(x, y)
+cov(x, y)
+```
+
+## Correlation function using the knowledge that the correlation is the correlation between two standardized variables.
+
+### Correlation calculations
+
+```{r correlation calculations}
+Cov(Standardize(x), Standardize(y))
+cor(x, y)
+```  
+
+### Correlation function
+
+```{r correlation function}
+Cor <- function(x, y){
+  Cov(Standardize(x), Standardize(y))
+}
+
+Cor(x, y)
+cor(x, y)
+```
+
+## Function to draw a violin plot of x
+
+### Create variables to pass to the function and create data from a normal distribution
+
+```{r variables for violin plot of random normal observations for a variable, warning = FALSE}
+# set.seed(Sys.time())
+sample_size <- 100
+mu <- 10
+sigma <- 10
+normal <- tibble(x = rnorm(sample_size, mu, sigma))
+```
+
+###
+```{r draw the violin plot}
+normal %>% 
+  ggplot(aes(x = factor(0), y = x)) +
+  geom_violin(fill = "lightblue") +
+  geom_boxplot(width = 0.25, fill = "lightgreen") + 
+  labs(
+    title = "Box Plot of a Single Variable",
+    x = "", 
+    y = "Normally Distributed random variable"
+  ) + 
+  coord_flip()
+```
+
+### Create a violin plot function
+
+```{r violin plot function}
+normal_violin <- function(sample_size, mu, sigma) {
+  tibble(x = rnorm(sample_size, mu, sigma)) %>%
+    ggplot(aes(x = factor(0), y = x)) +
+    geom_violin(fill = "lightblue") +
+    geom_boxplot(width = 0.25, fill = "lightgreen") +
+    labs(title = "Box Plot of a Single Variable",
+         x = "",
+         y = "Normally Distributed random variable") +
+    coord_flip()
+}
+```
+
+### Use the violin plot function
+
+```{r violin plot executions}
+normal_violin(100, 10, 10)
+```
+
+## Scheduled Departure times for flights leaving from a NYC airport and going to a given destination.
+
+### Code to create a bar chart of the number of flights going to a given destination at each hour of the day from all three New York City airports.
+
+```{r code outside flights }
+dest_airport <- "ATL"
+
+flights %>% 
+  filter(dest == dest_airport) %>%
+  ggplot(aes(hour, fill = origin)) +
+  geom_bar() +
+  scale_x_continuous(breaks = seq(0, 24, 1), labels = seq(0, 24, 1)) +
+  labs(
+    title = paste("New York City Flights", dest_airport),
+    x = "Hour of the day",
+    y = "Number of flights",
+    fill = "New York Airport"
+  )
+```  
+
+### Create a function to draw the bar chart which takes as an argument the destination airport.  
+
+```{r flights function}
+destination <- function(dest_airport){
+flights %>% 
+  filter(dest == dest_airport) %>%
+  ggplot(aes(hour, fill = origin)) +
+  geom_bar() +
+  scale_x_continuous(breaks = seq(0, 24, 1), labels = seq(0, 24, 1)) +
+  labs(
+    title = paste("New York City Flights to", dest_airport),
+    x = "Hour of the day",
+    y = "Number of flights",
+    fill = "New York Airport"
+  )  
+}
+```
+
+### Executive the function
+
+```{r flights to the given airport}
+destination("LAX")
+```
+
+## Look at the price and weight relationships for different types of cuts of diamonds
+
+### Create a subset of diamonds that isn't quite so big
+
+```{r subset of diamonds}
+diamonds_subset <- sample_n(diamonds, size = 1000)
+```
+
+### Prototype graph
+
+```{r diamond by cut, message = FALSE}
+diamond_cut = "Ideal"
+diamonds_subset %>% 
+  filter(cut == diamond_cut) %>% 
+  ggplot(aes(log(carat), log(price))) +
+  geom_point(color = "blue") +
+  geom_smooth(se = FALSE, color = "red") +
+  labs(
+    title = paste("There is a positive relationship between price and weight of", diamond_cut, "diamonds."),
+    x = "Natural Logarithm of Diamond Weight in Carats",
+    y = "Natural Logarithm of Diamond Price in Dollars"
+  )
+```  
+
+### Function Creation
+
+```{r function creation}
+price_weight_cut <- function(diamond_cut){
+diamonds_subset %>% 
+  filter(cut == diamond_cut) %>% 
+  ggplot(aes(log(carat), log(price))) +
+  geom_point(color = "blue") +
+  geom_smooth(se = FALSE, color = "red") +
+  labs(
+    title = paste("There is a positive relationship between price and weight of", diamond_cut, "diamonds."),
+    x = "Natural Logarithm of Diamond Weight in Carats",
+    y = "Natural Logarithm of Diamond Price in Dollars"
+  )  
+}
+```
+
+### Execution of the function
+
+```{r price_weight_cut execution, message = FALSE}
+price_weight_cut("Premium")
+```

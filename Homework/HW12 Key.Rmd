@@ -1,0 +1,125 @@
+---
+title: 'Homework #12'
+author: 'Relational Data '
+output:
+  html_document:
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(nycflights13)
+library(viridis)
+```
+
+## Concepts  
+
+1.  Explain the differences between inner and full joins.  
+
+The result of an inner join includes rows from the x tibble and information from the y tibble where the key variables match. If the y tibble doesn't have a match in the x tibble or the x tibble doesn't have a match in the y tibble, then the observations are excluded.
+
+A full join keeps all observations in x and y. A full join includes three types of rows. The first is like the inner join or where the keys match. The second are the rows in x where there is no match in y. This recreates missing values for the y variables where there is no match. The third are the rows in y where there are no matches in x. This creates missing values for the x variables in the join.  
+
+2.  Explain the differences between mutating and filtering joins.  
+
+These two concepts are similar to filtering and mutating when using the respective dplyr commands. Filtering chooses a subset of observations and mutate creates new variables.  
+    
+## Interpretation of code  
+
+Compare and interpret the following two R code chunks: 
+
+### Code chunk #1  
+
+Note: In order to run this code, you will probably need to install the viridis library.  
+
+```{r code chunk interpretation 1, warning = FALSE, message = FALSE}
+flights %>%
+  filter(year == 2013, month == 6, day == 13) %>%
+  group_by(dest) %>%
+  summarise(delay = mean(arr_delay, na.rm = TRUE)) %>%
+  inner_join(airports, by = c("dest" = "faa")) %>%
+  ggplot(aes(y = lat, x = lon, size = delay, colour = delay)) +
+  borders("state") +
+  geom_point() +
+  coord_quickmap() +
+  scale_color_viridis()
+``` 
+
+Line 2:  Chooses only those observations for 6 June 2013  
+
+Line 3:  Groups the observations by desintation  
+
+Line 4:  Calculates the average arrival delay for each destination. This gives us a tibble that has the average delay for each airport.  
+
+Line 5:  The airport tibble has information like latitude and longitude for each destination. The column in the tibble created from flights has the airport coded as dest and the airports tibble has the information used to identify airports as faa. The inner_join adds the information to the tibble created in the first part of the code.  
+
+Line 6:  Assigns x to lon and y to lat, and size and colour to delay which is the mean arrival delay from line 4.
+
+Line 7:  Draws the boundaries of the states in the United States in a map  
+
+Line 8:  Adds points to the map that are colored and sized by the magnitude of the average delay  
+
+Line 9:  Adjusts the maps so that they appear correctly like maps should.
+
+Line 10:  Uses the viridis color scheme  
+
+### Code chunk #2
+
+```{r code chunk interpretation 2, message = FALSE}
+planes_gt100 <- flights %>% 
+  group_by(tailnum) %>%
+  count() %>%
+  filter(n > 100)
+
+flights %>%
+  semi_join(planes_gt100, by = "tailnum")
+```
+
+Line 1:  Creates a new tibble called planes_gt100  
+
+Line 2:  Groups the observations in flights by plane using the tail number identifier  
+
+Line 3:  Counts the number of flights make by each plane  
+
+Line 4:  Chooses only those planes that have make more than 100 flights
+
+Line 5 - 6:  Uses a filtering join to extract all the information from flights on aircraft that have flown more than 100 flights.  
+
+## Write code
+
+### Problem 1
+
+Add the location of the destination (i.e. the latitude and longitude) to flights. The lat and lon variables are in the airports tibble.   
+
+```{r destination location}
+flights %>%
+  left_join(airports, by = c("dest" = "faa")) %>% 
+  select(year:time_hour, lat:lon)
+```  
+
+### Problem 2
+
+Filter flights to show only those on planes that have less than 100 flights. This can be done with either an anti_join or a semi_join.  
+
+```{r planes with less than 100 flights using anti-join}
+planes_gte100 <- flights %>% 
+  group_by(tailnum) %>%
+  count() %>%
+  filter(n >= 100)
+
+flights %>%
+  anti_join(planes_gte100, by = "tailnum")
+```
+
+```{r planes with less than 100 flights using semi-join}
+planes_lt100 <- flights %>% 
+  group_by(tailnum) %>%
+  count() %>%
+  filter(n < 100)
+
+flights %>%
+  semi_join(planes_lt100, by = "tailnum")
+```  
+
+If you need a hint, consider code chunk #2.  

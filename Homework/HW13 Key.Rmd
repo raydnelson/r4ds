@@ -1,7 +1,9 @@
 ---
 title: 'Homework #13 Key'
 author: 'Factors'
-output: word_document
+output:
+  html_document:
+    code_folding: show
 ---
 
 ```{r setup, include=FALSE}
@@ -12,12 +14,20 @@ library(forcats)
 
 ## Concepts  
 
-1.  How are factors different from character variables. When would you prefer factors?
+1.  How are factors different from character variables. When would you prefer factors?  
+
+Character variables often have a large number of possible values. Sometimes, a character variable will be unique for each observation. One example is where each individual only appears one time in a tibble and that individual is identified by their name.
+
+Factor variables usually can have a limited number of values. Factor variables can be represented as characters and integers. An example of a factor would be the grades that are awarded in a class.
+
+Factors are preferred when a character variable has a reasonably small number of values. Factors have the advantage that they can be ordered. They can also be stored very efficiently on a computer. Each level of a factor can be assigned a code. The code for each observation can then be efficiently substituted for an entire string. Factors are also helpful when we are trying to find data entry errors.  
 
 2.  Explain how you can change
 
-*  Factor order
-*  Factor levels
+*  Factor order: We can use the fct_reorder function to change the order of factor levels. The first argument in this function names the factor, the second identifies a variable to be used to reorder, and the third gives the function to use on the variable that will be used to change the order.  
+
+
+*  Factor levels: We can use the fct_recode function to change the levels of a factor. The first argument to the function is the factor that we desire to recode. The next arguments come in pairs. The left part of the equals sign gives the new value for the level. The right side gives the old values of the factor. The function fct_collapse works similarly except a new level is assigned multiple levels found in the original factor definition.  
     
 ## Interpretation of code  
 
@@ -37,6 +47,14 @@ gss_cat %>%
     y = "Number of Respondents"
   )
 ```  
+
+Line 2: The fct_infreq counts the number of observations in the marital variable to determine their frequency and then orders the factors from largest to lowest frequencies. The fct_rev function reverses the ordering of the factor from smallest to largest.  
+
+Line 3: Anticipates the bar chart in the next line and identifies marital as the variable of interest. The declaration of fill = marital anticipates coloring the bars based on marital status.  
+
+Line 4: Counts the number of observations in each marital status category and draws a bar chart without a legend.  
+
+Lines 5 - 9: Create the labels for the chart.
 
 ### Code chunk #2
 
@@ -58,6 +76,14 @@ gss_cat %>%
     y = "Number of Respondents"
   )
 ```
+
+Lines 2 - 8: Recode the factor partyid into three levels: other, rep, ind, and dem.  
+
+Line 9: Antipates the bar chart that follows by identifying partyid as the factor of interest and specifying that each of the bars be colored by the partyid.  
+
+Line 10 - 11: Counts the number of observations in other, rep, ind, and dem and then draws a horizontal bar chart.  
+
+Lines 12 - 15: Labels the graph.
 
 ## Write code
 
@@ -81,7 +107,7 @@ Create a boxplot for age by marital status. Sort the boxes by the median of age.
 1.  Use the gss_cat tibble
 2.  Select the variables marital and age
 3.  Use piping and na.omit to get rid of missing observations
-4  Draw a boxplot with the boxes colored by marital status
+4   Draw a boxplot with the boxes colored by marital status
 5.  Reorder the boxes using fct_reorder (the default function is median)
 6.  Suppress the legend
 7.  Create appropriate titles and axis labels

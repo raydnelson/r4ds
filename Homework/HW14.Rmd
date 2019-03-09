@@ -19,7 +19,7 @@ library(nycflights13)
     
 ## Interpretation of code  
 
-Interpret the following two R code chunks: 
+Interpret the following two R code chunks:  
 
 ### Code chunk #1  
 
@@ -75,7 +75,7 @@ Problem 1
 ```
 
 ```{r homework image, echo = FALSE}
-homework_graph <- "http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW12 Graph.png"
+homework_graph <- "http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW14 Graph.png"
 ```
 
 ![](`r homework_graph`)

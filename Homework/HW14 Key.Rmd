@@ -1,7 +1,9 @@
 ---
 title: 'Homework #14'
 author: 'Dates and Times'
-output: word_document
+output:
+  html_document:
+    code_folding: show
 ---
 
 ```{r setup, include=FALSE}
@@ -15,7 +17,20 @@ library(nycflights13)
 
 1.  Software packages often use a reference date for their date-time functions. Excel uses January 1, 1990. One alternative for R is "Unix Epoch", which is 1970-01-01. Explain how these systems represent date and date-time values as numbers.  
 
-2.  Time spans can be measured as durations, periods, or intervals. Compare and contrast these three ways of considering time.  
+*  Dates are represented as the number of days since January 1, 1970.  
+
+*  Date-times are given as the number of seconds since Janaury 1, 1970.  
+
+2.  Time spans can be measured as durations, periods, or intervals. Compare and contrast these three ways of considering time.
+
+Spans are the difference between two dates.
+
+*  Durations record time spans in seconds.
+
+*  Period record dates and date-times in "human" times like days, years, and months.  
+
+*  Intervals are stores as the starting and ending time. Make sure that the starting time is first, otherwise we will get a negative value.  
+
     
 ## Interpretation of code  
 
@@ -42,6 +57,16 @@ flights_dt <- flights %>%
 flights_dt %>% print()
 ```  
 
+Line 1 - 3:  Create a function that uses integer division and the modulus function to convert a time in an unorthodox time format into a date-time number.
+
+Lines 5 - 6: Filter the rows of the tibble flights so that we only have non-cancelled flights.  
+
+Lines 7 - 12: Convert four different times into standard date-time format. No new variables are created but rather the previous values are replaced with the converted information.  
+
+Line 13:  Select the variables origin, dest, all those variables that end in "delay", and those that end with "time"  
+
+Line 15: Prints out the resulting tibble  
+
 ### Code chunk #2
 
 ```{r code chunk interpretation 2, message = FALSE}
@@ -57,7 +82,17 @@ flights_dt %>%
     x = "Departure Time",
     y = "Number of Flights"
   )
-```
+```  
+
+Line 2: Selects all those flights that departed after the beginning of Christmas Day
+
+Line 3: Selects all those flights that departed before the beginning of the day after Christmas.  
+
+Line 4: Selects departure time as the x variable for ggplot aesthetics.  
+
+Line 5: The variable dep_time is measured in seconds. We want freqpoly to combine the times into 15 second intervals. Therefore, we choose a bandwidth of 60 * 15 to get 900 seconds.  
+
+Lines 6 - 11: Label and title the graph appropriately.
 
 ## Write code
 
@@ -70,12 +105,6 @@ Problem 1
 1.  Use the hour function to create a new hour variable from the dep_time
 1.  Draw a bar chart for the new hour variable
 1.  Use faceting to create a chart for each airport
-
-```{r homework image, echo = FALSE}
-homework_graph <- "http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW12 Graph.png"
-```
-
-![](`r homework_graph`)
 
 ```{r departure hour}
 flights %>%
