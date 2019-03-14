@@ -1,0 +1,67 @@
+---
+title: 'Homework #17 Key'
+author: "Vectors"
+output:
+  html_document:
+    code_folding: show
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(nycflights13)
+```
+
+## Concepts  
+
+1.  Explain why a tibble is a list but not all lists are tibbles.  
+
+2.  Explain how you use [], [[]], and $ when subsetting a list as described in section 20.5.2. 
+    
+## Interpretation of code  
+
+Interpret the following R code chunk: 
+
+Code Chunk #1
+
+```{r code chunk for determining whether a temperature is above or below freezing}
+data_science <- list(transform = "Transform", model = "Model", visual = "Visual")
+our_list <- list(one = TRUE, two = 3L, three = 500, four = "EDA", five = data_science)
+our_list$five
+our_list[1]
+our_list[[1]]
+our_list[["one"]]
+our_list[1:2]
+our_list$five$model
+```
+
+Code Chunk #2
+
+The nycflights13 library contains five tibbles: airlines, airports, flights, planes, and weather. The following code refers to these objects.
+
+```{r code chunk interpretation, warning = FALSE, message = FALSE}
+nyc <- list(airlines, airports, flights, planes, weather)
+names(nyc) <- c("airlines", "airports", "flights", "planes", "weather")
+nyc$planes %>% head(10)
+nyc$flights$arr_delay %>% head(10)
+```  
+
+## Write Code
+
+Complete the following steps  
+
+*  Create a vector of the names of the members of your family
+*  Create a vector of their birthdays as ymd (dates)
+*  Create a tibble (with variable names) for your family from the vectors that you already created
+*  Use dplyr to extract your name and birthday from your tibble
+
+```{r family tibble}
+family_names <- c("Ray", "Pam", "Jen", "Rebecca", "Angie", "Jon")
+birthdays <- c("1951-04-14", "1956-04-20", "1981-03-13", "1984-01-26",
+               "1986-03-05", "1991-06-18") %>% ymd()
+family <- tibble(names = family_names, birthdays = birthdays)
+family %>% 
+  filter(names == "Ray")
+```

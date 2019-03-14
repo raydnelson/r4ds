@@ -1,0 +1,58 @@
+---
+title: 'Homework #16'
+author: 'Conditional Execution'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(nycflights13)
+```
+
+## Concepts  
+
+1.  Use online documentation for the cut function to explain how it works.  
+
+2.  Explain how the switch function can be used as a replacement for long chains of if else statements.
+    
+## Interpretation of code  
+
+Interpret the following R code chunks: 
+
+Code Chunk #1
+
+```{r code chunk for determining whether a temperature is above or below freezing}
+freezing <- function(temperature){
+  if(temperature < 32) "below"
+  else if (temperature == 32) "freezing"
+  else "above"
+}
+```
+
+Code Chunk #2
+
+```{r code chunk interpretation, warning = FALSE, message = FALSE}
+# Below average and above average highway mileage using cut
+(intervals <- c(0, mean(mpg$hwy), max(mpg$hwy)))
+cut(mpg$hwy, intervals, labels = c("below average", "above average"))
+```  
+
+## Write Code
+
+### Problem 1 from 19.4.4 Exercises Problem #2
+
+Write a greeting function that says "good morning", "good afternoon", or "good evening", depending on the time of day. (Hint: use a time argument that defaults to lubridate::now(). That will make it easier to test your function.)
+
+```{r greeting function}
+
+```
+
+### (Optional) Problem 2 from 19.4.4 Exercises Problem #3
+
+Implement a fizzbuzz function. It takes a single number as input. If the number is divisible by three, it returns "fizz". If it’s divisible by five it returns "buzz". If it’s divisible by three and five, it returns "fizzbuzz". Otherwise, it returns the number. Make sure you first write working code before you create the function. You should use & and | when comparing vectors. You should use && and || when comparing scalars and & and | when comparing vectors.  
+
+```{r fizzbuzz function}
+
+```

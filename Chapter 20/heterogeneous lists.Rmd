@@ -1,0 +1,60 @@
+---
+title: "Heterogeneous Lists"
+author: "Ray Nelson"
+date: "3/13/2019"
+output:
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Lists can contain many types of information
+
+### Create objects
+
+```{r variety of objects}
+Logical <- 1:10 %% 3 == 0 # Those numbers between 1 and 10 that are divisible by 3
+Integer <- 10L
+Double <- 10
+Numeric <- list(Integer, Double)
+Character <- "Data Science"
+```
+
+### Create a list
+
+```{r create the list called variety}
+variety <-
+  list(
+    one = Logical,
+    two = Numeric,
+    three = Character,
+    four = mpg
+  )
+```
+
+### Investigate the structure of variety
+
+```{r structure of variety}
+str(variety)
+length(variety)
+names(variety)
+```  
+
+### Access the list
+
+```{r accessing the list}
+variety$one
+variety[[1]]
+variety[1]
+
+variety$four
+variety$four$hwy
+variety[[4]]
+variety[[4]]$hwy
+variety$four[[9]]
+```
+

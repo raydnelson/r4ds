@@ -1,0 +1,318 @@
+---
+title: "Vectors"
+author: "Ray Nelson"
+date: "11 March 2019"
+output:
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load libraries
+library(tidyverse)
+library(conflicted)
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+```
+
+## How to store and access information in R. We have the following possibilities today:  
+
+*  vectors (1 dimensional: character, logical, and numeric)
+*  lists
+*  tibbles (which are a special case of lists)  
+
+## Create vectors in which we place information 
+
+### Individuals associated with each section
+
+```{r individuals associated with each section}
+individuals1 <- c(
+  "Derrik Adams",
+  "Devin Adams",
+  "Mike Carpenter",
+  "Filipe Dias Bezerra",
+  "Kiersten Ernstrom",
+  "Ruben Ferreyra",
+  "Jonathan Fortuna",
+  "Matt Hubbard",
+  "Teresa Hwang",
+  "Nate Lambert",
+  "Ryan Lancaster",
+  "Matt Lipps",
+  "Luciano Peixoto",
+  "Alex Rwankuba",
+  "Shantel Sanders",
+  "Hayden Smith",
+  "Uros Stampe",
+  "Bruno Torres",
+  "Tiago Triumpho",
+  "Ray Nelson"
+)
+
+individuals2 <- c(
+  "Heidy Comish",
+  "Eveline De Medeiros Miranda",
+  "Kyle Finneman",
+  "Chris Holdaway",
+  "Taylor King",
+  "Trevor Lake",
+  "Travis Lovell",
+  "Hope Morrison",
+  "Sarah Nielsen",
+  "You Yeong Oh",
+  "Chad Olesiak",
+  "Jonathan Perkins",
+  "Jameson Ranck",
+  "Seth Randall",
+  "Amanda Spencer",
+  "Joshua Thornock",
+  "Matt Widmer",
+  "Nathan Zick",
+  "Ray Nelson"
+)
+```
+
+### Programs in which individuals can participate  
+
+```{r programs}
+program_names <- c("MIS", "MBA", "MPA", "MACC")
+program_codes <- c(1:4)
+```
+
+### Programs that correspond to each individual  
+
+```{r individuals in programs}
+programs1 <- c(2, 2, 2,	2, 1, 1, 2, 2, 3, 3, 3, 2, 2, 2, 3, 3, 2, 2, 2, NA)
+programs2 <- c(3, 3, 1, 2, 1, 2, 2, 3, 3, 3, 2, 3, 2, 2, 2, 2, 2, 1, NA)
+```
+
+### Types of the objections that we have created
+
+```{r types of objects}
+typeof(individuals1)
+typeof(programs1)
+typeof(program_names)
+typeof(program_codes)
+```
+
+## Organize our information into tibbles and lists
+
+### Programs as a tibble and a list
+
+```{r}
+(programs <- tibble(program_names, program_codes))
+(programs_list <- list(program_names = program_names, program_codes = program_codes))
+```
+
+### Individuals as tibbles and lists
+
+```{r individuals as tibble, error = TRUE}
+length(individuals1)
+length(individuals2)
+(classes_tibble) <- tibble(individuals1, individuals2)
+(class_list <- list(individuals2 = individuals1, individuals2 = individuals2))
+```
+
+### Individuals as a long tibble
+
+```{r long individual tibble}
+(section1 <- rep("section1", length(individuals1)))
+(section2 <- rep("section2", length(individuals2)))
+
+section1 <- tibble(individuals1, programs1, section1)
+colnames(section1) <- c("individual", "program", "section")
+section1
+
+section2 <- tibble(individuals2, programs2, section2)
+colnames(section2) <- c("individual", "program", "section")
+section2
+
+(classes <- rbind(section2, section1))
+typeof(classes)
+is_tibble(classes)
+```
+
+## Review of relational tibbles
+
+### Mutating joins
+
+#### classes and programs are tibbles. We want to add the program to classes
+
+##### Left Join
+
+```{r left join review}
+(classes_left <- classes %>% 
+  left_join(programs, by = c("program" = "program_codes")))
+```
+
+##### Full Join
+```{r}
+(classes_full <- classes %>% 
+  full_join(programs, by = c("program" = "program_codes")))
+```
+
+##### Inner Join
+```{r}
+(classes_inner <- classes %>% 
+  inner_join(programs, by = c("program" = "program_codes")))
+```
+
+### Filtering joins
+
+#### Cleanup classes_inner and replace classes for illustration with filtering joins
+*  Drop program
+*  Rename program_names to program
+
+```{r cleanup classes}
+classes <- classes_inner %>% 
+  select(-program) %>% 
+  rename(program = program_names)
+```
+
+#### Program
+
+```{r filtering joints for program}
+program <- tibble(program = "MBA")
+
+classes %>% semi_join(program)
+classes %>% anti_join(program)
+```
+
+#### Section
+
+```{r filtering joins for section}
+section <- tibble(section = "section1")
+classes %>% semi_join(section)
+```
+
+#### Program and Section
+
+```{r filtering joins for program and section}
+program_section <- tibble(section = "section2", program = "MPA")
+classes %>% semi_join(program_section)
+classes %>% anti_join(program_section)
+```
+
+## Information about objects
+
+```{r object information}
+colnames(classes)
+dim(classes)
+nrow(classes)
+ncol(classes)
+str(classes)
+```
+
+## Review of factors
+
+```{r review of factors}
+factor(classes$section)
+
+factor(classes$section, levels = c("section2", "section1"))
+
+factor(classes$program)
+factor(classes$program) %>% fct_rev()
+factor(classes$program, levels = c("MIS", "MPA", "MBA"))
+factor(classes$program) %>% fct_inorder()
+```
+
+## Accessing information in lists
+
+### Objects for use in this exercise include:
+
+*  classes (tibble that was already created)
+*  programs (tibble that was already created)
+*  sections (list that needs to be created from section1 and section2)
+*  a list called rdn_teaching which is a list that includes the above three objects
+
+### Create the sections list
+
+```{r sections list}
+sections <- list(section1 = section1, section2 = section2)
+``` 
+
+### Type of the objects that we are going to put in rdn_teaching
+
+```{r type of objects for rdn}
+typeof(classes)
+is_tibble(classes)
+typeof(sections)
+is_tibble(sections)
+typeof(programs)
+is_tibble(programs)
+```
+
+### Create the list rdn_teaching
+
+```{r rdn_teaching creation}
+rdn_teaching <- list(classes = classes, sections = sections, programs = programs)
+```
+
+### Investigate rdn_teaching
+
+```{r rdn_investigation}
+typeof(rdn_teaching)
+is_tibble(rdn_teaching)
+```
+
+### Structure of the list  
+
+```{r structure of rdn_teaching}
+str(rdn_teaching)
+```
+
+
+### Accessing information in the first level of the list
+
+```{r accessing elements in the rdn_list}
+rdn_teaching$classes
+rdn_teaching[[1]]
+
+rdn_teaching$sections
+rdn_teaching[[2]]
+
+rdn_teaching$programs
+rdn_teaching[[3]]
+```
+
+### Accessing information in a list that is within a list
+
+```{r list within a list}
+rdn_teaching$programs$program_names
+rdn_teaching$classes$individual
+rdn_teaching$sections$section1
+```
+
+## Lists can contain many types of information
+
+### Create objects
+
+```{r variety of objects}
+Logical <- 1:10 %% 3 == 0
+Integer <- 10L
+Double <- 10
+Numeric <- list(Integer, Double)
+Character <- "Data Science"
+```
+
+### Create a list
+
+```{r create the list variety}
+variety <-
+  list(
+    one = Logical,
+    two = Numeric,
+    three = Character,
+    four = classes,
+    five = programs
+  )
+```
+
+### Investigate the structure of variety
+
+```{r structure of variety}
+str(variety)
+length(variety)
+names(variety)
+```
