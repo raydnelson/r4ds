@@ -1,0 +1,82 @@
+---
+title: "Midterm II Winter 2019"
+author: "Data Science for Managers"
+date: "Due by class: 3/25/2019"
+output:
+  html_document:
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(nycflights13)
+```
+
+Submit an R Markdown file for the following five problems. In order to get full credit, your R Markdown document must knit properly and you shouldn't use any software other than R to complete your calculations.    
+
+## Problem 1 Function and time spans  
+
+Create a function that uses intervals to calculate the number of months left before a mortgage is paid off. Your function should take two arguments, the current date and the date that the mortgage matures. As you test your function, an easy example is to set the current date to March 31, 2019 and the maturity date to March 31, 2034. This would correspond to a 15 year mortgage.  
+
+```{r problem 1, message=FALSE}
+
+```
+
+## Problem 2 Lists  
+
+Please write code that completes the following:  
+
+1.  Create a new object mpg_lm by running the simple regression lm(hwy ~ displ, data = mpg).  
+1.  Use the str function to investigate structure of mpg_lm.  
+1.  Extract the fitted values and residuals from mpg_lm.
+1.  Create a tibble of fitted and residual values.
+
+```{r Problem 2}
+
+```
+
+## Problem 3 Factors  
+
+Use fct_recode to change levels of the drv variable in the mpg tibble to the following:   
+
+1.  "f" to "front"
+1.  "4" to "four"
+1.  "r" to "rear"
+
+```{r Problem 3}
+
+```
+
+## Problem 4 Relational data  
+
+Please write code that completes the following:  
+
+1.  Determines the top five airlines (carriers) based on number of flights leaving from JFK.
+1.  Use semi-join to select only those flights that correspond to the top five airlines from JFK.   
+
+```{r Problem 4}
+
+```
+
+## Problem 5 Function and z-scores  
+
+Write a function that classifies a given observation as either a "potential outlier" or a "not outlier". The criteria for this classification is whether or not the observation is more than three standard deviations above or below the mean. The function should:  
+
+1.  Have three arguments: the observation value, the mean of a distribution, and the standard deviation of the distribution.
+1.  Convert the observation into a z score and print out its value.
+1.  Determine whether the observation is more than 3 standard deviations below the mean or more than 3 standard deviations above the mean.
+1.  Classify the observation as either  "potential outlier" or "not outlier" and print out the result.
+	
+Test your function using the following values:  
+	
+1.  x = 4, mean = 0, and sd = 1 (potential outlier)
+1.  x = 4, mean = 10 and sd = 10 (not outlier)
+1.  x = 8, mean =  1, sd = 2 (potential outlier)
+
+
+```{r Problem 5}
+
+```
+

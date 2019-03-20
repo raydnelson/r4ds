@@ -16,9 +16,28 @@ library(nycflights13)
 
 ## Concepts  
 
-1.  Explain why a tibble is a list but not all lists are tibbles.  
+1.  Explain why a tibble is a list but not all lists are tibbles.
+
+In R, vectors are one dimensional holders of information. Vectors have slots or positions in which information and be stored. The information can be referenced by specifying its slot number or name. Although not everyone agrees with Hadley Wickham, he states that there are two kinds of vectors:  
+
+*  atomic vectors
+*  lists or recursive vectors
+
+In most programming languages, lists are heterogeneous. This means that they can hold information of a variety of different classes: logical, integer, double, character, etc. The objects in a list can also have a variety of lengths. Lists can even contain other lists. Using lists within lists is a common practice.
+
+A tibble is a collection of atomic vectors that are arranged in a list. Each of the atomic vectors must have the same length in a tibble. This means that tibbles are rectangular lists. This means that a tibble is a special case of a list.
+
+Because all lists do not contain just atomic vectors of the same length, lists in general do not satisfy the requirements for being a tibble.
 
 2.  Explain how you use [], [[]], and $ when subsetting a list as described in section 20.5.2. 
+
+We are able to extract information from lists using [], [[]], and $.
+
+The [] notation returns a sub-list and the result will always be a list.  
+
+The [[]] notation returns a simple component from a list.  
+
+The $ approach extracts named elements of a list. It works similarly to [[]].
     
 ## Interpretation of code  
 
@@ -37,6 +56,22 @@ our_list[1:2]
 our_list$five$model
 ```
 
+Line 1: Creates a name list with three slots. Slot one contains "Transform", two contains "Model", and three contains "Visual". The names of the slots are transform, model, and visual. 
+
+Line 2: Creates a second named list. The first one samed one is a logical atomic vector with the value TRUE. The second, named two, is an integer. Three and four are also atomic and are double and character. The fifth slot named five is the list created in line 1.
+
+Line 3: Returns the data_science vector  
+
+Line 4: Returns a list which contains the atomic vector one  
+
+Line 5: Returns the atomic vector one  
+
+Line 6: Returns the same atomic vector as line 5  
+
+Line 7: Returns a list of one and two
+
+Line 8: Returns the value "Model" as it goes to the slot named five and then gets the model slot from the resulting list.  
+
 Code Chunk #2
 
 The nycflights13 library contains five tibbles: airlines, airports, flights, planes, and weather. The following code refers to these objects.
@@ -47,6 +82,14 @@ names(nyc) <- c("airlines", "airports", "flights", "planes", "weather")
 nyc$planes %>% head(10)
 nyc$flights$arr_delay %>% head(10)
 ```  
+
+Line 1: Creates an unnamed list of the five individual tibbles.
+
+Line 2: Gives names to the tibbles in the nyc list
+
+Line 3: Retrieves the planes tibble from the list and prints out the first 10 observations  
+
+Line 4: Retrieves the flights tibble from the list, extracts the arr_delay variable, and then prints out the first 10 values for the variable.  
 
 ## Write Code
 

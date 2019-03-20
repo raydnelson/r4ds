@@ -1,6 +1,6 @@
 ---
-title: 'Homework #9'
-author: 'Covariation'
+title: 'Homework #11'
+author: 'Gathering, Spreading, Separating, and Uniting'
 output:
   html_document:
     code_folding: show
