@@ -1,0 +1,147 @@
+---
+title: "Model Basics mtcars"
+author: "Ray Nelson"
+date: "26 March 2019"
+output: 
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load libraries
+library(tidyverse)
+library(car)
+```  
+
+## Models
+
+*  Extract patterns from data
+*  Decompose variation into explained and unexplained
+*  Extract all possible information from data
+*  Achieve balance between explanatory power and simplicity  
+
+
+## Patterns and models (From Chapter 7.6)
+
+> If you spot a pattern, ask yourself:  
+
+> *  Could this pattern be due to coincidence (i.e. random chance)?
+> *  How can you describe the relationship implied by the pattern
+> *  How strong is the relationship implied by the pattern?
+> *  What other variables might affect the relationship?
+> *  Does the relationship change if you look at individual subgroups of the data?  
+
+## mtcars: A Simple Regression  
+
+We would like to be able to predict a car's mileage based on its weight.  
+
+### Start with a graph of the data  
+
+```{r graph of mpg on weight}
+mtcars %>% 
+  ggplot(aes(wt, mpg)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  geom_smooth(color = "red")
+```  
+
+### Estimate a simple regression equation  
+
+```{r simple regression estimation}
+mtcars_lm <- lm(mpg ~ wt, data = mtcars)
+mtcars_lm %>% str()
+mtcars_lm %>% coefficients()
+mtcars_lm %>% residuals()
+mtcars_lm %>% fitted()
+```  
+
+### How good is the model?
+
+```{r simple regression model evaluation}
+## How good is the model
+mtcars_lm %>%
+  summary()
+mtcars_lm %>% 
+  residualPlots()
+```  
+
+### Linear model predictions  
+
+```{r mtcars predictions}
+## Prediction with the linear model
+mtcars_lm %>%
+  predict(newdata = tibble(wt = 2))
+```  
+
+
+#### Function to predict
+
+```{r function to make predictions}
+predict_cars_lm <- function(x){
+  mtcars_lm %>% predict(newdata = tibble(wt = x))
+}
+
+predict_cars_lm(5)
+mtcars$wt %>% range()
+```
+
+## loess model to handle the nonlinear relationship
+
+loess is also known as local regression and is related to the family of generalized additive models
+
+```{r loess model}
+mtcars_loess <- loess(mpg ~ wt, data = mtcars)
+mtcars_loess %>% str()
+```  
+
+### How good is the model?
+
+```{r evaluation of loess model, message = FALSE}
+mtcars_loess %>% summary()
+
+fitted_values <- mtcars_loess %>%
+  fitted()
+studentized_residuals <- mtcars_loess %>%
+  residuals() %>% 
+  scale() %>% 
+  as.numeric()
+
+tibble(fitted_values, studentized_residuals) %>% 
+  ggplot(aes(fitted_values, studentized_residuals)) +
+  geom_point() +
+  geom_smooth(span = 0.9)
+```  
+
+### Forecast with loess
+
+```{r loess prediction}
+predict(mtcars_loess, data.frame(wt = 2))
+```  
+
+### loess forecast function
+
+```{r loess prediction fucntion}
+predict_cars_loess <- function(x){
+  predict(mtcars_loess, data.frame(wt = x))
+}
+
+predict_cars_loess(5)
+```
+
+## Comparison of linear model and loess model for different car weights
+
+```{r light cars}
+predict_cars_lm(2)
+predict_cars_loess(2)
+```
+
+```{r medium weight cars}
+predict_cars_lm(3)
+predict_cars_loess(3)
+```  
+
+```{r heavy cars}
+predict_cars_lm(5)
+predict_cars_loess(5)
+```  

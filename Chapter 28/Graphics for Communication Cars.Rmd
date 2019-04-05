@@ -1,0 +1,131 @@
+---
+title: "Graphics for Communication: MPG For Almost the Last Time"
+author: "Ray Nelson"
+date: "5 Apr 2019"
+output: 
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load libraries
+library(tidyverse)
+library(ggrepel)
+```  
+
+# Mileage Graph from MPG
+
+## End Product Graph
+
+```{r end product, message = FALSE}
+(best_in_class <- mpg %>%
+  group_by(class) %>%
+  filter(row_number(desc(hwy)) == 1)
+)
+
+mpg %>%
+  ggplot(aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  geom_point(size = 4, shape = 1, data = best_in_class) +
+  theme(legend.position = "bottom") +
+  ggrepel::geom_label_repel(data = best_in_class, aes(label = model)) +
+  labs(
+    title = "Fuel efficiency generally decreases with engine size",
+    subtitle = "Two seaters (sports cars) are an exception because of their light weight",
+    caption = "Data from fueleconomy.gov",
+    x = "Engine displacement (L)",
+    y = "Highway fuel economy (mpg)",
+    color = "Car type"
+  ) 
+```
+
+### First create this graph
+
+```{r basic graph, message = FALSE}
+basic_plot <- mpg %>%
+  ggplot(aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE)
+
+basic_plot
+```
+
+### Now annotate your graph so that it identifies the best car in each class
+
+1.  Create a new tibble called best_in_class by
+2.  Grouping by class
+3.  Filtering using row_number(desc(hwy)) == 1
+
+
+```{r find the best cars in each class}
+## Best MPG in each car class
+(best_in_class <- mpg %>%
+  group_by(class) %>%
+  filter(row_number(desc(hwy)) == 1)
+)
+```
+
+### Put circles around the best cars  
+
+```{r identify the best cars, message = FALSE}
+best_cars <- basic_plot +
+  geom_point(size = 3, shape = 1, data = best_in_class)
+
+best_cars
+```
+
+### Control the breaks on the y axis
+
+```{r control the breaks on the y-axis, message = FALSE}
+y_breaks <- best_cars +
+    scale_y_continuous(breaks = seq(15, 40, by = 5))
+
+y_breaks
+```  
+
+### Legend to the bottom
+
+```{r legend to the bottom, message = FALSE}
+new_basic <- y_breaks +
+    theme(legend.position = "bottom")
+
+new_basic
+```
+
+### Label the best cars in the diagram using geom_text  
+
+```{r use geom_text, message = FALSE}
+new_basic +
+  geom_text(data = best_in_class, aes(label = model))
+```
+
+### Label the best cars in the diagram using geom_label  
+```{r use geom_label, message = FALSE}
+new_basic +
+  geom_label(data = best_in_class, aes(label = model), nudge_y = 2, alpha = 0.5)
+```
+
+### Label the best cars in the diagram using geom_label_repel
+```{r use geom_label_repel, message = FALSE}
+with_labels <- new_basic +
+  ggrepel::geom_label_repel(data = best_in_class, aes(label = model))
+
+with_labels
+```
+
+### Add titles and labels
+
+```{r}
+with_labels +
+    labs(
+    title = "Fuel efficiency generally decreases with engine size",
+    subtitle = "Two seaters (sports cars) are an exception because of their light weight",
+    caption = "Data from fueleconomy.gov",
+    x = "Engine displacement (L)",
+    y = "Highway fuel economy (mpg)",
+    color = "Car type"
+  ) 
+```
+

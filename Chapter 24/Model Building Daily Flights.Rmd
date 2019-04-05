@@ -1,0 +1,221 @@
+---
+title: "Model Building: Daily NYC Flights"
+author: "Ray Nelson"
+date: "2 Apr 2019"
+output: 
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load libraries
+library(tidyverse)
+library(modelr)
+
+library(nycflights13)
+library(lubridate)
+library(MASS)
+library(splines)
+```  
+
+## Count the number of flights for each day
+
+```{r number of flights for each day in 2013}
+daily <- flights %>% 
+  mutate(date = make_date(year, month, day)) %>% 
+  group_by(date) %>% 
+  summarise(n = n())
+daily
+```
+
+## Graph the number of daily flights
+
+```{r graph of number of daily flights}
+daily %>% 
+  ggplot(aes(date, n)) +
+  geom_line()
+```
+
+
+## Analyze the possibe effect of the day of the week
+
+```{r day of week}
+daily <- daily %>% 
+  mutate(wday = wday(date, label = TRUE)) 
+
+daily %>% 
+  ggplot(aes(wday, n)) +
+  geom_boxplot()
+```
+
+## Predict the number of flights for each day of the week
+
+```{r day of the week predictions}
+mod <- lm(n ~ wday, data = daily)
+
+grid <- daily %>% 
+  data_grid(wday) %>% 
+  add_predictions(mod, "n")
+
+daily %>% 
+  ggplot(aes(wday, n)) +
+  geom_boxplot() +
+  geom_point(data = grid, color = "red", size = 4)
+```
+
+## Compute the residuals and plot them to see if the day of the week pattern has been removed  
+
+```{r residuals}
+daily <- daily %>% 
+  add_residuals(mod)
+
+daily %>% 
+  ggplot(aes(date, resid)) +
+  geom_ref_line((h = 0)) +
+  geom_line()
+```
+
+## Model starts failing in June so lets plot each day of the week separately
+
+```{r separate plot for each day of the week}
+daily %>% 
+  ggplot(aes(date, resid, colour = wday)) +
+  geom_ref_line(h = 0) +
+  geom_line(show.legend = FALSE)
+```
+
+## Some days have far fewer flights that expected. Let's choose those that have residuals less than -100
+
+```{r days with smaller than expected flights}
+daily %>% 
+  filter(resid < -100)
+```
+
+## Long term trend in the residuals over the course of the year
+
+```{r long term tred}
+daily %>% 
+  ggplot(aes(date, resid)) +
+  geom_ref_line(h = 0) +
+  geom_line(colour = "grey50") +
+  geom_smooth(se = FALSE, span = 0.2)
+```
+
+## Seasonal Saturday effect
+
+```{r seasonal Saturday effect}
+daily %>% 
+  filter(wday == "Sat") %>% 
+  ggplot(aes(date, n)) +
+  geom_point() + 
+  geom_line() +
+  scale_x_date(NULL, date_breaks = "1 month", date_labels = "%b")
+```
+
+## Create a function that roughly captures the three school terms.
+
+```{r function that creates a new factor}
+term <- function(date){
+  cut(date,
+      breaks = ymd(20130101, 20130605, 20130825, 20140101),
+      labels = c("spring", "summer", "fall"))
+}
+```
+## Apply the function to create a new variable called term in the tibble daily
+
+```{r create a new factor in daily}
+daily <- daily %>% 
+  mutate(term = term(date))
+daily
+```
+
+## Create a graph that investigates the pattern
+
+```{r graph number of flights using color to depict number of flights}
+daily %>% 
+  filter(wday == "Sat") %>% 
+  ggplot(aes(date, n, colour = term)) +
+  geom_point(alpha = 1/3) +
+  geom_line() +
+  scale_x_date(NULL, date_breaks = "1 month", date_labels = "%b")
+```
+
+## How this affects other days of the week
+
+```{r other days of the week}
+daily %>% 
+  ggplot(aes(wday, n, color = term)) +
+  geom_boxplot()
+```
+
+## Models of the day of the week
+
+```{r compare models with and without term}
+mod1 <- lm(n ~ wday, data = daily)
+mod2 <- lm(n ~ wday * term, data = daily)
+
+daily %>% 
+  gather_residuals(without_term = mod1, with_term = mod2) %>% 
+  ggplot(aes(date, resid, colour = model)) +
+  geom_line(alpha = 0.75)
+```
+
+## We can see the problem
+
+```{r find the problem in the residuals}
+grid <- daily %>% 
+  data_grid(wday, term) %>% 
+  add_predictions(mod2, "n")
+
+daily %>% 
+  ggplot(aes(wday, n)) +
+  geom_boxplot() +
+  geom_point(data = grid, color = "red") +
+  facet_wrap(vars(term))
+```
+
+## Estimation using robust linear models
+
+```{r robust estimation}
+mod3 <- rlm(n ~ wday * term, data = daily)
+
+daily %>% 
+  add_residuals(mod3, "resid") %>% 
+  ggplot(aes(date, resid)) +
+  geom_hline(yintercept = 0, size = 2, colour = "white") +
+  geom_line()
+```
+
+## Computed variables
+
+```{r computed variables}
+compute_vars <- function(data){
+  data %>% 
+    mutate(
+      term = term(date),
+      wday = wday(date, label = TRUE)
+    )
+}
+```
+
+## Put the functions directly into the model formula:
+
+```{r functions inside formula}
+wday2 <- function(x) wday(x, label = TRUE)
+mod3 <- lm(n ~ wday2(date) * term(date), data = daily)
+```
+
+## Time of year: an alternative approach
+
+```{r alternative approach}
+mod <- rlm(n ~ wday * ns(date, 5), data = daily)
+
+daily %>% 
+  data_grid(wday, date = seq_range(date, n = 13)) %>% 
+  add_predictions(mod) %>% 
+  ggplot(aes(date, pred, colour = wday)) +
+  geom_line() +
+  geom_point()
+```
+

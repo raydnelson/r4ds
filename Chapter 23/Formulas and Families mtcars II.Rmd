@@ -1,0 +1,168 @@
+---
+title: "Formulas and Model Families: mtcars II"
+author: "Ray Nelson"
+date: "29 March 2019"
+output: 
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load libraries
+library(tidyverse)
+library(modelr)
+library(MASS)
+```  
+
+## Models
+
+*  Extract patterns from data
+*  Decompose variation into explained and unexplained
+*  Extract all possible information from data
+*  Achieve balance between explanatory power and simplicity  
+
+## Four functions will help us understand the subfamilies of linear models called:  
+
+*  Analysis of Variance (ANOVA)
+*  Analysis of Covariance
+
+```{r basic function definitions}
+## Violin plot
+violin_plot <- function(data_set, x, y) {
+  x <- data_set[[x]]
+  y <- data_set[[y]]
+  tibble(x = x, y = y) %>%
+    ggplot(aes(reorder(x, y, FUN = median), y)) +
+    geom_violin(fill = "lightgreen") +
+    geom_boxplot(width = 0.10, fill = "lightblue") +
+    labs(title = "Violin Plot",
+         x = "Categorical Explanatory Variable",
+         y = "Response Variable")
+}
+
+## Relationship between response and explanatory
+relationship <- function(data_set, x, y) {
+  data_set %>%
+    ggplot(aes_string(x, y)) +
+    geom_point() +
+    geom_smooth(method = "lm") +
+    geom_smooth(colour = "red") +
+    labs(title = "Relationship between response and explanatory variables",
+         x = "Explanatory Variable",
+         y = "Response Variable")
+}
+
+## main effects
+graph_main_effects <- function(data_set, model, x, y) {
+  data_set %>% 
+    add_predictions(model = model, var = "pred") %>% 
+    ggplot(aes_string(x = x, y = y, color = x)) +
+    geom_point(show.legend = FALSE, position = "jitter") +
+    geom_point(aes(y = pred), show.legend = FALSE, size = 5,
+               color = "black", shape = 3,) +
+    labs(
+      title = "Visualization of different models.",
+      x = "Explanatory Variable",
+      y = "Response Variable"
+    )
+}
+
+## Analysis of covariance
+graph_predictions <- function(data_set, model, x, y, category) {
+  data_set %>% 
+    add_predictions(model = model, var = "pred") %>% 
+    ggplot(aes_string(x = x, y = y, color = category)) +
+    geom_point() +
+    geom_line(aes(y = pred)) +
+    labs(
+      title = "Visualization of different models.",
+      x = "Explanatory Variable",
+      y = "Response Variable"
+    )
+}
+
+```
+
+### mtcars Data Set
+```{r review of data set}
+data(mtcars)
+mtcars$vs <- factor(mtcars$vs, levels = c(0, 1), labels = c("v-shaped", "straight"))
+mtcars$am <- factor(mtcars$am, levels = c(0, 1), labels = c("automatic", "manual"))
+glimpse(mtcars)
+```
+
+## Type of transmission
+
+### Differences in mpg conditioned on the transmission of the vehicle
+
+```{r mpg and transmission}
+violin_plot(mtcars, "am", "mpg")
+```
+
+### Simple model with transmission as a predictor of highway miles per gallon
+
+```{r transmission as a predictor}
+zero_slope <- lm(mpg ~ am, data = mtcars)
+zero_slope %>%  summary()
+graph_main_effects(mtcars, zero_slope, "am", "mpg")
+```
+
+### Does displacement have an effect on mileage?
+
+```{r effect of displacement}
+relationship(mtcars, "disp", "mpg")
+```
+
+### Common slope for displacement and different intercepts based on transmission
+
+```{r common slope for displacement}
+common_slope <- lm(mpg ~ disp + am, data = mtcars)
+common_slope %>% summary()
+graph_predictions(mtcars, common_slope, "disp", "mpg", "am")
+```
+
+### Different slopes and intercepts for each type of transmission
+
+```{r different slopes and different intercepts for transmissions}
+different_slopes <- lm(mpg ~ disp + am + disp * am, data = mtcars)
+different_slopes %>% summary()
+graph_predictions(mtcars, different_slopes, "disp", "mpg", "am")
+```
+
+### As mentioned, we want to achieve an accurate but parsimonious model. Often times we have a trade-off between fit and simplicity. For this reason, we create measures that seek for optimal balance. These measures include:
+
+*  AIC
+*  AICc
+*  BIC
+*  Hannan-Quinn  
+
+All of these combine a measure of fit with a penalty for complexity. The measure of fit usually is related to an error measure which we want to make as small as possible. We also want to make the measure of complexity as small as possible.  
+
+If we add the error measure and the complexity measure together, we have our information criterion. We want this sum to be as small as possible.  Adding a variable to a model probably reduces the error but increases the complexity. Keeping a variable in the model, therefore, involves determining whether the benefit from the reduction in the error is greater than the cost of the increase in complexity.  
+
+### Choose among all the variables and interactions using statistics and stepAIC
+
+```{r almost all possible variables}
+big_model <- lm(mpg ~ cyl + disp + hp + drat + wt + qsec + vs + am, data = mtcars)
+big_model %>% summary()
+big_model %>% anova()
+big_model %>% stepAIC()
+```
+
+### Model with interactions
+
+```{r best model}
+interactions_model <- lm(mpg ~ wt + qsec + am + wt * am + qsec * am, data = mtcars)
+interactions_model %>% summary()
+interactions_model %>% anova()
+interactions_model %>% stepAIC()
+```
+
+### Prediction using the best model
+
+```{r prediction using best model}
+best_model <- lm(mpg ~ wt + qsec + am, data = mtcars)
+best_model %>% 
+  predict(newdata = tibble(wt = 2, qsec = 17, am = "manual"))
+```

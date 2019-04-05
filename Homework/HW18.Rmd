@@ -1,0 +1,65 @@
+---
+title: "HW18"
+author: "Ray Nelson"
+date: "21 Mar 2019"
+output:
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(nycflights13)
+```
+
+## Concepts  
+
+1.  Explain the basic parts of a for loop. 
+
+2.  Explain how loops are different from functions.
+    
+## Interpretation of code  
+
+Interpret the following R code chunks: 
+
+Code Chunk #1 (Section 21.2.1 Exercises Problem 1.3)
+
+```{r number of unique values in the iris data frame}
+unique_values <- vector("integer", length(iris))
+for (i in seq_along(iris)) {
+  unique_values[[i]] <- iris[[i]] %>% 
+    unique() %>% 
+    length()
+}
+unique_values
+```
+
+Code Chunk #2 (Section 21.3.4)
+
+```{r while loop}
+# flip a coin function
+flip <- function() sample(c("T", "H"), 1)
+# initialize variables
+flips <- 0
+nheads <- 0
+# while loop
+while (nheads < 3) {
+  if (flip() == "H") {
+    nheads <- nheads + 1
+  } else {
+    nheads <- 0
+  }
+  flips <- flips + 1
+}
+flips
+```  
+
+## Write Code
+
+Compute the type for each column in the nycflights13::flights tibble. (Problem 2 from Exercises 21.2.1)
+
+```{r type of variables in flights}
+
+```
+

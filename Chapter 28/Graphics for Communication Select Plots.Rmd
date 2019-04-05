@@ -1,0 +1,357 @@
+---
+title: "Graphics for Communication: Creating Plots"
+author: "Ray Nelson"
+date: "5 Apr 2019"
+output: 
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load libraries
+library(tidyverse)
+library(ggrepel)
+library(viridis)
+library(gridExtra)
+library(RColorBrewer)
+```  
+
+## Labeling graphs
+
+### First create this graph
+
+```{r basic graph, message = FALSE}
+mpg %>%
+  ggplot(aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE)
+```
+
+### Add the labels so that your plot looks like this. 
+
+```{r putting labels on graphs, message = FALSE}
+basic_plot <- mpg %>%
+  ggplot(aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  labs(
+    title = "Fuel efficiency generally decreases with engine size",
+    subtitle = "Two seaters (sports cars) are an exception because of their light weight",
+    caption = "Data from fueleconomy.gov",
+    x = "Engine displacement (L)",
+    y = "Highway fuel economy (mpg)", 
+    color = "Car type"
+    )
+
+basic_plot
+```  
+
+### Now annotate your graph so that it identifies the best car in each class
+
+1.  Create a new tibble called best_in_class by
+2.  Grouping by class
+3.  Filtering using row_number(desc(hwy)) == 1
+
+
+```{r find the best cars in each class}
+## Best MPG in each car class
+(best_in_class <- mpg %>%
+  group_by(class) %>%
+  filter(row_number(desc(hwy)) == 1)
+)
+```
+
+### Label the best cars in each diagram
+
+```{r use geom_text, message = FALSE}
+basic_plot +
+  geom_text(data = best_in_class, aes(label = model))
+```
+
+```{r use geom_label, message = FALSE}
+basic_plot +
+  geom_label(data = best_in_class, aes(label = model), nudge_y = 2, alpha = 0.5)
+```
+
+```{r use geom_label_repel, message = FALSE}
+basic_plot +
+  geom_point(size = 3, shape = 1, data = best_in_class) +
+  ggrepel::geom_label_repel(data = best_in_class, aes(label = model))
+```
+
+## Axis ticks and legend keys
+
+```{r control breaks on the y axis}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  scale_y_continuous(breaks = seq(15, 40, by = 5))
+```
+
+
+### Presidential Graph  
+
+
+Here is the graph that we are going to create step by step
+```{r presidential}
+presidential %>%
+  mutate(id = 33 + row_number()) %>%
+  ggplot(aes(start, id, color = party)) +
+  geom_point(size = 4) +
+  geom_segment(aes(xend = end, yend = id), size = 3) +
+  scale_x_date(breaks = presidential$start, date_labels = "'%y") +
+  scale_y_continuous(breaks = seq(34, 44, 1), labels = presidential$name) +
+  scale_colour_manual(values = c("Republican" = "red", "Democratic" = "blue")) +
+  theme(
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    legend.position = "bottom"
+  ) +
+  labs(
+    title = "The political party of the elected US president regularly changes.",
+    x = "",
+    y = "",
+    color = "Political Party"
+  )
+
+```  
+
+#### What does the presidential tibble look like?  
+
+```{r glimpse presidential}
+glimpse(presidential)
+```
+
+#### Presidential id number
+
+Add the presidential id number to the presidential tibble. Eisenhower was the 34th president.  
+
+```{r president number}
+presidential %>%
+  mutate(id = 33 + row_number())
+```
+
+#### Basic graph
+
+Draw the basic graph
+
+```{r basic graph}
+presidential %>%
+  mutate(id = 33 + row_number()) %>%
+  ggplot(aes(start, id, color = party)) +
+    geom_point(size = 4)
+```
+
+#### Add the line segment that shows duration of each administration
+
+```{r add duration}
+presidential %>%
+  mutate(id = 33 + row_number()) %>%
+  ggplot(aes(start, id, color = party)) +
+    geom_point(size = 4) +
+    geom_segment(aes(xend = end, yend = id), size = 3)
+```
+
+#### Change the scale of the x axis so that it labels the beginning of each administration.  
+```{r x-axis labels}
+presidential %>%
+  mutate(id = 33 + row_number()) %>%
+  ggplot(aes(start, id, color = party)) +
+    geom_point(size = 4) +
+    geom_segment(aes(xend = end, yend = id), size = 3) +
+    scale_x_date(breaks = presidential$start, date_labels = "'%y")
+```
+
+#### Change the scale of the y axis so that it corresponds to each president and use each President's last name as the label   
+
+```{r}
+presidential %>%
+  mutate(id = 33 + row_number()) %>%
+  ggplot(aes(start, id, color = party)) +
+  geom_point(size = 4) +
+  geom_segment(aes(xend = end, yend = id), size = 3) +
+  scale_x_date(breaks = presidential$start, date_labels = "'%y") +
+  scale_y_continuous(breaks = seq(34, 44, 1), labels = presidential$name)
+```
+
+#### Change the color of the bars to be red for Republican and blue for Democrat 
+
+```{r }
+presidential %>%
+  mutate(id = 33 + row_number()) %>%
+  ggplot(aes(start, id, color = party)) +
+  geom_point(size = 4) +
+  geom_segment(aes(xend = end, yend = id), size = 3) +
+  scale_x_date(breaks = presidential$start, date_labels = "'%y") +
+  scale_y_continuous(breaks = seq(34, 44, 1), labels = presidential$name) +
+  scale_colour_manual(values = c("Republican" = "red", "Democratic" = "blue"))
+```
+
+#### Alter the grid lines so that the graph isn't so complex and busy and put the legend at the bottom of the graph.  
+
+```{r alter the grid lines}
+presidential %>%
+  mutate(id = 33 + row_number()) %>%
+  ggplot(aes(start, id, color = party)) +
+  geom_point(size = 4) +
+  geom_segment(aes(xend = end, yend = id), size = 3) +
+  scale_x_date(breaks = presidential$start, date_labels = "'%y") +
+  scale_y_continuous(breaks = seq(34, 44, 1), labels = presidential$name) +
+  scale_colour_manual(values = c("Republican" = "red", "Democratic" = "blue")) +
+  theme(
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    legend.position = "bottom"
+  ) 
+```
+
+#### Add titles and label to the graph so that it is informative  
+
+```{r titles and labels}
+presidential %>%
+  mutate(id = 33 + row_number()) %>%
+  ggplot(aes(start, id, color = party)) +
+  geom_point(size = 4) +
+  geom_segment(aes(xend = end, yend = id), size = 3) +
+  scale_x_date(breaks = presidential$start, date_labels = "'%y") +
+  scale_y_continuous(breaks = seq(34, 44, 1), labels = presidential$name) +
+  scale_colour_manual(values = c("Republican" = "red", "Democratic" = "blue")) +
+  theme(
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    legend.position = "bottom"
+  ) +
+  labs(
+    title = "The political party of the elected US president regularly changes.",
+    x = "",
+    y = "",
+    color = "Political Party"
+  )
+```
+
+## Changing the color scale
+
+```{r}
+mpg %>%
+  ggplot(aes(displ, hwy)) +
+  geom_point(aes(color = drv))
+
+mpg %>%
+  ggplot(aes(displ, hwy)) +
+  geom_point(aes(color = drv)) +
+  scale_colour_brewer(palette = "Set1")
+
+mpg %>%
+  ggplot(aes(displ, hwy)) +
+  geom_point(aes(color = drv, shape = drv)) +
+  scale_colour_brewer(palette = "Set1")
+```
+
+### Color scaling using the viridis package
+
+```{r}
+df <- tibble(
+  x = rnorm(10000),
+  y = rnorm(10000)
+)
+
+regular_plot <- df %>%
+  ggplot(aes(x, y)) +
+  geom_hex() +
+  coord_fixed()
+
+viridis_plot <- df %>%
+  ggplot(aes(x, y)) +
+  geom_hex() +
+  viridis::scale_fill_viridis() +
+  coord_fixed()
+
+grid.arrange(regular_plot, viridis_plot, nrow = 1)
+```
+
+### Zooming  
+
+There are three ways to control the plot limits:
+
+1.  Adjust what data is plotted
+2.  Set the limits in each scale
+3.  Set xlim and ylim in coord_caartesian()  
+
+
+```{r use filtering, message = FALSE}
+# Original plot
+original <- mpg %>% 
+  ggplot(aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth()
+
+filtered <- mpg %>% 
+  filter(displ >= 5, displ <= 7, hwy >= 10, hwy <= 30) %>% 
+  ggplot(aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth()
+  
+axis_scaled <- ggplot(mpg, mapping = aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth() +
+  coord_cartesian(xlim = c(5, 7), ylim = c(10, 30))
+
+grid.arrange(original, filtered, axis_scaled, nrow = 3)
+```
+
+### Share common scales  
+
+```{r scaling problem}
+suv <- mpg %>% 
+  filter(class == "suv")
+compact <- mpg %>% 
+  filter(class == "compact")
+
+suv_plot <- suv %>% 
+  ggplot(aes(displ, hwy, colour = drv)) +
+  geom_point()
+
+compact_plot <- compact %>% 
+  ggplot(aes(displ, hwy, color = drv)) +
+  geom_point()
+
+grid.arrange(suv_plot, compact_plot, nrow = 1)
+```
+
+### Solution to the scaling problem
+
+```{r scaling solution}
+x_scale <- scale_x_continuous(limits = range(mpg$displ))
+y_scale <- scale_y_continuous(limits = range(mpg$hwy))
+col_scale <- scale_colour_discrete(limits = unique(mpg$drv))
+
+suv_plot <- suv %>%
+  ggplot(aes(displ, hwy, color = drv)) +
+  geom_point() +
+  x_scale +
+  y_scale +
+  col_scale
+
+compact_plot <- compact %>%
+  ggplot(aes(displ, hwy, color = drv)) +
+  geom_point() +
+  x_scale +
+  y_scale +
+  col_scale
+
+grid.arrange(suv_plot, compact_plot, nrow = 1)
+```
+
+### Themes
+
+```{r themes, message = FALSE}
+mpg %>% 
+  ggplot(aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  theme_minimal()
+```
+
+
+
+

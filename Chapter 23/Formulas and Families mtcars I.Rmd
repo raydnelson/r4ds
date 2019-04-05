@@ -1,0 +1,129 @@
+---
+title: "Formulas and Model Families: mtcars I"
+author: "Ray Nelson"
+date: "29 March 2019"
+output: 
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load libraries
+library(tidyverse)
+library(modelr)
+library(MASS)
+```  
+
+## Models
+
+*  Extract patterns from data
+*  Decompose variation into explained and unexplained
+*  Extract all possible information from data
+*  Achieve balance between explanatory power and simplicity  
+
+## Four functions will help us understand the subfamilies of linear models called:  
+
+*  Analysis of Variance (ANOVA)
+*  Analysis of Covariance
+
+```{r basic function definitions}
+## Violin plot
+violin_plot <- function(data_set, x, y) {
+  x <- data_set[[x]]
+  y <- data_set[[y]]
+  tibble(x = x, y = y) %>%
+    ggplot(aes(reorder(x, y, FUN = median), y)) +
+    geom_violin(fill = "lightgreen") +
+    geom_boxplot(width = 0.10, fill = "lightblue") +
+    labs(title = "Violin Plot",
+         x = "Categorical Explanatory Variable",
+         y = "Response Variable")
+}
+
+## Relationship between response and explanatory
+relationship <- function(data_set, x, y) {
+  data_set %>%
+    ggplot(aes_string(x, y)) +
+    geom_point() +
+    geom_smooth(method = "lm") +
+    geom_smooth(colour = "red") +
+    labs(title = "Relationship between response and explanatory variables",
+         x = "Explanatory Variable",
+         y = "Response Variable")
+}
+
+## main effects
+graph_main_effects <- function(data_set, model, x, y) {
+  data_set %>% 
+    add_predictions(model = model, var = "pred") %>% 
+    ggplot(aes_string(x = x, y = y, color = x)) +
+    geom_point(show.legend = FALSE, position = "jitter") +
+    geom_point(aes(y = pred), show.legend = FALSE, size = 5,
+               color = "black", shape = 3,) +
+    labs(
+      title = "Visualization of different models.",
+      x = "Explanatory Variable",
+      y = "Response Variable"
+    )
+}
+
+## Analysis of covariance
+graph_predictions <- function(data_set, model, x, y, category) {
+  data_set %>% 
+    add_predictions(model = model, var = "pred") %>% 
+    ggplot(aes_string(x = x, y = y, color = category)) +
+    geom_point() +
+    geom_line(aes(y = pred)) +
+    labs(
+      title = "Visualization of different models.",
+      x = "Explanatory Variable",
+      y = "Response Variable"
+    )
+}
+
+```
+
+### mtcars Data Set
+```{r review of data set}
+data(mtcars)
+mtcars$vs <- factor(mtcars$vs, levels = c(0, 1), labels = c("v-shaped", "straight"))
+mtcars$am <- factor(mtcars$am, levels = c(0, 1), labels = c("automatic", "manual"))
+glimpse(mtcars)
+```
+
+### Investigating differences in mpg conditioned on the type of motor: V-shaped or straight.
+
+```{r differences in hwy mileage by type of drive train}
+violin_plot(mtcars, "vs", "mpg")
+```
+
+### We can estimate a simple model with the type of motor as a predictor of miles per gallon. Once again, this is equivalent to an analysis of variance (ANOVA). This suggests that we have intercept terms in our regression equation and no slopes.
+
+```{r anova model}
+zero_slope <- lm(mpg ~ vs, data = mtcars)
+zero_slope %>%  summary()
+graph_main_effects(mtcars, zero_slope, "vs", "mpg")
+```
+
+### Is there a simple linear relationship between mpg and vehicle weight? If so, then we have a good start on creating a model that will help us predict mpg conditional on vehicle weight.  
+
+```{r simple linear relationship}
+relationship(mtcars, "wt", "mpg")
+```
+
+### It is possible to have a common slope for weight and different intercepts based on the type of motor of vehicle. This is one version of an analysis of covariance model.  
+
+```{r different intercepts but a common slope}
+common_slope <- lm(mpg ~ wt + vs, data = mtcars)
+common_slope %>% summary()
+graph_predictions(mtcars, common_slope, "wt", "mpg", "vs")
+```
+
+### An analysis of covariance model also allows us to have both categorical and numerical variables as predictors. If we include an interaction term, then each category can have a different slope and intercept.
+
+```{r different slopes and intercepts}
+different_slopes <- lm(mpg ~ wt + vs + wt * vs, data = mtcars)
+different_slopes %>% summary()
+graph_predictions(mtcars, different_slopes, "wt", "mpg", "vs")
+```

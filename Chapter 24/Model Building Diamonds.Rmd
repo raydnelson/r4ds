@@ -1,0 +1,159 @@
+---
+title: "Model Building: Diamonds"
+author: "Ray Nelson"
+date: "2 Apr 2019"
+output: 
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load libraries
+library(tidyverse)
+library(modelr)
+```  
+
+## Boxplots of the price of diamonds by cut, color, and clarity
+
+1.  Create a function called boxplot that takes cut, color, or clarity as an argument. Use aes_string in ggplot within the ggplot call.
+2.  Apply your function to cut, color, and clarity.
+3.  What do you observe about the relationships?
+
+```{r boxplots}
+boxplot <- function(x){
+  diamonds %>% 
+    ggplot(aes_string(x, "price")) +
+    geom_boxplot()
+}
+boxplot("cut")
+boxplot("color")
+boxplot("clarity")
+``` 
+
+## Heatmap of price and carat
+
+Draw a heatmap of price and carat by using geom_hex with bins = 50
+
+```{r heatmap}
+diamonds %>% 
+  ggplot(aes(carat, price)) + 
+  geom_hex(bins = 50)
+```
+
+## Alter the heatmap in two different ways  
+
+1.  Limit the diamonds to those less than or equal to 2.5 carats
+2.  Use a log base 2 transformation  
+
+```{r create a subset of the data with log transformation}
+diamonds2 <- diamonds %>% 
+  filter(carat <= 2.5) %>% 
+  mutate(lprice = log2(price),
+          lcarat = log2(carat))
+```
+
+### Draw a heatmap of the next data
+
+```{r new heatmap}
+diamonds2 %>% 
+  ggplot(aes(lcarat, lprice)) +
+  geom_hex(bins = 50) +
+  geom_smooth(color = "red")
+```
+
+### Fit a linear model to using lprice as the response and lcarat as the explanatory variables  
+
+```{r model}
+model_diamond <- lm(lprice ~ lcarat, data = diamonds2)
+model_diamond %>% summary()
+```
+
+### Use model_diamonds to created predictions for 20 values for the variable carat 
+
+```{r data needed to plot the predictions}
+grid <- diamonds2 %>% 
+  data_grid(carat = seq_range(carat, 20)) %>% 
+  mutate(lcarat = log2(carat)) %>% 
+  add_predictions(model_diamond, "lprice") %>% 
+  mutate(price = 2 ^ lprice)
+grid
+```
+
+### Plot the original data and the estimated modelel  
+
+```{r visual evaluation of the modelel}
+diamonds2 %>% 
+  ggplot(aes(carat, price)) +
+  geom_hex(bins = 50) +
+  geom_line(data = grid, color = "red", size = 1)
+```
+
+### Evaluate the residuals
+
+```{r}
+diamonds2 <- diamonds2 %>% 
+  add_residuals(model_diamond, "lresid")
+
+diamonds2 %>% 
+  ggplot(aes(lcarat, lresid)) +
+  geom_hex(bins = 50)
+```  
+
+### Boxplots of residuals
+
+```{r boxplots of residuals}
+boxplot <- function(x){
+  diamonds2 %>% 
+    ggplot(aes_string(x, "lresid")) +
+    geom_boxplot()
+}
+boxplot("cut")
+boxplot("color")
+boxplot("clarity")
+```
+
+### A more complicated model
+
+```{r more complicated model}
+model_diamonds2 = lm(lprice ~ lcarat + color + cut + clarity, data = diamonds2)
+```
+
+### Create a grid for the cut of the diamonds
+
+```{r grid for cut of diamonds}
+grid <- diamonds2 %>% 
+  data_grid(cut, .model = model_diamonds2)  %>% 
+  add_predictions(model_diamonds2)
+grid
+```
+
+### Graph the prices for the cut of diamonds holding carat, color, and clarity constant  
+
+```{r cut of diamonds predictions}
+grid %>% 
+  ggplot(aes(cut, pred)) +
+  geom_point()
+``` 
+
+### Check the residuals for outliers
+
+```{r residual check}
+diamonds2 <- diamonds2 %>% 
+  add_residuals(model_diamonds2, "lresid2")
+diamonds2 %>% 
+  ggplot(aes(lcarat, lresid2)) +
+  geom_hex(bins = 50)
+```
+
+### Examine the individual residuals that are greater than 4 times the price that we expected.  
+
+```{r potential outliers}
+diamonds2 %>% 
+  filter(abs(lresid2) > 1) %>% 
+  add_predictions(model_diamonds2) %>% 
+  mutate(pred = round(2 ^ pred)) %>% 
+  select(price, pred, carat:table, x:z) %>% 
+  arrange(price)
+```
+

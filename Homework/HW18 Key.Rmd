@@ -1,0 +1,104 @@
+---
+title: "HW18"
+author: "Ray Nelson"
+date: "27 Mar 2019"
+output:
+  html_document:
+    code_folding: "show"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(nycflights13)
+```
+
+## Concepts  
+
+Problem 1.  Explain the basic parts of a for loop.  
+
+There are three basic parts to a for loop:  
+
+1.  Output: Declaration of the object where the output of each iteration is to be stored. This is usually an atomic vector (logical, numeric, or character) or a list. This allocates a space in the computer where the results of the loop can be stored.
+1.  Sequence: A for loop interates over an index. The sequence defines the values that the index will assume for each iteration.
+1.  Body: This is where the actual calculations and manipulations occur. For each interation prescribed by the index sequence, this block of code is executed for the value of the index.  
+
+
+Problem 2.  Explain how loops are different from functions.  
+
+Both functions and loops execute blocks of common code. Functions only execute the block of code once, when they are called. In contrast, loops execute the same block of code repeatedly. For example, we can write a line of code for each column in a tibble that calls the mean function. Alternatively, we place the mean function within the body of the loop and it then gets called repeatedly as the loop cycles through its index sequence. New arguments are passed to the same line of code during each iteration of a loop.  
+    
+## Interpretation of code  
+
+Interpret the following R code chunks: 
+
+### Code Chunk #1 (Section 21.2.1 Exercises Problem 1.3)
+
+```{r number of unique values in the iris data frame}
+unique_values <- vector("integer", length(iris))
+for (i in seq_along(iris)) {
+  unique_values[[i]] <- iris[[i]] %>% 
+    unique() %>% 
+    length()
+}
+unique_values
+```
+
+Line 1: Creates an integer atomic vector called unique-values. This is where the loop will store the result of each iteration.  
+
+Line 2: Specifies the sequence of the loop. It creates an index that starts at 1 and ends with the number of columns in the iris data frame.  
+
+Line 3: This is the body of the function. In each iteration of the loop, it gets the ith column from the iris data frame.  
+
+Line 4: Then it creates a vector of the possible values that the variable assumes.   
+
+Line 5: Counts the number of different unique values found in the result from line 4.   
+
+Line 7: Prints out the vector unique_values. This reports the results of each iteration of the loop.  
+
+### Code Chunk #2 (Section 21.3.4)
+
+```{r while loop}
+# flip a coin function
+flip <- function() sample(c("T", "H"), 1)
+# initialize variables
+flips <- 0
+nheads <- 0
+# while loop
+while (nheads < 3) {
+  if (flip() == "H") {
+    nheads <- nheads + 1
+  } else {
+    nheads <- 0
+  }
+  flips <- flips + 1
+}
+flips
+```  
+
+Line 1: Creates the function flip which is like a fair coin. It takes one sample from the vector c("T", "H"). Heads and tails both have an equal probability of 50%.  
+
+Lines 2 - 3: The while loop must monitor the total number of flips and the number of consecutive heads. Therefore we must give them initial values which will subsequently be changed within the while loop.  
+
+Line 4: This creates the condition that will determine whether or not the while loop will continue. Loop continues as long as the condition is true. The loop will terminate as soon as the loop is false. As long as we don't have three consecutive heads, then the loop will continue.  
+
+Lines 5 - 6: The condition within the loop calls the flip function to determine whether we have a head or a tail. If the flip is a head, then it increments the variable nheads which keeps track of the number of consecutive heads.
+
+Line 7 - 8:  When the flip of the coin yields a tail, then these lines are executed. This resets the number of consecutive heads counter back to 0.  
+
+Line 9: This counts the number of flips since the game began. This adds one to the total number of flips for each time the the while loop has been executed.  
+
+Line 10:  When the number of consecutive heads finally equals 3, then the while loop terminates and the control of the program goes to the next step which is line 10. This reports the number of flips that was required to get three heads in a row.  
+
+## Write Code
+
+Compute the type for each column in the nycflights13::flights tibble. Problem 2 from Exercises 21.2.1
+
+```{r type of variables in flights}
+flights_type <- vector("character", length(flights))
+for (i in seq_along(flights)) {
+  flights_type[[i]] <- flights[[i]] %>% typeof()
+}
+flights_type
+```
+

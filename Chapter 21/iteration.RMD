@@ -1,0 +1,233 @@
+---
+title: "Interation"
+author: "Ray Nelson"
+date: "21 March 2019"
+output: 
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load libraries
+library(tidyverse)
+```
+
+## Iteration
+
+Iteration is a basic part of all computer languages. R allows for the repeated execution of code over multiple objects. Iteration uses the following constructs:
+
+*  for loops
+*  while
+*  apply (base R)
+*  map (purrr)  
+
+## Our discussion will use the base R data frame mtcars.  
+
+```{r mtcars data frame}
+data(mtcars)
+?mtcars
+```
+
+## Basics parts of a for loop
+
+The for loop has three basic components:  
+
+1.  Output (declaration of object needed to store results)
+1.  Sequence
+1.  Body  
+
+## for loop to determine the type of each variable in mtcars 
+
+```{r type of each variable in mtcars}
+variable_type <- vector("character", length(mtcars)) # declaration of storage object
+
+for (i in seq_along(mtcars)) { # Sequence
+  variable_type[[i]] <- typeof(mtcars[[i]]) # body of the for loop
+}
+
+variable_type
+```
+
+## Review of factors and coercion  
+
+All of the variables in the data frame mtcars are current double precision numbers. Let's coerce and redefine the variables in the following manner:  
+
+1.  Change cyl into an integer
+1.  Convert vs into a factor with levels "V-shaped" and "straight"
+1.  Convert am into a factor with levels "automatic" and "manual"
+
+```{r coercion and recoding}
+mtcars$cyl <- mtcars$cyl %>% as.integer()
+mtcars$vs <- factor(mtcars$vs, levels = c(0, 1), labels = c("V-shaped", "straight"))
+mtcars$am <- factor(mtcars$am, levels = c(0, 1), labels = c("automatic", "manual"))
+```  
+
+## Check to see the class of the variables in mtcars using a for loop  
+
+```{r class of variables in mtcars}
+variable_class <- vector("character", length(mtcars)) # declaration of storage object
+for (i in seq_along(mtcars)) { # Sequence
+  variable_class[[i]] <- class(mtcars[[i]]) # body of the for loop
+}
+variable_class
+```
+
+## Easier approach to determining the type and class of mtcars variables  
+
+```{r implied loops}
+mtcars %>% typeof()
+mtcars %>% map_chr(typeof)
+
+mtcars %>% class()
+mtcars %>% map_chr(class)
+```  
+
+## Calculate the mean of each numerical variable in mtcars
+
+### Create a new tibble mtcars_numeric which includes mpg, disp, hp, drat, wt, and qsec
+
+```{r create mtcars_numerical}
+mtcars_numerical <- mtcars %>% 
+  select(mpg, disp:wt, qsec)
+```  
+
+### Determine the means using a for loop
+
+```{r for loop to determine means}
+means <- vector("double", length(mtcars_numerical))
+for (i in seq_along(mtcars_numerical)) {
+  means[[i]] <- mean(mtcars_numerical[[i]])
+}
+means
+```
+
+### Implied loop calculations of mean
+
+```{r implied loop calculations}
+mtcars_numerical %>% map_dbl(mean)
+```
+
+### Use the map_dbl function to calculate the median, IQR, and sd
+
+```{r calculatoin of the median, IQR, and sd}
+mtcars_numerical %>% map_dbl(median)
+mtcars_numerical %>% map_dbl(IQR)
+mtcars_numerical %>% map_dbl(sd)
+```
+
+## Looping with the output from the body being a list
+
+#### Generate 1000 observations from the normal distribution
+#### Means of -10, 0, 10, 100
+#### Same standard deviation of 1
+
+```{r sample of normals with different means but the same standard devition}
+## for loop
+means <- c(-10, 0, 10, 100) # vector of the means for the simulation
+normals <- vector("list", length(means)) # Storage object for the simulation objects
+for (i in seq_along(means)) {
+  normals[[i]] <- rnorm(1000, mean = means[[i]], sd = 1)
+}
+normals %>% str()
+
+normals %>%
+  map_dbl(mean) %>%
+  round()
+
+normals %>% 
+  map_dbl(sd) %>% 
+  round()
+```
+
+### Use our own function in a loop
+
+```{r number of unique values for each variable in mtcars}
+number_unique <- function(x) {
+  x %>%
+    unique() %>% 
+    length()
+}
+
+mtcars %>% map_int(number_unique)
+```  
+
+## Unknown output length (output length is the result of a random draw from uniform distribution)
+
+```{r unknown output length}
+means <- c(-10, 0, 10, 100)
+out <- vector("list", length(means))
+for (i in seq_along(means)) {
+  n <- sample(100, 1)
+  out[[i]] <- rnorm(n, mean = means[[i]], sd = 1)
+}
+
+out %>% str()
+out %>% unlist() %>% str()
+```
+
+## Unknown sequence length with while
+
+```{r how many tries to get three heads in a row using while}
+flip <- function() sample(c("T", "H"), 1)
+
+flips <- 0
+nheads <- 0
+
+while (nheads < 3) {
+  if (flip() == "H") {
+    nheads <- nheads + 1
+  } else {
+    nheads <- 0
+  }
+  flips <- flips + 1
+}
+flips
+```  
+
+## Scale all of the numerical variables in mtcars  
+### Scale using a for loop  
+
+```{r scale using}
+mtcars_scaled <- mtcars_numerical
+for (i in seq_along(mtcars_scaled)) {
+  mtcars_scaled[[i]] <- mtcars_numerical[[i]] %>% scale()
+}
+mtcars_scaled
+```
+
+### Comparison of unscaled and scaled numerical variables
+
+```{r comparison of scaled and unscaled variables}
+# Comparison of the means
+mtcars_numerical %>% 
+  map_dbl(mean) %>% 
+  round()
+
+mtcars_scaled %>%
+  map_dbl(mean) %>% 
+  round()
+
+# Comparison of the standard deviations
+mtcars_scaled %>%
+  map_dbl(sd) %>% 
+  round()
+
+mtcars_scaled %>%
+  map_dbl(sd) %>% 
+  round()
+```
+
+## Scale all of the numerical variables in mtcars
+
+```{r implied loops way of scaling}
+mtcars_numerical %>% typeof()
+mtcars_numerical %>% 
+  map(scale) %>% 
+  as_tibble()
+
+mtcars_numerical %>% 
+  map(scale) %>% 
+  as_tibble() %>% 
+  map_dbl(mean)
+```

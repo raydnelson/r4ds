@@ -1,0 +1,135 @@
+---
+title: "Model Basics Retail Sales"
+author: "Ray Nelson"
+date: "26 March 2019"
+output: 
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load libraries
+library(tidyverse)
+library(forecast)
+library(fImport)
+library(Quandl)
+library(timeSeries)
+library(magrittr)
+``` 
+
+This R Markdown document requires the forecast, fImport, Quandl, timeSeries, car, and magrittr libraries. For this reason, you may need to install them in order for you to be able to execute the code.  
+
+## Forecast of not seasonally adjusted retail sales  
+
+### Obtain the data from FRED (Federal Reserve Economic Data Site at St. Louis Fed)
+
+```{r get retail from FRED}
+retail <- fredSeries("RSAFSNA", from = "1992-01-01") %>% 
+  as.ts() %>%
+  divide_by(1000)
+```
+
+### Draw a picture of the data  
+
+```{r preliminary evaluation}
+retail %>% 
+  ggtsdisplay()
+```
+
+### Use the additive decomposition model to decompose the time series into:
+
+*  Trend\Cycle
+*  Seasonality
+*  Remainder  
+
+```{r stl decomposition}
+retail_stl <- retail %>% 
+  stl(s.window = 7)
+retail_stl %>%
+  str()
+```
+
+### Result of the decomposition  
+
+```{r stl components}
+retail_stl %>% 
+  autoplot() +
+  labs(
+    title = "STL decomposition of time series"
+  )
+```
+
+### Is there any information in the remainder?
+
+```{r information in the remainder}
+retail_stl$time.series[, "remainder"] %>% 
+  ggtsdisplay() +
+  labs(
+    title = "There is still information in the remainder from STL"
+  )
+```
+
+### Prediction using the STL model
+
+```{r stl prediction}
+retail_stl %>%
+  forecast(h = 12) %>% 
+  autoplot()
+```
+
+### ETS are part of the family of state space models and are also known as exponential smoothing  
+
+```{r estimate an ets model}
+retail_ets <- retail %>%
+  ets(model = "ZZZ")
+retail_ets %>% str()
+retail_ets %>% summary()
+retail_ets %>%
+  residuals() %>% 
+  tail(24)
+retail_ets %>%
+  fitted() %>% 
+  tail(24)
+```  
+
+### ETS doesn't extract all of the information from the data. Information remains in the residuals  
+
+```{r information in ets residuals}
+retail_ets %>% 
+  residuals() %>% 
+  ggtsdisplay()
+```
+
+### Forecasting with the ETS model
+
+```{r ets forecasts}
+retail_ets %>% 
+  forecast(h = 12) %>% 
+  autoplot()
+```
+
+### ARIMA is a family of models. ARIMA means auto-regressive, integrated, moving average.  
+
+```{r estimate the ARIMA model}
+retail_arima <- retail %>% 
+  auto.arima()
+retail_arima %>% str()
+retail_arima %>% summary()
+```
+
+### ARIMA models seem to capture the more of the information than the other techniques 
+
+```{r evaluation of ARIMA}
+retail_arima %>% 
+  residuals() %>% 
+  ggtsdisplay()
+```
+
+### Forecasts from the ARIMA model
+
+```{r arima forecasts}
+retail_arima %>% 
+  forecast(h = 12) %>%
+  autoplot()
+```

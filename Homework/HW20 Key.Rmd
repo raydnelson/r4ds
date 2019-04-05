@@ -1,0 +1,94 @@
+---
+title: "HW20 Key"
+author: "Ray Nelson"
+date: "3 Apr 2019"
+output:
+  html_document:
+    code_folding: "show"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Concepts  
+
+1.  Explain how you specify the equation that you want to estimate in a linear model.  
+
+In R, for most families of models, we specify the equation that we want to estimate using the "~" symbol. On the left side of the "~" we place the response variable and on the right side we put the explanatory variables. In general, response variable ~ explanatory variables should be read as the response variable modeled as explanatory variables.  
+
+2.  Explain how dependent and independent variables are related to response and explanatory (predictor) variables.  
+
+Dependent and response variables are the same. Independent, explanatory, and predictor variables are those that we use to explain the variation in the response variable. We need to be very careful that we don't say or conclude that the explanatory variables cause the response variable to change. We are talking about explanation, not causation.
+
+3.  Explain how you use categorical, numerical, and interactions in a linear model. What is their effect on the slopes and intercepts in your model.  
+
+The explanatory or predictor variables in a model can be categorical, numerical, or interactions among the different types of variables. These have the following effects on the slopes and intercepts of the model:
+
+*  Only categorical variables gives different intercepts and no estimated slope terms.
+*  Categorical variables and numerical variables with no interactions give different intercepts and shared slopes for each categorical variable.
+*  Categorical and numerical variables with interactions produces a unique slope and intercept for each category. 
+    
+## Interpretation of code  
+
+Interpret the following R code chunks: 
+
+Code Chunk #1 Analysis of Variance Predictions
+
+```{r ANOVA and prediction}
+model_lm <- lm(mpg ~ am, data = mtcars)
+model_lm %>% summary()
+```
+
+Line 1: Creates a linear model named model_lm that uses only the categorical (factor) am  (the transmission variable) from the mtcars tibble. From this model we can determine the means of the two levels for am: 0 (automatic) and 1 (manual).  
+
+Line 2:  Applying the summary function to model_lm gives the parameter estimates and summary statistics for the linear model.
+
+Code Chunk #2 Analysis of Covariance Predictions
+
+```{r Analysis of Covariance I}
+model_lm <- lm(mpg ~ wt + am + wt * am, data = mtcars)
+model_lm %>% summary()
+```
+Line 1: Creates a linear model named model_lm that uses the categorical (factor) am  (the transmission variable) and the numerical variable wt from the mtcars tibble. It also allows for interactions between am and wt. The interaction gives automatic transmissions and manual transmissions unique slopes and intercepts.
+
+Automatic transmissions have an intercept of 31.4 and a slope of -3.8. The manual transmissions have an intercept of 31.4 + 14.9 and an slope of -3.8 - 5.3
+
+Line 2:  Applying the summary function to model_lm gives the parameter estimates and summary statistics for the linear model.
+
+Code Chunk #3 Analysis of Covariance Predictions
+
+```{r Analysis of Covariance II}
+model_lm <- lm(mpg ~ wt + am, data = mtcars)
+model_lm %>% summary()
+```
+
+Line 1: Creates a linear model named model_lm that uses the categorical (factor) am  (the transmission variable) and the numerical variable wt from the mtcars tibble. It does not allow for interactions between am and wt. The result is a model that has an intercept for automatic and and intercept for manual but the two categories share a common slope. 
+
+Automatic transmissions have an intercept of 37.3 and manual transmissions have an intercept of 37.3 - 0.02. They share a slope of -5.35. (The difference between the intercepts is statistically and practically insignificant.)
+
+Line 2:  Applying the summary function to model_lm gives the parameter estimates and summary statistics for the linear model.
+
+## Write Code
+
+Use the diamonds data set to create a model for predicting diamond prices. Use your model to predict the price of a specific diamond. Please come prepared to show your model to the class if you are selected as the guest lecturer.
+
+```{r diamonds prediction model}
+# One way of doing this calculation is to create new log variables
+diamonds2 <- diamonds %>% 
+  mutate(lprice = log(price),
+         lcarat = log(carat))
+diamond_model <- lm(lprice ~ lcarat + cut + color + clarity, data = diamonds2)
+diamond_model %>%
+  predict(tibble(lcarat = log(2), cut = "Ideal", color = "D", clarity = "I1")) %>%
+  exp()
+
+# A second way is to put the logs into the model statement
+diamond_model <- lm(log(price) ~ log(carat) + cut + color + clarity, data = diamonds2)
+diamond_model %>%
+  predict(tibble(carat = 2, cut = "Ideal", color = "D", clarity = "I1")) %>%
+  exp()
+```  
+
+As we can see, these two alternative approaches give exactly the same prediction.  

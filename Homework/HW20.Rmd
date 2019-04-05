@@ -1,0 +1,54 @@
+---
+title: "HW20"
+author: "Ray Nelson"
+date: "1 Apr 2019"
+output:
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Concepts  
+
+1.  Explain how you specify the equation that you want to estimate in a linear model.
+
+2.  Explain how dependent and independent variables are related to response and explanatory (predictor) variables.
+
+3.  Explain how you use categorical, numerical, and interactions in a linear model. What is their effect on the slopes and intercepts in your model.  
+    
+## Interpretation of code  
+
+Interpret the following R code chunks: 
+
+Code Chunk #1 Analysis of Variance Predictions
+
+```{r ANOVA and prediction}
+model_lm <- lm(mpg ~ am, data = mtcars)
+model_lm %>% summary()
+```
+
+Code Chunk #2 Analysis of Covariance Predictions
+
+```{r Analysis of Covariance I}
+model_lm <- lm(mpg ~ wt + am + wt * am, data = mtcars)
+model_lm %>% summary()
+```
+
+Code Chunk #3 Analysis of Covariance Predictions
+
+```{r Analysis of Covariance II}
+model_lm <- lm(mpg ~ wt + am, data = mtcars)
+model_lm %>% summary()
+```
+
+## Write Code
+
+Use the diamonds data set to create a model for predicting diamond prices. Use your model to predict the price of a specific diamond. Please come prepared to show your model to the class if you are selected as the guest lecturer.
+
+```{r diamonds prediction model}
+
+```
