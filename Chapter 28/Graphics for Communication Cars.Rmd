@@ -16,13 +16,14 @@ library(ggrepel)
 
 # Mileage Graph from MPG
 
-## End Product Graph
+## Finished Graph
 
 ```{r end product, message = FALSE}
-(best_in_class <- mpg %>%
-  group_by(class) %>%
-  filter(row_number(desc(hwy)) == 1)
-)
+best_in_class <- mpg %>%
+    group_by(class) %>%
+    arrange(desc(hwy)) %>%
+    mutate(ranking = row_number()) %>%
+    filter(ranking == 1)
 
 mpg %>%
   ggplot(aes(displ, hwy)) +
@@ -56,15 +57,21 @@ basic_plot
 
 1.  Create a new tibble called best_in_class by
 2.  Grouping by class
-3.  Filtering using row_number(desc(hwy)) == 1
+3.  Sort observations for each group so that the best mileage is the first observations
+4.  Create a new variable called ranking
+5.  Choose the observations with the number one ranking in each class.  
 
 
 ```{r find the best cars in each class}
 ## Best MPG in each car class
-(best_in_class <- mpg %>%
-  group_by(class) %>%
-  filter(row_number(desc(hwy)) == 1)
-)
+best_in_class <- mpg %>%
+    group_by(class) %>%
+    arrange(desc(hwy)) %>%
+    mutate(ranking = row_number()) %>%
+    filter(ranking == 1)
+
+best_in_class %>% 
+  select(manufacturer, model, hwy, class, ranking)
 ```
 
 ### Put circles around the best cars  

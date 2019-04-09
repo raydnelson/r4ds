@@ -1,0 +1,42 @@
+---
+title: "City Manager Briefing"
+author: "Ray Nelson"
+date: "4/9/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(fImport)
+library(forecast)
+library(tidyverse)
+library(magrittr)
+library(highcharter)
+```
+
+
+## Real Estate Prices
+
+```{r real estate outlook}
+fredSeries("ATNHPIUS39340Q", from = "1984-01-01") %>% 
+  forecast(h = 8) %>% 
+  hchart()
+```
+
+## Provo-Orem Employment  
+
+```{r labor market}
+fredSeries("PROV349NA", from = "1990-01-01") %>% 
+  forecast(h = 24) %>% 
+  hchart()
+```  
+
+## Retail Sales
+
+```{r retail sales}
+fredSeries("RSAFSNA", from = "1992-01-01") %>%
+  divide_by(1000) %>% 
+  forecast(h = 24) %>% 
+  hchart()
+```  
+

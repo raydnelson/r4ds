@@ -10,11 +10,18 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(modelr)
 ```
 
 ## Concepts  
 
 Compare and constrast the machine learning and the classical modeling approaches.
+
+The machine learning approach focuses on the predictive ability of the model. This approach carefully uses training and testing sets to avoid overfitting models. Often, the models created by machine learning are black boxes so we don't really understand why the models are doing a good job of prediction. We do know, however, that often they perform very well because they are not subject to the assumptions of linearity and homoscedasticity that underly many of the classical modeling methodologies.
+
+Classical model building allows builders to participate in the creative process. One result is that the domain knowledge of the model builder is often increased as they think about why variables combine to give good predictions. Models that result from the classical approach to model building often give both the creators and consumers of forecasts more insights into whether the model will continue to perform even when the fundamental conditions of the forecasting situation change. 
+
+It isn't necessary to choose between the two different types of models. Both are very useful and both should be combined. Thinking that we need to choose between machine learning and classical modeling is a false dichotomy.
     
 ## Interpretation of code  
 
@@ -31,7 +38,15 @@ diamonds2 <- diamonds %>%
 
 ggplot(diamonds2, aes(lcarat, lprice)) + 
   geom_hex(bins = 50)
-```
+```  
+
+Line 1:  Creates a new tibble diamonds2 from the original tibble diamonds.  
+
+Line 2:  Restricts the tibble to only those observations that are less than or equal to 2.5 carats.  
+
+Lines 3 - 5:  Creates two new variables that are the natural logarithm of price and carat.  
+
+Lines 6 - 7:  Draws a heat map using geom_hex of the log of carat and the log of price. The geom_hex creates a grid of hexagons (2,500). The algorithm then counts how many observations fit into each hexagon. The function scales the color of the hexagon to reflect the number of observations found in the hexagon.
 
 Code Chunk #2 Comparison of predicted with actual data when when we have a log transformation
 
@@ -48,6 +63,22 @@ ggplot(diamonds2, aes(carat, price)) +
   geom_hex(bins = 50) + 
   geom_line(data = grid, colour = "red", size = 1)
 ```
+
+Line 1:  Creates a model which is a simple linear regression of the log of price on the log of carat. The model uses the diamonds2 tibble which contains only the diamonds with  weight less than or equal to 2.5 carats.
+
+line 2:  Creates a new tibble called grid.  
+
+Line 3:  Creates a sequence of 20 points that begins with the minimum value of carat and ends with the maximum value for carat. The grid puts 18 other points equidistant between the minimum and the maximum.  
+
+Line 4:  Takes the natural logarithm of the points so that they are compatible with the line model (mod_diamond) that was created in line 1.  
+
+Line 5:  Adds predictions to the grid tibble by substituting the values created in lines 2 - 3 into the linear model estimated in line 1.  
+
+Line 6:  Converts the predictions calculated in line 5 back into the original dollar units.  
+
+Lines 7 - 8:  Creates a heat map of the diamonds found in the tibble diamonds2 using the geom_hex function.
+
+Line 9:  Plots the results of the model that was estimated in line 1 onto the heat map. The data for the line comes from the grid tibble that was created in lines 2 - 6.  
 
 ## Write Code
 
