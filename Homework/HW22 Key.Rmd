@@ -4,7 +4,7 @@ author: "Ray Nelson"
 date: "8 Apr 2019"
 output:
   html_document:
-    code_folding: "hide"
+    code_folding: "show"
 ---
 
 ```{r setup, include=FALSE}
@@ -14,7 +14,9 @@ library(tidyverse)
 
 ## Concepts  
 
-Explain the idea of themes within ggplot.
+Explain the idea of themes within ggplot.  
+
+Themes allow us to customize the non-data elements of our plot. There are default themes that change many of the aspects of a plot with a single statement. You can also change individual elements such as tick marks, background colors, legend position, etc.
     
 ## Interpretation of code  
 
@@ -22,17 +24,21 @@ Interpret the following R code chunks:
 
 Code Chunk #1 Zooming using coord_cartesian
 
-```{r coord_cartesian zooming}
+```{r coord_cartesian zooming, message = FALSE}
 mpg %>% 
-  ggplot(mapping = aes(displ, hwy)) +
+  ggplot(aes(displ, hwy)) +
   geom_point(aes(color = class)) +
   geom_smooth() +
   coord_cartesian(xlim = c(5, 7), ylim = c(10, 30))
-```
+```  
+
+Line 1 - 4: Create the regular scatterplot with a loess smoothed line. The points are colored by the class of the car.  
+
+Line 5:  Plots all of the points but limits the graph to those cars with displacement between 5 and 7 and highway mileage between 10 and 30. All of the points are still considered in the plot but we only see those specified by the limits in coord_cartesian. 
 
 Code Chunk #2 Zooming using filtering
 
-```{r filtered zooms}
+```{r filtered zooms, message = FALSE}
 mpg %>%
   filter(displ >= 5, displ <= 7, hwy >= 10, hwy <= 30) %>%
   ggplot(aes(displ, hwy)) +
@@ -40,7 +46,13 @@ mpg %>%
   geom_smooth()
 ```  
 
-Why are the loess lines in these two graphs different?
+Lines 1 - 2:  Limits the data to be plotted to only those observations with displacement between 5 and 7 and highway mileage between 10 and 30.  
+
+Lines 3 - 5: Create the regular scatterplot with a loess smooth.  
+
+Why are the loess lines in these two graphs different?  
+
+The smoothed line in the first graph is using all of the data whereas the second using only 38 rows from mpg that satisfy the filtering condition.  
 
 ## Write Code
 
@@ -48,6 +60,19 @@ Problem 3 from 28.2.1 Exercises
 
 Take an exploratory graphic that you've created during the semester, and add informative labels, annotations, scales, and themes to make it easier for others to understand.  
 
-```{r diamonds prediction model}
-
+```{r diamonds, message = FALSE}
+diamonds %>% 
+  sample_n(1000) %>% 
+  filter(carat <= 2.5) %>% 
+  ggplot(aes(carat, price / 1000)) +
+  geom_point(size = 0.5, shape = 20, position = "jitter") +
+  geom_smooth(colour = "blue", se = FALSE) +
+  labs(
+    title = "Diamond prices form a non-linear pattern with diamond weight
+    that has heteroscedatic variation.",
+    y = "Thousands of Dollars",
+    x = "Weight in Carats"
+  ) +
+  scale_x_continuous(breaks = seq(0, 2.5, 0.25)) +
+  theme(panel.background = element_rect(fill = "lightsteelblue1"))
 ```
