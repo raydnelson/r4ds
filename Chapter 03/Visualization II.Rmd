@@ -1,80 +1,62 @@
 ---
 title: "Visualization II"
 author: "Ray Nelson"
-date: "1/15/2019"
+date: "9/10/2019"
 output:
   html_document:
     code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(tidyverse)
 ```
 
-## The grammar of graphics includes the following seven elements:
-*  Data
-*  Mapping
-*  Geometric object
-*  Stats
-*  Position
-*  Coordinate system
-*  Facets
+## The grammar of graphics includes the following seven elements:  
+1.  Data
+2.  Mapping or aesthetics
+3.  Geometric object
+4.  Stats
+5.  Position
+6.  Coordinate system
+7.  Facets
 
-## Today we will focus on the geometric objects. We will talk about:
-1.  Graphs for categorical variables, both nominal and ordinal
-1.  Graphs for one numerical variables
-1.  Graphs for two numerical variables
-    i)  Plots
-    i)  Densities
-1.  Probability plots
-1.  Polygons and maps
+## Geometric objects  
 
-## Graphs for categorical variables
-## Bar versus col geoms: How do we summarize categorical data?  
+We will talk about:  
 
-### Bar  
+1.  Graphs for categorical variables
+2.  Graphs for one numerical variables
+3.  Graphs for two numerical variables
 
-This is an inline r code chunk. The number of observations in the mpg dataframe is: `r nrow(mpg)`
+## Important Definition  
 
-This is code chunk. The "r" signifies that that it is and R chunk. The second gives the code chunk a name. We can also have additional arguments. For example, messages = FALSE suppresses messages.
+Distribution of a variable is:  
+
+1. Range of values
+2. Probability or frequency of each value  
+
+### Distribution of  categorical variables
+
+#### Bar Chart  
 
 ```{r bar}
 ggplot(data = mpg, mapping = aes(x = class, fill = class)) +
   geom_bar()
 ```  
 
-### Column
-
-```{r col}
-class_count <- mpg %>% 
-  group_by(class) %>% 
-  summarize(count = n())
-class_count %>% print()
-ggplot(data = class_count, mapping = aes(x = class, y = count, fill = class)) +
-  geom_col(show.legend = FALSE)
-```  
-
-What is the difference?  
-
-A good reference for this is <https://ggplot2.tidyverse.org/reference/geom_bar.html>. Another good source of such information:  
-
-![Our class textbook](http://govfinance.byu.edu/govfinance/images/dataScience/DataScience.png)
-
-## Distribution numerical variables
-
-How do we summarize numerical data?  
+### Distribution numerical variables
 
 ### Histograms  
 
-```{r histogram of highway miles per gallon, message = FALSE}
+```{r histogram of highway miles per gallon}
 ggplot(data = mpg, mapping = aes(x = hwy)) +
   geom_histogram(fill = "blue", binwidth = 2.5)
 ```  
 
 ### Frequency Polygons  
 
-```{r frequency polygons of highway miles per gallon, message = FALSE}
+```{r frequency polygons}
 ggplot(data = mpg, mapping = aes(x = hwy)) +
   geom_freqpoly(color = "blue", binwidth = 2.5)
 ``` 
@@ -86,173 +68,164 @@ ggplot(data = mpg, mapping = aes(x = hwy)) +
   geom_density(fill = "blue")
 ```  
 
-### Rug  
+### Boxplots
 
-```{r rug plots, message = FALSE}
-ggplot(data = faithful, mapping = aes(x = eruptions)) +
-  geom_rug()
-```  
-
-### Combinations of density plots  
-
-```{r combination of density plots, message = FALSE}
-ggplot(data = faithful, mapping = aes(x = eruptions)) +
-  geom_histogram(fill = "lightblue")
-ggplot(data = faithful, mapping = aes(x = eruptions)) +
-  geom_freqpoly(color = "lightblue")
-ggplot(data = faithful, mapping = aes(x = eruptions)) +
-  geom_density(fill = "lightblue")
-ggplot(data = faithful, mapping = aes(x = eruptions)) +
-  geom_rug()
-ggplot(data = faithful, mapping = aes(x = eruptions)) +
-  geom_histogram(aes(y = stat(density)), fill = "lightgreen") +
-  geom_density(fill = "blue", alpha = 0.3) +
-  geom_rug(color = "red")
+```{r boxplots}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_boxplot()
 ```
 
 ### Violin plots  
 
-```{r violin for highway miles per gallon}
-ggplot(data = mpg, mapping = aes(x = class, y = hwy, fill = class)) +
-  geom_violin(show.legend = FALSE)
+```{r violin plots}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_violin()
+```
+
+## Statistical Transformations
+
+### Bar Versus Column charts
+
+```{r bar chart}
+ggplot(data = mpg, mapping = aes(x = class, fill = class)) +
+  geom_bar(show.legend = FALSE)
 ```  
 
-### Boxplots   
-
-```{r boxplots for highway miles per gallon}
-ggplot(data = mpg, mapping = aes(x = class, y = hwy, fill = class)) +
-  geom_boxplot(show.legend = FALSE)
+```{r column chart}
+class_count <- mpg %>% 
+  group_by(class) %>% 
+  summarize(count = n())
+print(class_count)
+ggplot(data = class_count, mapping = aes(x = class, y = count, fill = class)) +
+  geom_col(show.legend = FALSE)
 ```  
 
-### True violin plots   
+### Loess Smoothing and simple regression
 
-```{r true violin plots for highway miles per gallon}
-ggplot(data = mpg, mapping = aes(x = class, y = hwy, fill = class)) +
-  geom_violin(show.legend = FALSE) +
-  geom_boxplot(show.legend = FALSE, width = 0.05, fill = "grey")
+```{r loess smoothing}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_smooth()
+```
+
+```{r simple regression}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+## Position Adjustments
+
+### Color and fill aesthetics in a bar chart
+
+#### Color aesthetic
+
+```{r color aesthetic}
+ggplot(data = diamonds, mapping = aes(x = cut, color = cut)) +
+  geom_bar(show.legend = FALSE, size = 3)
 ```  
 
-## Plots of two numerical variables
+#### Fill aesthetic
+
+```{r fill aesthetic}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = cut)) +
+  geom_bar(show.legend = FALSE)
+```
+
+#### Bar chart with multiple categories
+
+```{r cut and clarity}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) +
+  geom_bar()
+```
+
+#### Position = identity
+
+```{r identity}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) +
+  geom_bar(alpha = 1/5, position = "identity")
+```
+
+#### Position = fill
+
+```{r fill}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) +
+  geom_bar(position = "fill")
+```  
+
+#### Position = dodge  
+
+```{r dodge}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) +
+  geom_bar(position = "dodge")
+```  
+
+#### Position = jitter
 
 Compare and contrast the following graphs.  
 
-### Scatterplot  
+##### Scatterplot  
 
 ```{r scatterplot}
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   geom_point() 
 ```
-### Jittered Scatterplot  
+##### Jittered Scatterplot  
 
 ```{r jitter}
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
-  geom_jitter()
-```  
+  geom_point(position = "jitter")
+``` 
 
-### Path Plot  
-```{r path}
-ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
-  geom_path()
+## Coordinate system
+
+### Horizontal bar chart
+
+```{r horizontal bar chart}
+ggplot(data = mpg, mapping = aes(x = class, fill = drv)) +
+  geom_bar(position = "dodge") +
+  coord_flip()
 ```
 
-### Line Plot
-```{r line}
-ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
-  geom_line() 
-```  
+### Horizontal violin plot
+```{r violin plot}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_violin(fill = "lightgreen") +
+  geom_boxplot(fill = "lightblue", width = 0.1) +
+  coord_flip()
+``` 
 
-### Curves and Segments
+### Map of New Zealand  
 
-```{r curves and segments}
-b <- ggplot(mtcars, aes(wt, mpg)) +
-  geom_point()
-b
+```{r maps}
+nz <- map_data("nz")
 
-df <- data.frame(x1 = 2.62, x2 = 3.57, y1 = 21.0, y2 = 15.0)
-b +
-  geom_curve(aes(x = x1, y = y1, xend = x2, yend = y2, colour = "curve"), data = df) +
-  geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2, colour = "segment"), data = df)
+new_zealand <- ggplot(data = nz, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill = "white", color = "black")
+
+new_zealand
+
+new_zealand +
+  coord_quickmap()
 ```
 
-### Ribbons and Areas
+## Summary  
 
-```{r ribbons, message = FALSE}
-# Create the data from for this problem
-plot_data <- data.frame(year = time(LakeHuron), level = as.vector(LakeHuron))
-ggplot(data = plot_data, mapping = aes(x = year, y = level)) +
-  geom_ribbon(mapping = aes(ymin = level - 1, ymax = level + 1),
-              fill = "lightblue") +
-  geom_path(size = 1, color = "blue")
-```  
+1.  Data
+2.  Aesthetics  
+3.  Geometric objects (stats)
+4.  Positioning
+5.  Coordinate system
+6.  Faceting
 
-### Two dimensional densities
-
-#### Eruption time from faithful dataframe
-
-```{r eruption time density}
-ggplot(data = faithful, aes(x = eruptions)) +
-  geom_density(fill = "blue")
-```  
-
-#### Waiting time from faithful dataframe
-
-```{r waiting time density}
-ggplot(data = faithful, aes(x = waiting)) +
-  geom_density(fill = "blue")
+```{r combination}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) +
+  geom_bar(position = "dodge") +
+  coord_flip() +
+  facet_grid(vars(color))
 ```
 
-#### Joint distribution of eruptions and waiting time
 
-```{r joint distribution}
-m <- ggplot(faithful, aes(x = waiting, y = eruptions)) +
- geom_point() +
- ylim(0.5, 6) +
- xlim(40, 110)
-print(m)
-m + geom_density_2d()
-m + stat_density_2d(aes(fill = stat(level)), geom = "polygon")
-```  
-
-#### Contour plot
-
-```{r contour plot}
-ggplot(data = faithfuld, aes(x = waiting, y = eruptions, z = density)) +
-  geom_contour()
-
-ggplot(data = faithful, aes(x = waiting, y = eruptions)) +
-  geom_density2d()
-```
-
-## Plots that allow us to investigate the family of distributions. The following normal quantile plot allows us to check whether the variable highway mileage is normally distributed.  
-
-### Quantile-Quantile Plots  
-
-```{r qq plots}
-ggplot(data = mpg, mapping = aes(sample = hwy)) +
-  geom_qq() +
-  geom_qq_line()
-```  
-
-## Polygon geom allows us to draw shapes. This is especially usefull when drawing maps. Here is an example of how we can use ggplot to draw maps.  
-
-### Maps
-
-```{r maps example, messages = FALSE, warning = FALSE}
-crimes <- data.frame(state = tolower(rownames(USArrests)), USArrests)
-crimesm <- gather(crimes, key = variable, value = value, -state)
-if (require(maps)) {
-  states_map <- map_data("state")
-  ggplot(crimes, aes(map_id = state)) +
-    geom_map(aes(fill = Murder), map = states_map) +
-    expand_limits(x = states_map$long, y = states_map$lat)
-
-  last_plot() + coord_map()
-  ggplot(crimesm, aes(map_id = state)) +
-    geom_map(aes(fill = value), map = states_map) +
-    expand_limits(x = states_map$long, y = states_map$lat) +
-    facet_wrap(vars(variable))
-}
-```
 
 
 

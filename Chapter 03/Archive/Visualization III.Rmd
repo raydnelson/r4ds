@@ -1,0 +1,37 @@
+---
+title: "Visualization Extra"
+author: "Ray Nelson"
+date: "9/4/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Bar chart of car classes  
+*  Bar colored by car class  
+*  No legend  
+
+```{r bar chart by car class}
+ggplot(data = mpg, mapping = aes(x = class, fill = class)) +
+  geom_bar(show.legend = FALSE)
+```
+
+## Bar chart of car classes  
+*  Bar colored by car class  
+*  Stack bar in each by drive type  
+*  Proportion of drive for each class of vehicle  
+
+```{r bar chart by car class and drive type}
+ggplot(data = mpg, mapping = aes(x = class, fill = drv)) +
+  geom_bar(position = "fill")
+```  
+
+## Bar chart of car classes  
+*  Vertical orientation  
+*  Number of by drive train type for each vehicle class  
+
+```{r bar chart by car class and drive type number of vehicles}
+ggplot(data = mpg, mapping = aes(x = class, fill = drv)) +
+  geom_bar(position = "dodge")

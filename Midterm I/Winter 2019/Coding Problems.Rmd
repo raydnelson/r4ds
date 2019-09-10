@@ -37,6 +37,12 @@ Please write code that completes the following:
 *  Order the bars from smallest to largest number of destinations (This is called a Pareto Chart)
 *  It is not required that your graph replicate the graph labels. We will cover that in Chapter 28.
 
+```{r, echo = FALSE}
+url <- "http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW11Graph.png"
+```
+
+![](`r url`)
+
 ```{r Problem 2}
 
 ```

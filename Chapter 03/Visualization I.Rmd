@@ -1,21 +1,21 @@
 ---
 title: "Data Visualization I"
 author: "Ray Nelson"
-date: "1/11/2019"
+date: "9/04/2019"
 output:
   html_document:
     code_folding: hide
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(tidyverse)
 ```
 
 ## Basic smoothed scatterplot  
 * Highway miles per gallon (hwy) on displacement (displ)  
 
-```{r basic smoothed scatterplot, message = FALSE}
+```{r basic smoothed scatterplot}
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   geom_point() +
   geom_smooth()
@@ -29,8 +29,8 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
 *  Increase the size of the lines  
 
 ```{r linear regression}
-ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) +
-  geom_point() +
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(aes(size = drv)) +
   geom_smooth(mapping = aes(linetype = drv), method = "lm", se = FALSE, size = 2)
 ```
 
@@ -68,7 +68,7 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
   geom_point(position = "jitter", show.legend = FALSE) +
   geom_smooth(method = "lm", show.legend = FALSE) +
-  facet_wrap(vars(class))
+  facet_wrap(vars(class), ncol = 2)
 ```  
 
 ## Linear regression of highway on displacement
@@ -86,30 +86,59 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) +
   facet_grid(rows = vars(as.factor(cyl)), cols = vars(drv))
 ```  
 
-## Bar chart of car classes  
-*  Bar colored by car class  
-*  No legend  
+## Exercises from 3.6.1 Problem 6
 
-```{r bar chart by car class}
-ggplot(data = mpg, mapping = aes(x = class, fill = class)) +
-  geom_bar(show.legend = FALSE)
+### Simple smoothed scatterplot with blue line for smooth
+
+```{r simple smooth with blue line and larger red symbols, message = FALSE}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(color = "red", size = 2) +
+  geom_smooth(color = "blue", se = FALSE)
 ```
 
-## Bar chart of car classes  
-*  Bar colored by car class  
-*  Stack bar in each by drive type  
-*  Proportion of drive for each class of vehicle  
+### Smoothed scatterplot with blue smoothed line for each different drive train
 
-```{r bar chart by car class and drive type}
-ggplot(data = mpg, mapping = aes(x = class, fill = drv)) +
-  geom_bar(position = "fill")
-```  
+```{r smooth from each drive train, message = FALSE}
+ggplot(data = mpg,
+       mapping = aes(x = displ, y = hwy, group = drv)) +
+  geom_point(size = 2) +
+  geom_smooth(color = "blue", se = FALSE)
+```
 
-## Bar chart of car classes  
-*  Vertical orientation  
-*  Number of by drive train type for each vehicle class  
+### Smoothing and color by drive train
 
-```{r bar chart by car class and drive type number of vehicles}
-ggplot(data = mpg, mapping = aes(x = class, fill = drv)) +
-  geom_bar(position = "dodge")
+```{r smoothing by drive train}
+ggplot(data = mpg,
+       mapping = aes(x = displ, y = hwy, color = drv)) +
+  geom_point(size = 2) +
+  geom_smooth(se = FALSE)
+```
+
+### Color symbols by drive train but blue global smooth
+
+```{r global smoothing with colors by drive train}
+ggplot(data = mpg,
+       mapping = aes(x = displ, y = hwy, color = drv)) +
+  geom_point(mapping = aes(color = drv), size = 2) +
+  geom_smooth(se = FALSE, color = "blue")
+```
+
+### Symbols colored by drive train with smoothing by linetype
+
+```{r smoothing by linetype}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(mapping = aes(color = drv), size = 2) +
+  geom_smooth(mapping = aes(linetype = drv), se = FALSE)
+```
+
+### Color in circles as the plotting symbols
+
+```{r colors in circles}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, fill = drv)) +
+  geom_point(
+    size = 3,
+    shape = 21,
+    color = "white",
+    stroke = 2
+  )
 ```  
