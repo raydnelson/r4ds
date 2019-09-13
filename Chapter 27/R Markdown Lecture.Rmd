@@ -1,0 +1,131 @@
+---
+title: "R Markdown"
+author: "Developers at RStudio"
+date: "9/16/2019"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(tidyverse)
+```
+
+# R Markdown basics
+
+  1.  YAML header and setup code chunk 
+  1.  Text and formatting 
+  1.  Code chunks  
+
+## YAML header and initial code chunk
+
+The following YAML header sets up an html document to have the code available but hidden:
+
+`title: "R Markdown"`  
+`author: "Developers at RStudio"`  
+`date: "9/16/2019"`
+`output:`  
+`html_document:`  
+`code_folding: hide`
+    
+The setup code chunk often contains libraries.  
+
+`{r setup, include = FALSE}`  
+`knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)`  
+`library(tidyverse)`  
+
+## Text and formatting
+
+### Purposes of R Markdown as proposed by Grolemund and Wickham *(Here is an example of an ordered list.)*
+
+1.  Communicate with decision makers, who want to focus on the conclusions, not the code behind the analysis.
+4.  Collaborate with other data scientists (including the future you!), who are interested in both your conclusions, and how you reached them (i.e. the code).
+2.  Provide an environment suitable for data science, as a modern day lab notebook where you can capture not only what you did, but also what you were thinking.
+
+### Resources
+
+Here are some potential resources when using R Markdown: **(This is an unordered list)**
+
+*  [Free R Books](https://bookdown.org/)
+*  [Website](https://rmarkdown.rstudio.com/)
+*  [Cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf)
+*  [Reference](https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf)
+
+### Consider the following heading levels
+
+# 1st Level Header
+
+## 2nd Level Header
+
+### 3rd Level Header
+
+#### 4rd Level Header
+
+##### 5rd Level Header
+
+###### 6rd Level Header
+
+### Links and images
+
+<http://govfinance.byu.edu/govfinance/classes/dataScience/dataScienceSyllabus.html>
+
+[Class Web Site](http://govfinance.byu.edu/govfinance/classes/dataScience/dataScienceSyllabus.html)
+
+
+![Outline for Our Class](http://govfinance.byu.edu/govfinance/resources/chartFigureTable/dataScience/Data%20Science%20Workflow.png)
+
+### Equations
+
+#### Inline
+
+This is the quadratic equation: ${{ - b \pm \sqrt {{b^2} - 4ac} } \over {2a}}$
+
+
+#### Display for quadratic equation
+
+$${{ - b \pm \sqrt {{b^2} - 4ac} } \over {2a}}$$
+
+
+### Tables using R Markdown
+
+First Header  | Second Header
+------------- | -------------
+Content Cell  | Content Cell
+Content Cell  | Content Cell
+
+## Code Chunks
+
+### Inline
+
+The number of rows in the mtcars tibble is: `r nrow(mtcars)`.
+
+### Display
+
+Scatterplot of highway miles per gallon on engine displacement    
+Built-in mpg R data set
+
+```{r mpg versus wt}
+  ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+    geom_point(color = "red", alpha = 0.5) + 
+    geom_smooth(method = "loess", color = "lightgreen", se = FALSE) +
+    geom_smooth(method = "lm", color = "lightblue", se = FALSE) +
+    labs(
+      title = "The relationship between highway mileage and displacement is not linear",
+      x = "Liters",
+      y = "Miles Per Gallon"
+    )
+```  
+
+Because of the nonlinear pattern, transformations such as those we will cover in Chapter 5 will be appropriate and desirable.
+
+### Tables using R code
+
+```{r table example}
+head(mtcars, 5)
+knitr::kable(
+  mtcars[1:5, ], 
+  caption = "A knitr kable."
+)
+```
+
