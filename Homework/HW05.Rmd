@@ -1,48 +1,49 @@
 ---
 title: 'Homework #5'
 author: "Filtering and Arranging"
+date: "Due: 23 Sep 2019"
 output: word_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(tidyverse)
 library(nycflights13)
 ```
 
 ## Concepts  
 
-1.  Explain the differences among "=", "==", and "<-". Give an example of how you would use each of these symbols.  
+1.  Explain the differences among "=", "==", and "<-". Give an example of how you would use each of these symbols.
+
 1.  Compare and contrast the logical operators "x & y" and "xor(x, y)".
 
-## Interpretation of code  
-
-Interpret the following R code:  
+## Interpretation
 
 ```{r code chunk}
-delta_spring_fall <- filter(flights, month == 5 | month == 9, carrier == "DL")
-ggplot(data = filter(delta_spring_fall, dep_delay < 90),
-       mapping = aes(x = as.factor(month),
-                     y = dep_delay,
-                     fill = as.factor(month))) +
-  geom_violin(show.legend = FALSE) +
-  geom_boxplot(width = 0.05, fill = "grey", show.legend = FALSE) +
+flights %>%
+  filter(month == 5 | month == 9, carrier == "DL") %>%
+  ggplot(aes(
+    x = as.factor(month),
+    y = dep_delay,
+    fill = as.factor(month)
+  )) +
+  geom_boxplot(fill = "lightblue", show.legend = FALSE) +
   coord_flip() +
   facet_grid(rows = vars(origin))
 ```
 
-## Coding Problem 1: Use violin plots and facets to explore the distribution of departure delays for the American, Delta, and United (AA, DL, and UA) for flights going to Atlanta, Chicago, and Los Angeles (ATL, ORD, and LAX).
+## Coding Problem
 
-```{r airlines and destinations}
+Air time and distance travelled are undoubtedly positively related. Investigate this relationship for all April flights from JFK.
 
-```
-
-## Coding Problem 2: Air time and distance travelled are undoubtedly positively related. Investigate this relationship for all April flights from JFK.
+*  Filter the flights data frame to isolate the flights from JFK during April
+*  Create a scatterplot
 *  Use jittering and transparency to help with the overplotting.
-*  What might explain the clusters of points in the scatterplot?
-*  Is the relationship linear?
+*  Smooth with loess
+*  Smooth with a linear regression
 
-```{r air time and distance travelled}
+![Desired result shown above.](http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW05.png)
 
-```
+1.  What might explain the clusters of points in the scatterplot?
+2.  Is the relationship linear?
 

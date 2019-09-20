@@ -1,0 +1,58 @@
+---
+title: 'Homework #3 Key'
+author: "Grammar of Graphics"
+date: "Due: 9/16/2019"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, error = FALSE)
+library(tidyverse)
+```
+
+## Concepts  
+
+Define and explain each of the seven parts of the layered grammar of graphics.
+
+Data:  identifies the primary data set that provides the data for the graph.  
+
+Aethetics: the assignment of x-axis, y-axis, color, fill, stroke, linetype, shape, size, and transparency to variables in the data frame. This is a set of mappings.  
+
+Geoms: Creates a series of layers which contain a type of graph.  
+
+Stats: Some types of graphs require calculations before the graph can be drawn. For example, geom_smooth requires the calculation of loess or other types of smoothing such as simple linear regression. The geom_bar requires counting the frequency of each category in the variable.  
+
+Position: alters the presentation of the data. The geom_bar can have position of identity, fill, or dodge. In order to show all points in a scatterplot, we use the geom_scatter or us a position = "jitter" in the geom_point part of the function call.  
+
+Coordinate System: Changes the coordinate system. The coord_flip swaps the x and y axes. It can also be used to change from the default cartesian to polor coordinates.  
+
+Facet: Creates a separate graph for each value in a categorical variable or a separate graph for a range of values for numerical variables. This might also be seen as splitting a graph into subplots.
+
+## Interpretation of code
+
+```{r code chunk, message = FALSE, warning = FALSE}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) +
+  geom_bar(position = "fill") +
+  facet_wrap(vars(color), ncol = 1)
+```  
+
+Line 1: sets up the regular ggplot parameters by identifying the data set. The categorical variable cut is identified as the variable that is being analyzed.  
+
+Line 2: Creates a layer that includes a bar chart. From the first line, the color of each bar is determined by the clarity categorical variable. The position = "fill" means that the proportion of each clarity category rather than counts are given for each clarity category.  
+
+Line 3: Creates a separate bar chart for each value of the color variable. There is only one column so the bar charts are stacked one above the other.  
+
+## Using the mpg tibble, draw a proportional bar chart for class of vehicle (class), drive train (drv), and year
+
+1.  Put class on the x axis.
+1.  Color the bars based on the drive.
+1.  Use position to convert the proportional bar chart.
+1.  Use facet_grid to create a graph for 1999 and 2008.
+
+```{r facets}
+ggplot(data = mpg, mapping = aes(x = class, fill = drv)) +
+  geom_bar(position = "fill") +
+  facet_grid(rows = vars(year))
+```

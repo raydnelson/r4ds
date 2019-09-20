@@ -1,26 +1,27 @@
 ---
 title: 'Homework #5'
 author: "Filtering and Arranging"
+date: "Due: 23 Sep 2019"
 output:  
   html_document:
     code_folding: hide
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(tidyverse)
 library(nycflights13)
 ```
 
 ## Concepts  
 
-1.  Explain the differences among "=", "==", and "<-". Give an example of how you would use each of these symbols.  
+1.  Explain the differences among "=", "==", and "<-". Give an example of how you would use each of these symbols.
 
 The common use of "=" is to assign values within a function call. Example: ggplot(data = mpg, mapping = aes(x = hwy))  
 
 There should be no confusion about "==" since its use is to determine strict equality in comparisons. Example: filter(mpg, class == "compact")  
 
-The preferred assignment operator is "<-". It will work to also use "=" as an assignment operator, but it is not consider good practice within the R community. Example:  x <- rnorm(n = 100, mean = 10, sd = 10)
+The preferred assignment operator is "<-". It will also work to use "=" as an assignment operator, but it is not consider good practice within the R community. Example:  x <- rnorm(n = 100, mean = 10, sd = 10)
 
 2.  Compare and contrast the logical operators "x & y" and "xor(x, y)".
 
@@ -33,67 +34,51 @@ The preferred assignment operator is "<-". It will work to also use "=" as an as
 Interpret the following R code:  
 
 ```{r code chunk}
-delta_spring_fall <-
-  filter(flights, month == 5 | month == 9, carrier == "DL")
-ggplot(
-  data = filter(delta_spring_fall, dep_delay < 90),
-  mapping = aes(
+flights %>%
+  filter(month == 5 | month == 9,
+         carrier == "DL",
+         dep_delay < 90) %>%
+  ggplot(aes(
     x = as.factor(month),
     y = dep_delay,
     fill = as.factor(month)
-  )
-) +
-  geom_violin(show.legend = FALSE) +
-  geom_boxplot(width = 0.05,
-               fill = "grey",
-               show.legend = FALSE) +
+  )) +
+  geom_boxplot(fill = "lightblue", show.legend = FALSE) +
   coord_flip() +
   facet_grid(rows = vars(origin))
 ```
 
-Line 1: Creates a new data frame that all of the Delta flights in August or September  
+Line 1: Identifies the initial data frame as flights
 
-Line 2: Calls the ggplot function but restrict the data to only those flights in the delta_spring_fall which have a departure delace of less than 90 minutes  
+Lines 2 - 4: Creates a new data frame that includes all of the Delta flights in August or September with departure delays of less than 90 minutes
 
-Lines 3 through 5: Gives the mapping so that the category value for the violin plots is month. Month must be converted into a factor in order for the geoms to work properly. The y or numerical varue is the departure delay. We use month as a category assigned to the fill aesthetic.  
+Lines 5 - 9: Pipes the data frame into the ggplot function. The variable month is mapped as the category value for the boxplots. Month must be converted into a factor in order for the geoms to work properly. The y or numerical value is the departure delay. We also use month as a category assigned to the fill aesthetic, which must also be converted into a factor since it is an integer.  
 
-Line 6: Creates a layer for the violin plot and suppresses the legend.
+Line 10: Creates a layer for the boxplot, fills the box with a lightblue background, and suppresses the legend.
 
-Line 7: Creates a layer for the boxplot, shrinks the width of the box to 5%, fills the box with a grey background, and suppresses the legend.
+Line 11: Flips the x and y axes  
 
-Line 8: Flips the x and y axes  
+Line 12: Creates three different plots, one for each of the three origin airports in New York City.
 
-Line 9: Creates three different plots, one for each of the three origin airports in New York City.
+## Coding Problem
 
-## Coding Problem 1: Use violin plots and facets to explore the distribution of departure delays for the American, Delta, and United (AA, DL, and UA) for flights going to Atlanta, Chicago, and Los Angeles (ATL, ORD, and LAX).  
+Air time and distance travelled are undoubtedly positively related. Investigate this relationship for all April flights from JFK.
 
-
-```{r airlines and destinations, warning = FALSE}
-flights_subset <-
-  filter(flights,
-         carrier %in% c("DL", "UA", "AA"),
-         dest %in% c("ORD", "LAX", "ATL"))
-ggplot(data = flights_subset, mapping = aes(x = carrier, y = dep_delay)) +
-  geom_violin(mapping = aes(fill = carrier), show.legend = FALSE) +
-  geom_boxplot(width = 0.05) +
-  coord_flip() +
-  facet_grid(rows = vars(dest)) 
-```
-
-## Coding Problem 2: Air time and distance travelled are undoubtedly positively related. Investigate this relationship for all April flights from JFK.
-*  Create a new data frame april_jfk
+*  Filter the flights data frame to isolate the flights from JFK during April
 *  Create a scatterplot
 *  Use jittering and transparency to help with the overplotting.
-*  What might explain the clusters of points in the scatterplot?
-*  Is the relationship linear?  
+*  Smooth with loess
+*  Smooth with a linear regression
 
-```{r air time and distance travelled, warning = FALSE}
-april_jfk <- filter(flights, month == 4, origin == "JFK")
-ggplot(data = april_jfk, mapping = aes(x = distance, y = air_time)) +
+```{r air time and distance travelled, message = FALSE, warning = FALSE}
+flights %>%
+  filter(month == 4, origin == "JFK") %>%
+  ggplot(aes(x = distance, y = air_time)) +
   geom_point(position = "jitter", alpha = 1 / 100) +
-  geom_smooth()
+  geom_smooth(color = "red") +
+  geom_smooth(method = "lm", color = "blue")
 ```  
 
 Destination might be a possible reason why we have clusters of data.  
 
-Comparing the linear regression line with the loess smoothed line suggests that the  relationship might not   be linear.
+Comparing the linear regression line with the loess smoothed line suggests that the relationship might not be linear.

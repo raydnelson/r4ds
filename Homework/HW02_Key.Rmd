@@ -1,0 +1,56 @@
+---
+title: 'Homework #2 Key'
+author: "Aesthetic Mappings and Facets"
+date: "Due: 9/11/2019"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+library(tidyverse)
+```
+
+## Concepts  
+
+Explain how aesthetics, scaling, and mapping are related to each other within the context of the grammar of graphcs and ggplot.  
+
+Aesthetics, scaling, and mapping are referring to the same concept. This is the process whereby the x-axis, y-axis, color, fill, shape, linetype, size, transparency, etc. of a given observation are assigned values based on variables in the data frame. Aesthetics are visual properties in a graph. Mapping and scaling assign levels to describe aesthetic properties.  
+
+## Interpretation of code
+
+```{r code chunk}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) +
+  geom_point(show.legend = FALSE) +
+  geom_smooth(mapping = aes(linetype = drv), method = "lm", se = FALSE, show.legend = FALSE) +
+  facet_wrap(vars(drv))
+``` 
+
+Line 1: calls the ggplot function. It gets the data from the data frame (tibble) mpg and assigns displacement to the x-axis, highway miles per gallon to the y axis, and associates color with the vehicle’s drive train.
+
+Line 2: draws a scatterplot. It suppresses the legend that would result because of the color = drv statement.
+
+Lines 3: creates a simple regression line whose color and linetype are determined by the type of drive train. The method = "lm" argument chooses the smoothing method to be simple regression. The se = FALSE clause removes the confidence interval from the graph. The show.legend = FALSE once again prevents a legend from being drawn.
+
+Line 4: creates a separate scatterplot for each class of vehicle
+
+## Write your own code
+
+Draw a scatterplot of linear regressions of city mileage on displacement
+
+1.  Put displ on the x-axis
+1.  Put cty on the y-axis
+1.  Color the plot symbols by class
+1.  Draw a simple regression line for each car class without a confidence interval
+1.  Use facet_wrap to create a graph for each class
+1.  Suppress the legend
+
+```{r facets}
+ggplot(data = mpg, mapping = aes(x = displ, y = cty, color = class)) +
+  geom_point(show.legend = FALSE) +
+  geom_smooth(method = "lm", se = FALSE, show.legend = FALSE) +
+  facet_wrap(vars(class))
+```

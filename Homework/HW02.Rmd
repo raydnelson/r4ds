@@ -1,0 +1,45 @@
+---
+title: 'Homework #2'
+author: "Aesthetic Mappings and Facets"
+date: "Due: 9/11/2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Concepts  
+
+Explain how aesthetics, scaling, and mapping are related to each other within the context of the grammar of graphcs and ggplot. 
+
+Write your answer here.
+
+## Interpretation of code
+
+```{r code chunk, message = FALSE, warning = FALSE}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) +
+  geom_point(show.legend = FALSE) +
+  geom_smooth(mapping = aes(linetype = drv), method = "lm", se = FALSE, show.legend = FALSE) +
+  facet_wrap(vars(drv))
+``` 
+
+Write your answer here.
+
+## Write your own code
+
+Draw a scatterplot of linear regressions of city mileage on displacement
+
+1.  Put displ on the x-axis
+1.  Put cty on the y-axis
+1.  Color the plot symbols by class
+1.  Draw a simple regression line for each car class without a confidence interval
+1.  Use facet_wrap to create a graph for each class
+1.  Suppress the legend
+
+![Desired shown above](http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW02.png)
+
+```{r facets}
+# Put your code here
+```

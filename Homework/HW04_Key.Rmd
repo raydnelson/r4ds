@@ -1,0 +1,89 @@
+---
+title: 'Homework #4 Key'
+author: "R Markdown"
+date: "Due: 9/18/2019"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Concepts
+
+Explain the sequence whereby a word file is created from a R Markdown document. What is the purpose of the YAML header?
+
+1. Create a R Markdown document
+2. The knitr library converts the R Markdown file into a Markdown document
+3. The pandoc software converts Markdown files into a variety of document formats including HTML, PDF, and Microsoft word.
+
+The YAML header sets up the document. It can include a title, author, and date as well as other options that are documented at [Bookdown](https://bookdown.org/yihui/rmarkdown/). For our purposes, the most important part of the YAML header is the specification of the output. We generally use html_document with code folding or Microsoft Word.
+
+# Interpretation of R Markdown code
+
+## New lines and paragraphs can be very confusing. This is one of the most inconsistent and confusing parts of R Markdown. `Creates text within a heading 2 tag`
+
+
+When using R Markdown, you insert a new line by putting two spaces and a carriage return at the end of your text.  `This line ends with a new line rather than a paragraph`
+A new paragraph requires two carriage returns. `Creates a new paragraph`
+
+R Markdown allows you to have italics, bold, and code `Regular line of code with new paragraph`
+
+* *italics* `Pair of asterisks create italics`
+* **bold** `Double pair of asterisks create bold`
+* `code`. (A monospaced font is usually used for code.) `The symbol used to create code chunks also delineates code`
+
+## Include graphics `Header 2 text`
+
+![You can insert graphics from the web:](http://govfinance.byu.edu/govfinance/images/dataScience/DataScience.png) `Inserts a graph from a file. The file can be a local file on your own computer or a url reference to a file on the web.`
+
+## You can create your own graphics like this one that compares highway mpg for different class and drive train combinations. `Header 2 text`
+
+```{r distribution of mpg by auto class and drive train}
+ggplot(data = mpg, aes(x = class, y = hwy, fill = class)) +
+  geom_boxplot(show.legend = FALSE) +
+  coord_flip() +
+  facet_grid(rows = vars(drv))
+```  
+`The above is a display code chunk`
+
+## You can also use include tables  `Header 2 text`
+
+Number of Students in *MPA 634: Data Science for Managers* `Regular text with part of text in italics`
+
+Department | Students
+---------- | ----------
+MBA        | 2
+MISM       | 6
+MPA        | 8
+
+`The above give lines create a table`
+
+# Your code:
+
+Write RMarkdown code that creates the following document. You don't need another YAML header and setup R chunk because they are already part of this R Markdown document.
+
+# This is an R Markdown Document  
+
+Parts of a distribution  
+
+*  Range of values
+*  Probabilities or frequencies  
+
+We use the grammar of graphics and ggplot to create a series of density plots that compare the highway mpg for different types of drive trains.  
+
+```{r comparison of mileage by drive train}
+ggplot(data = mpg, mapping = aes(x = hwy, fill = drv)) +
+  geom_density(show.legend = FALSE) +
+  facet_grid(rows = vars(drv))
+```  
+
+You can calculate the average miles per gallon for all cars using the following code:  round(mean(mpg$hwy)
+
+1.  The mean(mpg$hwy) function calculates the average of the hwy column in the mpg data frame.
+2.  The round(aNumber, 2) rounds the number to two decimal places.  
+
+An inline sentence is: "The average highway mileage for all cars is `r round(mean(mpg$hwy), 2)` miles per gallon."

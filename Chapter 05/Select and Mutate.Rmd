@@ -1,7 +1,7 @@
 ---
 title: "Select and Mutate"
-author: "Ray Nelson"
-date: "1/25/2019"
+author: "MPA 634: Data Science for Managers"
+date: "9/23/2019"
 output:
   html_document:
     code_folding: hide
@@ -11,49 +11,52 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(nycflights13)
-data(flights)
 ```
 
 ## Give multiple ways to select dep_time, dep_delay, arr_time, and arr_delay from the flights data frame.  
 
 ```{r column selection alternatives}
 variables <- c("dep_time", "dep_delay", "arr_time", "arr_delay")
-departure_delays <- select(flights, variables)
-departures_delays <-
-  select(flights, dep_time, dep_delay, arr_time, arr_delay)
-departures_delays <-
-  select(flights, starts_with("dep"), starts_with("arr"))
-departures_delays <-
-  select(flights, ends_with("time"), ends_with("delay"))
-departures_delays <- select(flights, 4, 6:7, 9)
+departure_delays <- flights %>%
+  select(variables)
+departures_delays <- flights %>%
+  select(dep_time, dep_delay, arr_time, arr_delay)
+departures_delays <- flights %>%
+  select(starts_with("dep"), starts_with("arr"))
+departures_delays <- flights %>%
+  select(ends_with("time"), ends_with("delay"))
+departures_delays <- flights %>% 
+  select(4, 6:7, 9)
 ```
 
 ## Calculate the difference between dep_time and sched_dep_time and compare the result with dep_delay. How do we explain the difference? 
+
 *  Use transmute to calcuate the new time difference
 *  Compare dep_time with your calculation to see where they are different
 *  Choose the first 20 observations
 
 ```{r departure comparison}
-departure_comparison <-
-  transmute(flights,
-            dep_time,
-            sched_dep_time,
-            dep_delay,
-            time_difference = dep_time - sched_dep_time,
-            same = (dep_delay == time_difference))
+departure_comparison <- flights %>%
+  transmute(
+    dep_time,
+    sched_dep_time,
+    dep_delay,
+    time_difference = dep_time - sched_dep_time,
+    same = (dep_delay == time_difference)
+  )
 head(departure_comparison, 20)
 ```
 
-## Replicate the calculation of dep_delay  
+## Replicate the calculation of dep_delay
+
 *  Create a new data frame (departure_calculations) from flights that  
    +  Converts dep_time into minutes from midnight
    +  Converts sched_dep_time into minutes from midnight  
 *  View dep_time, sched_dep_time, del_delay and their calculated equivalents
 
 ```{r conversion of times}
-departure_calculations <-
+departure_calculations <- flights %>% 
   transmute(
-    flights,
     dep_time,
     sched_dep_time,
     dep_delay,
@@ -61,13 +64,15 @@ departure_calculations <-
     sched_dep_minutes = sched_dep_time %/% 100 * 60 + sched_dep_time %% 100,
     dep_delay_calculated = dep_minutes - sched_dep_minutes
   )
-View(departure_calculations)
+departure_calculations %>% 
+  head(5)
 ```  
 
 ## Transform scatterplot of diamonds
 
 ### Draw a scatter plot of price on diamond weights
-*  Use diamonds data frame  
+
+*  Use the diamonds data frame  
 *  The price of diamonds is given by price  
 *  The weight of the diamonds is given by carat  
 *  Use transparency to help with the overplotting of so many observations  
@@ -75,38 +80,41 @@ View(departure_calculations)
 *  Add a simple regression line without the confidence interval  
 
 ```{r original scatterplot, message = FALSE}
-ggplot(data = diamonds, mapping = aes(x = carat, y = price)) +
-  geom_point(alpha = 1/100) +
+diamonds %>%
+  ggplot(mapping = aes(x = carat, y = price)) +
+  geom_point(alpha = 1 / 100) +
   geom_smooth(color = "red", se = FALSE) +
   geom_smooth(method = "lm", color = "blue", se = FALSE)
 ```
 
 ### Scale price and carat by subtracting the mean and dividing by the standard deviation
+
 *  Create a new data frame that includes scaled values for price and carat
 *  Draw a scatterplot with transparency, loess, and simple regression as before
 
 ```{r scaling, message = FALSE}
-scaled <- transmute(diamonds,
-                 scale_price = (price - mean(price, na.rm = TRUE)) / sd(price, na.rm = TRUE),
-                 scale_carat = (carat - mean(carat, na.rm = TRUE)) / sd(carat, na.rm = TRUE)
-)
-ggplot(data = scaled, mapping = aes(x = scale_carat, y = scale_price)) +
-  geom_point(alpha = 1/100) +
+diamonds %>%
+  transmute(
+    scale_price = (price - mean(price, na.rm = TRUE)) / sd(price, na.rm = TRUE),
+    scale_carat = (carat - mean(carat, na.rm = TRUE)) / sd(carat, na.rm = TRUE)
+  ) %>%
+  ggplot(aes(x = scale_carat, y = scale_price)) +
+  geom_point(alpha = 1 / 100) +
   geom_smooth(color = "red", se = FALSE) +
   geom_smooth(method = "lm", color = "blue", se = FALSE)
 ```
 
 ### Try a logarithmic transformation of price and carat
+
 *  Create a new data frame that includes logarithmic transformed variables for price and carat
 *  Draw a scatterplot with transparency, loess, and simple regression as before
 
 ```{r logarithmic transformation, message = FALSE}
-logged <- transmute(diamonds,
-                 log_price = log(price),
-                 log_carat = log(carat)
-)
-ggplot(data = logged, mapping = aes(x = log_carat, y = log_price)) +
-  geom_point(alpha = 1/100) +
+diamonds %>%
+  transmute(log_price = log(price),
+            log_carat = log(carat)) %>%
+  ggplot(mapping = aes(x = log_carat, y = log_price)) +
+  geom_point(alpha = 1 / 100) +
   geom_smooth(color = "red", se = FALSE) +
   geom_smooth(method = "lm", color = "blue", se = FALSE)
 ```
@@ -125,39 +133,13 @@ ggplot(data = diamonds, mapping = aes(x = log(carat), y = log(price))) +
   geom_smooth(method = "lm", color = "blue", se = FALSE)
 ```
 
-## Consider the time series data set for AirPassengers
-
-```{r time series}
-data(AirPassengers)
-AirPassengers
-plot(AirPassengers)
-```
-
-### Lead and lag functions
-*  Convert the AirPassengers ts object into a data frame
-*  Use mutate to create two new variables: lagging and leading
-*  View the first 10 observations
-*  View the last 10 observations
-
-```{r leads and lags}
-passengers <- as.data.frame(AirPassengers)
-passengers <- mutate(passengers,
-                     lagging = lag(x),
-                     leading = lead(x))
-head(passengers, 10)
-tail(passengers, 10)
-```
-
 ## Rank the diamonds by weight and price
+
 *  Create two new variables called size_rank and price_rank where 1 means the largest
 *  View the largest diamonds by size
 *  View the largest diamonds by price
 
 ```{r rank the diamonds and find the largest}
-largest <- mutate(diamonds,
-                  size_rank = min_rank(desc(carat)),
-                  price_rank = min_rank(desc(price)))
-
 largest <- diamonds %>%
   mutate(size_rank = min_rank(desc(carat)),
          price_rank = min_rank(desc(price)))

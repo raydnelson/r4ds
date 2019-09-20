@@ -1,6 +1,6 @@
 ---
 title: "Visualization II"
-author: "Ray Nelson"
+author: "MPA 634: Data Science for Managers"
 date: "9/10/2019"
 output:
   html_document:
