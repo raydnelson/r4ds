@@ -27,7 +27,7 @@ flights %>%
     y = dep_delay,
     fill = as.factor(month)
   )) +
-  geom_boxplot(fill = "lightblue", show.legend = FALSE) +
+  geom_boxplot(show.legend = FALSE) +
   coord_flip() +
   facet_grid(rows = vars(origin))
 ```
@@ -39,7 +39,7 @@ Air time and distance travelled are undoubtedly positively related. Investigate 
 *  Filter the flights data frame to isolate the flights from JFK during April
 *  Create a scatterplot
 *  Use jittering and transparency to help with the overplotting.
-*  Smooth with loess
+*  Smooth with the default method (generalized additive model)
 *  Smooth with a linear regression
 
 ![Desired result shown above.](http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW05.png)

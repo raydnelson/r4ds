@@ -35,8 +35,7 @@ flights %>%
 ggplot(aes(x = origin,
            y = minutes_after_midnight,
            fill = origin)) +
-  geom_boxplot(fill = "grey",
-               show.legend = FALSE) +
+  geom_boxplot(show.legend = FALSE) +
   coord_flip()
 ```
 
@@ -68,7 +67,7 @@ flights %>%
          arrival = arr_delay) %>% 
   ggplot(aes(x = departure, y = arrival)) +
   geom_point() +
-  geom_smooth(color = "red", se = FALSE) +
+  geom_smooth(method = "loess", color = "red", se = FALSE) +
   geom_smooth(method = "lm", color = "blue", se = FALSE)
 ```  
 

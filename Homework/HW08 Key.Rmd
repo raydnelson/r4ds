@@ -1,12 +1,13 @@
 ---
 title: 'Homework #8'
 author: 'Univariate Distributions'
+date: "Due: 2 Oct 2019"
 output: 
   html_document:
     code_folding: hide
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
@@ -39,9 +40,7 @@ Numerical:
 *  geom_rug
 *  geom_violin
     
-## Interpretation of code  
-
-Interpret the following R code:  
+## Code Interpretation 
 
 ```{r code chunk interpretation}
 Median <- median(mpg$cty)

@@ -1,11 +1,12 @@
 ---
 title: 'Homework #7'
 author: 'Summarization by Group'
-output:  word_document
+date: "Due: 30 Sep 2019"
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 library(tidyverse)
 library(nycflights13)
 ```
@@ -14,66 +15,51 @@ library(nycflights13)
 
 Carefully explain the following:  
 
-1.  The two elements that define the distribution of a random variable
-1.  How the mean measures the location of a distribution
-1.  How the standard deviation measures the scale or spread of a distribution
+1.  The two elements that define the distribution of a random variable  
 
-## Interpretation of code  
+
+2.  How the mean measures the location of a distribution  
+
+
+3.  How the standard deviation measures the scale or spread of a distribution  
+
+
+## Interpretation 
 
 Interpret the following R code:  
 
-```{r code chunk interpretation, warning = FALSE, message = FALSE}
+```{r code chunk interpretation}
 flights %>%
   group_by(day, month) %>%
   summarize(cancelled = mean(is.na(dep_time)) * 100,
             delay = mean(dep_delay, na.rm = TRUE)) %>%
-  ggplot(mapping = aes(x = delay, y = cancelled)) +
+  ggplot(aes(x = delay, y = cancelled)) +
   geom_point() +
-  geom_smooth(color = "red") +
-  labs(
-    title = "Large average delays associate with percentage of cancelled flights",
-    x = "Average Delay in Minutes",
-    y = "Percentage of cancelled flights"
-  )
+  geom_smooth(color = "red")
 ```
 
-## Write code that accomplishes the following:
+## Coding Problems
 
-1.  Create a new data frame that excludes cancelled flights
+1.  Create a new data frame that excludes cancelled flights.
+
+This data frame should have 327346 observations.
 
 ```{r exclude cancelled flights}
 
 ```  
 
-2.  Rank carriers from best to worst by their average arrival delays
+2.  For the not cancelled flights, rank carriers from best to worst by their average arrival delays. Count the number of flights for each carrier.
 
 ```{r carrier ranking}
-# Rank carriers from best to worst by their average arrival delays
 
 ```  
 
-3.  Rank destination airports from worst to best by their average arrival delays
+![](http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW07_Code_2.png)
 
-```{r destination airport ranking}
-
-```  
-
-4.  Rank NYC airports from best to worst by their average departure delays
-
-```{r NYC airport ranking}
-
-```  
-
-5.  Rank carriers from best to worst by their on time percentage
+3.  For the not cancelled flights, rank carriers from best to worst by their on time percentage as measured by the arrival delay. Count the number of flights for each carrier.
 
 ```{r time percentage}
 
 ```
 
-Is it possible to use the above results to rank carriers? As a hint, think about how the following code might help you consider this question.  
-
-```{r number of flights}
-flights %>% 
-  group_by(carrier, origin) %>%
-  count(dest)
-```  
+![](http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW07_Code_3.png)

@@ -1,59 +1,42 @@
 ---
 title: "Grouped Summaries"
-author: "Ray Nelson"
-date: "1/28/2019"
+author: "MPA 634: Data Science for Managers"
+date: "9/25/2019"
 output:
   html_document:
     code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(tidyverse)
 library(nycflights13)
-data(flights)
 ```
 
-## Average delay for all airports
+## Average and median delay for all airports
 
-```{r average delay, warning = FALSE}
-summarise(
-  flights,
+```{r average delay}
+flights %>% summarise(
   mean_delay = mean(dep_delay, na.rm = TRUE),
-  median_delay = median(dep_delay, na.rm = TRUE)
+  median_delay = median(dep_delay, na.rm = TRUE) 
 )
 ```
 
 ## Average and median delay for each airport
 
-```{r airport average median delay, warning = FALSE}
-by_airport <- group_by(flights, origin)
-summarize(
-  by_airport,
-  mean_delay = mean(dep_delay, na.rm = TRUE),
-  median_delay = median(dep_delay, na.rm = TRUE)
+```{r airport average median delay}
+flights %>%
+  group_by(origin) %>%
+  summarize(
+    mean_delay = mean(dep_delay, na.rm = TRUE),
+    median_delay = median(dep_delay, na.rm = TRUE
+    )
 )
 ```
 
-## Smoothed scatterplot of average distance and average delay for each destination location
+## Smoothed scatterplot of average distance and average delay for each location
 
-```{r distance and average arrival delay, message = FALSE, warning = FALSE}
-by_dest <- group_by(flights, dest)
-delay <- summarise(
-  by_dest,
-  count = n(),
-  dist = mean(distance, na.rm = TRUE),
-  delay = mean(arr_delay, na.rm = TRUE)
-)
-delay
-ggplot(data = delay, mapping = aes(x = dist, y = delay)) +
-  geom_point(aes(size = count), alpha = 1/3) +
-  geom_smooth(se = FALSE)
-```
-
-## Smoothed scatterplot of average distance and average delay for each location using piping
-
-```{r distance and average arrival delay using piping, message = FALSE, warning = FALSE}
+```{r distance and average arrival delay using piping}
 flights %>%
   group_by(dest) %>%
   summarize(
@@ -61,20 +44,9 @@ flights %>%
     dist = mean(distance, na.rm = TRUE),
     delay = mean(arr_delay, na.rm = TRUE)
   ) %>%
-  ggplot(mapping = aes(x = dist, y = delay)) +
+  ggplot(aes(x = dist, y = delay)) +
   geom_point(aes(size = count), alpha = 1 / 3) +
   geom_smooth(se = FALSE)
-```
-
-## Piping to get average and median delay for each airport
-
-```{r piping to compare airports, warning = FALSE}
-flights %>%
-  group_by(origin) %>%
-  summarize(
-    mean_delay = mean(dep_delay, na.rm = TRUE),
-    median_delay = median(dep_delay, na.rm = TRUE)
-  )
 ```
 
 ## Location and spread for arrival delays of American, Delta, or United flights and going to Atlanta, Chicago, or Los Angeles from each of the New York Airports
@@ -105,7 +77,8 @@ not_cancelled %>%
   summarize(
     delay = mean(arr_delay),
     n = n()
-  )
+  ) %>% 
+  arrange(desc(delay))
 ```
 
 ## Bar graph of the number of destinations for each airport
@@ -139,14 +112,15 @@ not_cancelled %>%
 
 ## Number of flights that left before 5am for each day
 
-```{r early morning flights }
+```{r early morning flights}
 not_cancelled %>% 
   filter(dep_time < 500) %>% 
   count(month, day)
 
 not_cancelled %>% 
   group_by(month, day) %>% 
-  summarize(n_early = sum(dep_time < 500))
+  summarize(n_early = sum(dep_time < 500)) %>% 
+  filter(n_early > 0)
 ```
 
 ## Proportion of flights were delayed by more than an hour from the three different airports

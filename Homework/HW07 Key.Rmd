@@ -1,13 +1,14 @@
 ---
 title: 'Homework #7 Key'
 author: 'Summarization by Group'
+date: "Due: 30 Sep 2019"
 output:
   html_document:
     code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 library(tidyverse)
 library(nycflights13)
 ```
@@ -28,94 +29,64 @@ The mean of a variable gives its center of gravity or the balance point. If we p
 
 The standard deviation attempts to measure the average size of deviations. A deviation is defined as the distance of an observation from the mean. We can't simply add up the deviations because the sum of the deviations in a sample is always zero. The negative and positive deviations cancel each other out. For this reason we have to square the deviations. We then average these squared deviations and take the square root to get the standard deviation. The standard deviation has the units of the original observations.
 
-## Interpretation of code  
+## Interpretation 
 
 Interpret the following R code:  
 
-```{r code chunk interpretation, warning = FALSE, message = FALSE}
+```{r code chunk interpretation}
 flights %>%
-  group_by(month, day) %>%
+  group_by(day, month) %>%
   summarize(cancelled = mean(is.na(dep_time)) * 100,
             delay = mean(dep_delay, na.rm = TRUE)) %>%
-  ggplot(mapping = aes(x = delay, y = cancelled)) +
+  ggplot(aes(x = delay, y = cancelled)) +
   geom_point() +
-  geom_smooth(color = "red") +
-  labs(
-    title = "Large average delays associate with percentage of cancelled flights",
-    x = "Average Delay in Minutes",
-    y = "Percentage of cancelled flights"
-  )
+  geom_smooth(color = "red")
 ```
 
-Lines 1 - 2: group the observations in the flights data set by day and month. Although R doesn't actually sort the observations, the subsequent calcuations act as all of the observations have first been sorted by month and then by day.  
+Lines 1 - 2: group the observations in the flights data set by day and month. Although R doesn't actually sort the observations, the subsequent calcuations act as though all of the observations have first been sorted by month and then by day.  
 
 Lines 3: calculate proportion of cancelled flights. The term is.na(dep_time) creates a logical variable. If dep_time is missing, then the expression evaluates as true and receives a value of one. If dep_time isn't missing, then the expression evaluates as false and receives a value of zero. Summing the logical variable gives the number of cancelled flights. Calculating the mean gives the proportion of cancelled flights. Multiplying by 100 converts the proportion into a percentage.  
 
 Line 4: calculates the average delay after removing missing values with the na.rm function.  
 
-Line 5: inputs the new data frame into ggplot  
+Line 5: puts the average delay on the x axis and the percentage of cancelled flights on the y axis  
 
-Line 6: put the average delay on the x axis and the percentage of cancelled flights on the y axis  
+Lines 6 - 7: creates a scatterplot using the geom_point with a loess smoothed line that results from the geom_smooth  
 
-Lines 7 - 8: creates a scatterplot using the geom_point with a loess smoothed line that results from the geom_smooth  
+The remainder of the code creates the labels on the graph. 
 
-The remainder of the code creates the labels on the graph.  
-
-
-## Write code that accomplishes the following:
+## Coding Problems
 
 1.  Create a new data frame that excludes cancelled flights
 
 ```{r exclude cancelled flights}
 not_cancelled <- flights %>% 
-  filter(!is.na(dep_delay), !is.na(arr_delay))
+  filter(!is.na(dep_delay)) %>% 
+  filter(!is.na(arr_delay))
 ```  
 
-2.  Rank carriers from best to worst by their average arrival delays
+This data frame should have 327346 observations.
+
+2.  For the not cancelled flights, rank carriers from best to worst by their average arrival delays. Count the number of flights for each carrier.
 
 ```{r carrier ranking}
-# Rank carriers from best to worst by their average arrival delays
-not_cancelled %>% 
+not_cancelled %>%
   group_by(carrier) %>% 
-  summarize(arrival_delay = mean(arr_delay)) %>% 
-  arrange(arrival_delay)
+  summarise(
+    average_arrival_delay = mean(arr_delay),
+    flights = n()
+  ) %>% 
+  arrange(average_arrival_delay)
 ```  
 
-3.  Rank destination airports from worst to best by their average arrival delays
-
-```{r destination airport ranking}
-not_cancelled %>% 
-  group_by(dest) %>% 
-  summarize(destination_delay = mean(arr_delay)) %>% 
-  arrange(desc(destination_delay))
-```  
-
-4.  Rank NYC airports from best to worst by their average departure delays
-
-```{r NYC airport ranking}
-not_cancelled %>% 
-  group_by(origin) %>% 
-  summarize(departure_delay = mean(dep_delay)) %>% 
-  arrange(departure_delay)
-```  
-
-5.  Rank carriers from best to worst by their on time percentage
+3.  For the not cancelled flights, rank carriers from best to worst by their on time percentage as measured by the arrival delay. Count the number of flights for each carrier.
 
 ```{r time percentage}
 not_cancelled %>% 
   group_by(carrier) %>% 
-  summarize(on_time = mean(arr_delay <= 0)) %>% 
-  arrange(desc(on_time))
+  summarise(
+    on_time_percentage = mean(arr_delay <= 0),
+    flights = n()) %>% 
+  arrange(on_time_percentage %>% desc())
 ```
 
-Is it possible to use the above results to rank carriers? As a hint, think about how the following code might help you consider this question.  
-
-```{r number of flights}
-flights %>% 
-  group_by(carrier, origin) %>%
-  count(dest)
-```  
-
-The traditional ranking of airlines doesn't take into consideration advantages and disadvantages of flying from or to highly congested airports. We might find that a given airline has a terrible on-time percentage but flies from significantly difficult airports or flies to particularly difficult destinations. Without information about these difficulties, we cannot rank carriers in a meaningful way.  
-
-When we find that an apparent relationship between two variables changes abruptly when we consider a third variable, then we have an example of Simpson's paradox.  

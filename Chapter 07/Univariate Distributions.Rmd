@@ -1,13 +1,13 @@
 ---
 title: "Univariate Distributions"
-author: "Ray Nelson"
-date: "2/1/2019"
+author: "MPA 634: Data Science for Managers"
+date: "9/30/2019"
 output:
   html_document:
     code_folding: hide
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
@@ -95,6 +95,16 @@ We can control the amount of smoothing by using the bw argument to geom_density.
 diamonds %>%
   ggplot(aes(x = carat)) +
   geom_density(fill = "lightblue")
+```
+
+We can add tick marks for each observation by using the geom_rug. In order to keep the calculations to a reasonable level, we take a sample of 1,000 observations from the original diamonds data frame.
+
+```{r density of carat with rug ticks}
+diamonds %>%
+  sample_n(1000) %>% 
+  ggplot(aes(x = carat)) +
+  geom_density(fill = "lightblue") +
+  geom_rug()
 ```
 
 ### Location or central tendency of the distribution is measured by the mean and the median
@@ -203,7 +213,3 @@ diamonds %>%
   geom_boxplot(fill = "lightblue", width = 0.1) +
   coord_flip()
 ```
-
-
-
-
