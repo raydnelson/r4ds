@@ -57,7 +57,7 @@ Describing the distribution gives us a basic set of questions to start asking. T
 1.  Symmetry   
 1.  Outliers  
 
-## Visualizing Distributions of categorical variables 
+## Visualizing distributions of categorical variables 
 
 ### Bar chart for cut using geom_bar
 
@@ -67,7 +67,7 @@ diamonds %>%
   geom_bar(show.legend = FALSE)
 ```  
 
-### Horizontal bar chart using count and geom_col
+### Horizontal bar chart of cut using count and geom_col
 
 ```{r horizontal bar chart of cut}
 diamonds %>% 
@@ -191,11 +191,12 @@ The upper whisker of a boxplot starts at the upper hinge. We then move right 1.5
 
 Outliers are those observations that lie more than 1.5 * IQR from the lower and upper hinges.  
 
-Consider now the four dimensions of the diamond size distribution:  
-1.  Location
-1.  Scale  
-1.  Symmetry
-1.  Outliers
+Consider now the four dimensions of the diamond size distribution: 
+
+1. Location
+1. Scale  
+1. Symmetry
+1. Outliers
 
 ```{r boxplot interpretation}
 diamonds %>% 

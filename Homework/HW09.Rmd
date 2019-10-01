@@ -13,7 +13,6 @@ library(tidyverse)
 
 1.  Under what conditions is it appropriate to use covariance and correlation as measures of the strength of relationships between variables.
 
-2.  Explain how covariance and correlation are related to each other. Which one do you prefer? Why?
     
 ## Interpretation of code  
 

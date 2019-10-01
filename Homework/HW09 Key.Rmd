@@ -1,6 +1,7 @@
 ---
 title: 'Homework #9 Key'
 author: 'Covariation'
+date: "Due: 7 Oct 2019"
 output:
    html_document:
      code_folding: hide
@@ -13,20 +14,33 @@ library(tidyverse)
 
 ## Concepts  
 
-1.  Under what conditions is it appropriate to use covariance and correlation as measures of the strength of relationships between variables.  
+#### 1.  Explain how Tukey's five number summary is related to the boxplot.
 
-In order for covariance and correlation to accurately capture strength, the relationship should be:
+The boxplot contains each of the element that comprise Tukey's five number summary:
 
-*  Linear
-*  Constant variance (homoscedastic)  
+1. *Minimum* is either an outlier or the end endcap on the lower whisker.
+2. *First quartile* is the lower hinge on the box part of the boxplot.
+3. *Median or second quartile* is the line in the middle of the boxplot.
+4. *Third quartile* is the upper hinge on the box part of the boxplot
+5. *Maximum* is either an outlier or the end endcap on the upper whisker.  
 
-2.  Explain how covariance and correlation are related to each other. Which one do you prefer? Why?  
 
-Correlation is the covariance between the standardized (scaled) values of each of the variables. Standardizing or scaling variables turns them into quantities similar to z-scores. Therefore, a correlation coefficient is the covariance between two z-scores. It is a unitless measure that can assume values between -1 and 1. Because of its interpretability, the correlation is preferred to covariance.   
+#### 2.  Identify at least five geom's that help you explore the covariation between two variables
+
+1. Categorical and continuous
+  * geom_boxplot
+  * geom_violin
+  * geom_freqpoly
+2. Two categorical
+  * geom_hex
+  * geom_tile
+3. Two continuous variables
+  * geom_point
+  * geom_smooth
+  * geom_path
+  * geom_line
     
 ## Interpretation of code  
-
-Interpret the following R code:  
 
 ```{r code chunk interpretation I}
 mpg %>%
@@ -47,31 +61,13 @@ Lines 3 - 4: create two layers, one for the violin shape and the other for the b
 Lines 5 - 8: label the graph and the axis
 Line 9: flips the x and y axes  
 
-
-```{r code chunk interpretation II}
-diamonds %>%
-  filter(carat < 3) %>% 
-  ggplot(aes(x = carat, y = price)) +
-  geom_boxplot(aes(group = cut_width(carat, 0.1))) +
-  coord_flip()
-```
-
-Lines 1 - 2: chooses only those diamonds that weigh less than 3 carets as a subset of the diamonds data frame  
-
-Line 3: ggplot function call that includes two numerical variables, carat and price. This is different from what we have done previously since we are going to draw a boxplot. Usually a boxplot has one categorical variable and one numerical variable.
-
-Line 4: the aesthetic specification essentially converts the size variable into a category. The cut_width assigns each observation into a bin that has a width of 0.1 which is similar to having a histogram. Grouping by this variable converts the x variable into a category as required by the boxplot.
-
-Line 5: switches the x and y axes.
-
 ## Write code  
 
-Using the mpg data set, use covariance, correlation, scatterplots, and heat maps to investigate the relationship between highway and city mileage. Use geom_smooth to determine whether the relationship is linear.
+Use the mpg data frame and ggplot to investigate the relationship between
+
+#### 1. Highway (hwy) and city (cty) mileage
 
 ```{r relationship between highway and city mileage}
-cov(mpg$hwy, mpg$cty)
-cor(mpg$hwy, mpg$cty)
-
 mpg %>% 
   ggplot(aes(x = cty, y = hwy)) +
   geom_point() +
@@ -87,6 +83,21 @@ mpg %>%
     y = "Highway Miles Per Gallon"
   )
 ```
+
+#### 2. Highway mileage and drive train
+
+```{r relationship betwen highway and drive train}
+mpg %>% 
+  ggplot(aes(x = reorder(drv, hwy, FUN = median), y = hwy, fill = drv)) +
+  geom_boxplot(show.legend = FALSE) +
+  coord_flip() +
+  labs(
+    title = "Front wheel drive cars get better highway mileage.",
+    x = "Type of Drive Train",
+    y = "Miles per gallon"
+  )
+```
+
 
 
 
