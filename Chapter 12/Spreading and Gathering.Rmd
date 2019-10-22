@@ -1,14 +1,16 @@
 ---
 title: "Gathering, Spreading, Separating, and Uniting"
-author: "Ray Nelson"
-date: "20 Feb 2019"
+author: "MPA 634: Data Science for Managers"
+date: "10/16/2019"
 output:
   html_document:
     code_folding: "hide"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 # Load libraries
 library(tidyverse)
 library(fImport)
@@ -17,122 +19,141 @@ library(zoo)
 
 ## Import the Data 
 
-```{r alternative structures}
+### Read from a csv file on a website
+
+```{r file on website}
+movies <- read_csv(url("http://govfinance.byu.edu/govfinance/classes/dataScience/lectures/illustrations/movies.csv"))
+```
+
+### Read an entire workspace
+
+```{r alternative structures for loading data}
 # Load workspace
-movies <- read_csv(url("http://govfinance.byu.edu/govfinance/classes/dataScience/lectures/illustrations/Movies.csv"))
 load(url("http://govfinance.byu.edu/govfinance/classes/dataScience/lectures/illustrations/movies_fitness.RData"))
 ```  
 
-### Explore Movies
+## Mechanics of gathering with an illustration using Excel
+
+```{r gathering mechanics}
+fitness %>% 
+  select(name, runpulse:maxpulse) %>% 
+  gather(runpulse:maxpulse, key = pulse_type, value = pulse)
+```
+
+## Movies
+
+### Explore movies
 
 ```{r explore movies}
-Movies %>% glimpse()
-Movies %>% summary()
+movies %>%
+  summary()
 ```
 
 ### Gathering with all variables
 
 ```{r gather all}
-Movies %>% 
-  gather(Domestic, Worldwide, key = source, value = revenue)
+movies %>% 
+  gather(domestic, worldwide, key = source, value = revenue)
 ```
 
 ### Gathering with a subset of variables
 
 ```{r gather subset}
-Movies %>% 
-  select(Year, Domestic, Worldwide) %>% 
-  gather(Domestic, Worldwide, key = source, value = revenue)
+movies %>% 
+  select(year, domestic, worldwide) %>% 
+  gather(domestic, worldwide, key = source, value = revenue)
 ```
 
 ### Time series trends of revenue
 
-```{r time series of trends of revenue, message = FALSE}
-Movies %>%
-  group_by(Year) %>% 
-  summarize(Domestic_median = median(Domestic),
-            Worldwide_median = median(Worldwide)) %>% 
-  gather(Domestic_median, Worldwide_median, key = Source, value = Revenue) %>% 
-  ggplot(aes(x = Year, y = Revenue, color = Source)) +
+```{r time series of trends of revenue}
+movies %>%
+  group_by(year) %>% 
+  summarize(domestic_median = median(domestic),
+            worldwide_median = median(worldwide)) %>% 
+  gather(domestic_median, worldwide_median, key = source, value = revenue) %>% 
+  ggplot(aes(x = year, y = revenue, color = source)) +
   geom_point() +
   geom_smooth(se = FALSE)
 ```
 
-### Compare Domestic and Worldwide Revenues
+### Convert to a long tibble
 
+```{r long movies tibble}
+movies_long <- movies %>%
+  select(rating, year, domestic, worldwide) %>% 
+  gather(domestic:worldwide, key = source, value = revenue)
+```
+
+### Compare domestic and worldwide revenues by rating
 ```{r domestic and worldwide revenue by rating}
-movies <- Movies %>%
-  select(Rating, Year, Domestic, Worldwide) %>% 
-  gather(Domestic:Worldwide, key = Source, value = Revenue)
-
-movies %>% ggplot(aes(x = Source, y = Revenue, fill = Source)) +
+movies_long %>%
+  ggplot(aes(x = source, y = revenue, fill = source)) +
   geom_boxplot(show.legend = FALSE) + 
-  facet_grid(rows = vars(Rating)) +
+  facet_grid(rows = vars(rating)) +
   coord_flip()
 ```
 
-### Distributions of revenue by domestic and Rating
+### Distributions of revenue by domestic by rating
 
 ```{r distributions of revenue domestic and worldwide revenue by rating}
-movies %>% 
-  ggplot(aes(x = Rating, y = Revenue, fill = Rating)) +
+movies_long %>% 
+  ggplot(aes(x = rating, y = revenue, fill = rating)) +
   geom_boxplot(show.legend = FALSE) + 
   coord_flip() + 
-  facet_grid(rows = vars(Source))
+  facet_grid(rows = vars(source))
 ```
 
 ## Fitness
-### Explore Fitness
+### Explore fitness
 
 ```{r explore variables in Fitness}
-Fitness %>%
-  glimpse()
-Fitness %>%
+fitness %>%
   summary()
 ```
 
 ### Comparison of all pulses by sex
 
 ```{r boxplot comparison of pulse by sex}
-Fitness %>% 
-  select(Sex, RunPulse, RstPulse, MaxPulse) %>% 
-  gather(RunPulse:MaxPulse, key = Pulse_Type, value = Pulse) %>% 
-  ggplot(aes(x = Sex, y = Pulse, fill = Sex)) +
+fitness %>% 
+  select(sex, runpulse:maxpulse) %>% 
+  gather(runpulse:maxpulse, key = pulse_type, value = pulse) %>% 
+  ggplot(aes(x = sex, y = pulse, fill = sex)) +
     geom_boxplot(show.legend = FALSE) +
-    facet_grid(rows = vars(Pulse_Type)) +
+    facet_grid(rows = vars(pulse_type)) +
     coord_flip()
 ```
 
-### Violin plot of MaxPulse and RunPulse with facet by pulse type
+### Violin plot of maxpulse and runpulse with facet by pulse type
 ```{r faceting by pulse type}
-Fitness %>% 
-  select(Sex, RunPulse, MaxPulse) %>% 
-  gather(RunPulse, MaxPulse, key = Pulse_Type, value = Pulse) %>% 
-  ggplot(aes(x = Sex, y = Pulse, fill = Sex)) +
+fitness %>% 
+  select(sex, runpulse, maxpulse) %>% 
+  gather(runpulse, maxpulse, key = pulse_type, value = pulse) %>% 
+  ggplot(aes(x = sex, y = pulse, fill = sex)) +
     geom_violin(fill = "grey") +
     geom_boxplot(width = 0.25, show.legend = FALSE) +
-    facet_grid(rows = vars(Pulse_Type)) +
+    facet_grid(rows = vars(pulse_type)) +
     coord_flip()
 ```
 
-### Violin Plot with facet by Sex
+### Violin plot with facet by sex
 
 ```{r faceting with Sex}
-Fitness %>% 
-  select(Sex, RunPulse, MaxPulse) %>% 
-  gather(RunPulse, MaxPulse, key = Pulse_Type, value = Pulse) %>% 
-  ggplot(aes(x = Pulse_Type, y = Pulse, fill = Sex)) +
+fitness %>% 
+  select(sex, runpulse, maxpulse) %>% 
+  gather(runpulse, maxpulse, key = pulse_type, value = pulse) %>% 
+  ggplot(aes(x = pulse_type, y = pulse, fill = sex)) +
     geom_violin(fill = "grey") +
     geom_boxplot(width = 0.25, show.legend = FALSE) +
-    facet_grid(rows = vars(Sex)) +
+    facet_grid(rows = vars(sex)) +
     coord_flip()
 ```
 
-### Relationship of RunPulse and MaxPulse by Gender
+### Relationship of runpulse and maxpulse by gender from wide tibble
 
 ```{r relationship of Run and Max Pulse by Gender}
-Fitness %>% 
-  ggplot(aes(x = RunPulse, y = MaxPulse, color = Sex)) +
+fitness %>% 
+  ggplot(aes(x = runpulse, y = maxpulse, color = sex)) +
     geom_point() +
     geom_smooth(method = "lm", se = FALSE)
 ```
@@ -141,21 +162,23 @@ Fitness %>%
 
 ```{r linear model}
 # Extracting components
-regression <- lm(MaxPulse ~ RunPulse, data = Fitness )
-regression %>% summary()
-regression %>% coef()
+regression <- lm(maxpulse ~ runpulse, data = fitness )
+regression %>%
+  summary()
+regression %>%
+  coef()
 ```
 
-### Analysis of Residuals
+### Analysis of residuals
 
 ```{r analysis of residuals}
 # Plot of Predicted versus actual
-plot_data <- tibble(regression$fitted.values, Fitness$MaxPulse, Fitness$Sex)
-colnames(plot_data) <- c("Fitted", "Actual", "Sex")
+plot_data <- tibble(regression$fitted.values, fitness$maxpulse, fitness$sex)
+colnames(plot_data) <- c("fitted", "actual", "sex")
 
 plot_data %>% 
-  ggplot(aes(x = Fitted, y = Actual)) +
-    geom_point(aes(color = Sex)) +
+  ggplot(aes(x = fitted, y = actual)) +
+    geom_point(aes(color = sex)) +
     geom_smooth(method = "lm", color = "grey")
 ```
 
@@ -164,7 +187,6 @@ plot_data %>%
 ### Get time series functions, get Data from FRED, and create a data frame
 
 ```{r FRED}
-
 # Get time series functions
 "http://govfinance.byu.edu/govfinance/quantTools/R/manipulations.R" %>%
   url() %>%
@@ -183,12 +205,6 @@ dates <- revenue %>%
 # Create a data frame
 revenue <- data.frame(dates, revenue)
 colnames(revenue) <- c("dates", "sales", "income")
-```
-
-### This is the data frame that is the result of the R code
-
-```{r revenue}
-revenue
 ```
 
 ### Violin plots to compare the distribution of sales and income tax revenues  

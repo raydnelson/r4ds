@@ -8,7 +8,9 @@ output:
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
 ```
 
@@ -39,6 +41,19 @@ The boxplot contains each of the element that comprise Tukey's five number summa
   * geom_smooth
   * geom_path
   * geom_line
+  
+#### 3. Explain how you can use violin plots to determine whether a distribution is symmetrical.
+
+You can use boxplots to detect asymmetry in a distribution of a continuous variable in the following four ways:
+
+1. The mean and the median don't line up.
+2. The median is closer to either the upper hinge or lower hinge. With a symmetric distribution the median should be midway between the first and third quartiles.
+3. The left and right whiskers aren't the same length.
+4. Outliers exist only in either the left or right tail.
+
+#### 4. Explain how you can use violin plots to determine whether a distribution has fat tail relative to the normal.
+
+The thickness of the tails of a distribution are measured relative to the normal distribution. Tail thickness and kurtosis are an indicator of outliers. In the boxplot, the presence of a large number of outliers probably suggests thick tails.
     
 ## Interpretation of code  
 
@@ -59,11 +74,12 @@ Lines 1 - 2: initialize the ggplot by using the mpg data frame. Because we are g
 Lines 3 - 4: create two layers, one for the violin shape and the other for the boxplot. The fill colors are light green and light blue. The width of the boxplot is diminished to 0.1 so that that the boxplots fit within the violin shapes.  
 
 Lines 5 - 8: label the graph and the axis
+
 Line 9: flips the x and y axes  
 
 ## Write code  
 
-Use the mpg data frame and ggplot to investigate the relationship between
+Use the mpg data frame and ggplot to investigate the covariation between
 
 #### 1. Highway (hwy) and city (cty) mileage
 
@@ -78,7 +94,7 @@ mpg %>%
   ggplot(aes(x = cty, y = hwy)) +
   stat_density_2d(aes(fill = stat(density)), geom = "raster", contour = FALSE) +
   labs(
-    title = "Relationship between city and highway miles per gallong",
+    title = "Relationship between city and highway miles per gallon",
     x = "City Miles Per Gallon",
     y = "Highway Miles Per Gallon"
   )
@@ -97,7 +113,3 @@ mpg %>%
     y = "Miles per gallon"
   )
 ```
-
-
-
-

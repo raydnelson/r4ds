@@ -1,0 +1,54 @@
+---
+title: "Coding Midterm 1"
+author: "Mitchell Moody"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+```
+
+## Problem 1
+
+Although not required, I put labels anyway.
+
+```{r problem one}
+flights %>% 
+  filter(dest %in% c('ATL', 'BOS'), arr_delay <= 30, arr_delay >= -30) %>% 
+  ggplot(aes(x = origin, y = arr_delay)) +
+  geom_violin(aes(fill = origin), show.legend = FALSE) +
+  geom_boxplot(fill = "gray", width = .2) +
+  facet_grid(rows = vars(dest)) +
+  coord_flip() +
+  labs(
+    title = "NYC 2013 Flights Within 30 Minutes of Scheduled Arrival",
+    x = "Origin",
+    y = "Arrival Delay") 
+
+
+```
+
+## Problem 2
+
+
+```{r problem two}
+flights %>% 
+  filter(dep_delay < 0, !is.na(arr_delay), !is.na(dep_delay)) %>% 
+  group_by(origin) %>% 
+  summarize(
+    on_time_percentage = (sum((arr_delay) <= 0) / n() * 100),
+  ) %>% 
+  ggplot(aes(x = reorder(origin, -on_time_percentage), y = on_time_percentage, fill = origin)) +
+  geom_col(show.legend = FALSE) +
+  labs(
+    title = "Bar Chart (Pareto) of Percentage On Time",
+    x = "",
+    y = "Percentage"
+  ) 
+  
+```

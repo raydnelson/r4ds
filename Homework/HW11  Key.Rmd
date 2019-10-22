@@ -1,13 +1,16 @@
 ---
 title: 'Homework #11'
-author: 'Gathering, Spreading, Separating, and Uniting'
+author: 'Gathering'
+date: "Due: 21 Oct 2019"
 output:
   html_document:
     code_folding: show
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 ```
 

@@ -1,0 +1,58 @@
+---
+title: 'Midterm I Coding'
+author: "Sarah Eyring"
+date: "Due: 10/14/2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(nycflights13)
+```
+
+## Problem 1
+
+```{r code Problem 1}
+
+flights %>%
+  filter(dest == "ATL" | dest == "BOS", 
+         arr_delay <= 30, arr_delay >= -30) %>%
+  ggplot(aes(x = origin, y = arr_delay, fill = origin)) +
+  geom_violin(show.legend = FALSE) +
+  geom_boxplot(fill = "grey", width = 0.20) +
+  coord_flip() +
+  facet_grid(rows = (vars(dest))) +
+  labs(
+    title = "NYC 2013 Flights Within 30 Minutes of Scheduled Arrival",
+    x= "Origin",
+    y= "Arrival Delay")
+```  
+
+## Problem 2
+
+```{r code Problem 2 Part 1}
+
+not_cancelled <- flights %>%
+  filter(!is.na(dep_delay), !is.na(arr_delay))
+
+```  
+
+```{r code Problem 2 Part 2}
+
+not_cancelled %>%
+  filter(dep_delay < 0) %>%
+  mutate(early = arr_delay < 0) %>%
+  group_by(origin) %>%
+  summarise(percent_early = (sum(early == TRUE) / n()) *100) %>%
+  arrange(desc(percent_early)) %>%
+  
+  ggplot(aes(x = origin, y = percent_early, fill = origin)) +
+  geom_col(show.legend = FALSE) +
+  labs(
+    title = "Bar Chart (Pareto) of Percentage on Time",
+    x= "",
+    y= "Percentage")
+
+```
+

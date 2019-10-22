@@ -68,8 +68,7 @@ Line 10:  Uses the viridis color scheme
 
 ```{r code chunk interpretation 2, message = FALSE}
 planes_gt100 <- flights %>% 
-  group_by(tailnum) %>%
-  count() %>%
+  count(tailnum) %>%
   filter(n > 100)
 
 flights %>%
@@ -78,13 +77,11 @@ flights %>%
 
 Line 1:  Creates a new tibble called planes_gt100  
 
-Line 2:  Groups the observations in flights by plane using the tail number identifier  
+Line 2:  Counts the number of flights make by each plane  
 
-Line 3:  Counts the number of flights make by each plane  
+Line 3:  Chooses only those planes that have make more than 100 flights
 
-Line 4:  Chooses only those planes that have make more than 100 flights
-
-Line 5 - 6:  Uses a filtering join to extract all the information from flights on aircraft that have flown more than 100 flights.  
+Line 4 - 5:  Uses a filtering join to extract all the information from flights on aircraft that have flown more than 100 flights.  
 
 ## Write code
 
@@ -104,8 +101,7 @@ Filter flights to show only those on planes that have less than 100 flights. Thi
 
 ```{r planes with less than 100 flights using anti-join}
 planes_gte100 <- flights %>% 
-  group_by(tailnum) %>%
-  count() %>%
+  count(tailnum) %>%
   filter(n >= 100)
 
 flights %>%
@@ -114,8 +110,7 @@ flights %>%
 
 ```{r planes with less than 100 flights using semi-join}
 planes_lt100 <- flights %>% 
-  group_by(tailnum) %>%
-  count() %>%
+  count(tailnum) %>%
   filter(n < 100)
 
 flights %>%

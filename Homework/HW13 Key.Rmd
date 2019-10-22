@@ -1,6 +1,7 @@
 ---
 title: 'Homework #13 Key'
 author: 'Factors'
+date: "Due: 28 Oct 2019"
 output:
   html_document:
     code_folding: show
@@ -31,11 +32,9 @@ Factors are preferred when a character variable has a reasonably small number of
     
 ## Interpretation of code  
 
-Compare and interpret the following two R code chunks: 
-
 ### Code chunk #1  
 
-```{r code chunk interpretation 1, warning = FALSE, message = FALSE}
+```{r code chunk interpretation 1}
 gss_cat %>%
   mutate(marital = marital %>% fct_infreq() %>% fct_rev()) %>%
   ggplot(aes(x = marital, fill = marital)) +
@@ -58,7 +57,7 @@ Lines 5 - 9: Create the labels for the chart.
 
 ### Code chunk #2
 
-```{r code chunk interpretation 2, message = FALSE}
+```{r code chunk interpretation 2}
 gss_cat %>%
   mutate(partyid = fct_collapse(
     partyid,

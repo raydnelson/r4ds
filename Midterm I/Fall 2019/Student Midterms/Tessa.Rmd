@@ -1,0 +1,46 @@
+---
+title: "Midterm 1 - Take Home"
+author: "Tessa Carver"
+date: "10/12/2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+``` {r code library}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(nycflights13)
+```
+
+## First Coding Problem
+```{r code problem 1}
+flights %>%  
+  filter(dest == c("ATL", "BOS")) %>% 
+  filter(arr_delay <= 30) %>% 
+  ggplot(aes(x = origin, y = arr_delay)) +
+  geom_violin(aes(fill=origin), show.legend = FALSE)+
+  geom_boxplot(fill = "gray", width = 1/5, show.legend = FALSE)+
+  facet_grid(vars(col=dest))+
+  coord_flip()
+```
+
+
+## Second Coding Problem
+``` {r code tests}
+flights %>%  
+  filter(dep_delay < 0) %>% 
+  filter(!is.na(arr_delay)) %>% 
+  group_by(origin) %>% 
+  mutate(arrival = dep_delay + arr_delay) %>% 
+  summarize(on_time = mean(arrival<=0)*100) %>% 
+  ggplot(aes(x=reorder(origin, on_time, FUN = desc), y = on_time)) +
+  geom_col(aes(fill = origin), show.legend = FALSE) 
+  
+```

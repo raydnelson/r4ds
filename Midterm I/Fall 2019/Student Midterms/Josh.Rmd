@@ -1,0 +1,52 @@
+---
+title: "Haines Midterm 1"
+author: "Josh Haines"
+date: "10/10/2019"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(nycflights13)
+```
+
+### Problem 1
+```{r Problem 1}
+flights %>% 
+  filter(dest %in% c("ATL","BOS")) %>% 
+  filter(arr_delay <= 30 & arr_delay >= -30) %>% 
+  ggplot(aes(x = origin, y = arr_delay)) +
+    geom_violin(aes(fill = origin), show.legend = FALSE) +
+    geom_boxplot(width = .15, fill = 'lightgrey') +
+  coord_flip() +
+  facet_grid(dest ~ .) +
+  labs(
+    title = 'First Coding Problem:',
+    subtitle = 'NYC 2013 Flights Within 30 Minutes of Scheduled Arrival',
+    y = 'Arrival Delay',
+    x = 'Origin'
+  )
+```
+
+### Problem 2
+```{r Problem 2}
+flights %>% 
+  filter(!is.na(arr_delay) & !is.na(dep_delay) & dep_delay < 0) %>% 
+  group_by(origin) %>% 
+  summarize(on_time_percentage = (sum(arr_delay <= 0)/n())*100) %>% 
+  ggplot(aes(x = reorder(origin, -on_time_percentage),
+             y = on_time_percentage, 
+             fill = origin)) + 
+    geom_col(show.legend = FALSE) +
+  labs(
+    title = 'Second Coding Problem',
+    subtitle = 'Bar Chart (Pareto) of Percentage On Time',
+    x = '',
+    y = 'Percentage'
+  )
+```
+

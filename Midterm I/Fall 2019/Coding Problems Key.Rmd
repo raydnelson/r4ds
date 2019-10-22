@@ -1,0 +1,76 @@
+---
+title: "Midterm I Fall 2019"
+author: "Data Science for Managers"
+date: "Due by class: 10/13/2019"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(nycflights13)
+```
+
+Submit an R Markdown file that includes the following two problems. In order to get full credit, your R Markdown document must knit properly.
+
+## Problem 1
+
+Please write code that completes the following:
+
+* Chooses only those observations that fly to either Atlanta (ATL) or Boston (BOS)
+* Chooses the flights that are within 30 minutes of the scheduled arrival
+* Draws a set of horizontal violin plots for each airport with a separate graph for each destination.
+* It is not required that your graph replicate the graph labels. We will cover that in Chapter 28.
+
+
+```{r problem 1}
+flights %>% 
+  filter(dest %in% c("ATL", "BOS")) %>%
+  filter(arr_delay <= 30) %>% 
+  filter(arr_delay >= -30) %>% 
+  ggplot(aes(x = origin, y = arr_delay, fill = origin)) +
+  geom_violin(show.legend = FALSE) +
+  geom_boxplot(fill = "grey", width = 0.2, show.legend = FALSE) +
+  facet_grid(rows = vars(dest)) +
+  coord_flip() +
+  labs(
+    title = "First Coding Problem:",
+    subtitle = "NYC 2013 flights within 30 minutes of scheduled arrival",
+    x = "Origin",
+    y = "Arrival Delay"
+  )
+```
+
+## Problem 2
+
+Please write code that completes the following:
+
+* Choose only non-cancelled flights that left early
+* Based on the flights that left early, calculate the percentage of those that arrived on time at the destination for each origin airport
+* Draw a bar chart of the percentage for each airport
+* Color the bars by the origin airport
+* Order the bars in the bar chart from highest percentage at the left to lowest percentage at the right
+* It is not required that your graph replicate the graph labels.
+
+
+```{r Problem 2}
+flights %>% 
+  filter(!is.na(dep_delay)) %>% 
+  filter(!is.na(arr_delay)) %>% 
+  filter(dep_delay < 0) %>% 
+  group_by(origin) %>% 
+  summarise(percentage_arrival = mean(arr_delay <= 0) * 100) %>% 
+  ggplot(aes(x = origin,
+             y = percentage_arrival,
+             fill = origin)) +
+  geom_col(show.legend = FALSE) +
+  labs(
+    title = "Second Coding Problem:",
+    subtitle = "Bar chart (Pareto) of percentage of flights that left early that arrived on time.",
+    x = "",
+    y = "Percentage"
+  )
+```
+

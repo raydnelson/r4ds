@@ -7,13 +7,15 @@ output:
     code_folding: "hide"
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 # Load libraries
 library(tidyverse)
 library(forcats)
 library(janitor)
-library(knitr)
+# 
 library(kableExtra)
 ```
 
@@ -59,7 +61,7 @@ factor(x1)
 unique(x1)
 (f1 <- factor(x1, levels = unique(x1)))
 
-(f2 <- x1 %>% factor() %>% fct_inorder())
+(f2 <-factor(x1) %>% fct_inorder())
 
 f2 %>% levels()
 ```  
@@ -71,8 +73,8 @@ f2 %>% levels()
 ```{r familiarity with data}
 ? gss_cat
 data(gss_cat)
-gss_cat %>% View()
-gss_cat
+gss_cat %>%
+  View()
 ```  
 
 ### Value of factors in a tibble
@@ -100,20 +102,23 @@ gss_cat %>%
 
 ### Counting multiple factors or traditional cross tabulations
 
-```{r multiple factors}
-# Using dplyr and count
+#### Simple count using count from dplyr
+
+```{r simple counts}
 gss_cat %>% 
   count(race, marital)
+```
 
-# Using dplyr but with tabular output and styled table outputs using knitr and kableExtra
+```{r spread and kable}
 gss_cat %>% 
   group_by(race, marital) %>% 
   summarise(n = n()) %>% 
   spread(marital, n) %>% 
   kable() %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
 
-# Using the janitor library and styling uisng knitr (kable) and kableExtra
+```{r tabyl and kable}
 gss_cat %>% 
   tabyl(race, marital) %>% 
   kable() %>% 

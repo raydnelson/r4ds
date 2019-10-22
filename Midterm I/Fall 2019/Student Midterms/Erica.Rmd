@@ -1,0 +1,40 @@
+---
+title: "Midterm I"
+author: "Erica"
+date: "10/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(nycflights13)
+```
+
+## I think there is a way to combine the steps in this next chunk but I couldn't figure it out.
+
+```{r}
+destinations <- flights %>% 
+  filter(dest %in% c("ATL", "BOS"))
+
+arrivals <- destinations %>% 
+  filter(arr_time, (abs(sched_arr_time - arr_time) <= 30))
+```
+
+## Here is the code for the graph
+
+```{r}
+arrivals %>% 
+ggplot(aes(origin, arr_delay)) +
+  geom_violin(aes(fill = origin), show.legend = FALSE) +
+  geom_boxplot(width = 0.25, fill = "grey") +
+  facet_grid("dest") +
+  coord_flip() +
+  labs(
+    title = "First Coding Problem",
+    subtitle = "NYC 2013 Flights Within 30 Minutes of Scheduled Arrival",
+    x = "Origin",
+    y = "Arrival Delay")
+```
+
+### I don't know why LGA's flights to BOS are short

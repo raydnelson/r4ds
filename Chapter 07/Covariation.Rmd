@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE,
 library(tidyverse)
 ```
 
-## Explore the Car Highway Mileage
+## Explore the car highway mileage
 ### Distribution of mileage
 
 1.  Location
@@ -39,7 +39,7 @@ mpg %>%
   geom_bar(show.legend = FALSE)
 ```
 
-## Relationship between categorical and continous variables
+## Relationship between categorical and continuous variables
 
 ### Distribution of highway miles per gallon by vehicle class using violin plots
 
@@ -56,27 +56,63 @@ mpg %>%
 
 ## Relationship between two categorical variables
 
-```{r categorical variables}
+### Contingency table for diamond color and cut using dplyr and tidyr
+
+```{r contingency}
+# Contingency table for diamond color and cut using dplyr and tidyr
+diamonds %>% 
+  count(color, cut) %>% 
+  spread(key = cut, value = n)
+```
+
+### geom_point with position jitter
+
+```{r geom_point}
 diamonds %>%
-  ggplot(aes(x = cut, y = color)) +
+  ggplot(aes(x = cut, y = color, color = clarity)) +
   geom_point(position = "jitter",
              alpha = 0.8,
              shape = 16,
              size = 0.5)
+```
 
+### geom_count
+
+```{r geom_count}
 diamonds %>%
   ggplot(aes(x = cut, y = color)) +
   geom_count()
+```
 
+### geom_tile
+
+```{r geom_tile}
 diamonds %>% 
   count(color, cut) %>% 
   ggplot(aes(x = cut, y = color)) +
     geom_tile(aes(fill = n))
 ```
 
+### Bar chart
+
+```{r bar chart}
+diamonds %>% 
+  ggplot(aes(x = color, fill = cut, width = color)) +
+  geom_bar(position = "fill")
+```
+
+### Mosaic chart
+
+```{r mosaic}
+library(ggmosaic)
+diamonds %>% 
+  ggplot() +
+  geom_mosaic(aes(x = product(color, cut), fill = color), na.rm = TRUE)
+```
+
 ## Relationship between two continuous variables
 
-### Scatterplot
+### Scatterplot of price on carat
 
 ```{r scatterplot of carat and price}
 cov(diamonds$carat, diamonds$price)
@@ -86,17 +122,17 @@ diamonds %>%
   geom_point(alpha = 1)
 ```
 
-### Two Dimensional Density
+### Two dimensional density
 
-#### Choose a subset of diamonds
+### Choose a subset of diamonds
 
 ```{r smaller diamonds}
-set.seed(4393)
+set.seed(1234)
 dsmall <- diamonds %>%
   sample_n(1000)
 ```
 
-#### Scatterplot of price on carat
+### Scatterplot of price on carat for a subset of diamonds
 
 ```{r two dimensional density}
 dsmall %>%
@@ -104,7 +140,7 @@ dsmall %>%
   geom_point()
 
 dsmall %>%
-  ggplot(aes(x, y)) +
+  ggplot(aes(x = carat, y= price)) +
   stat_density_2d(geom = "raster",
                   aes(fill = stat(density)),
                   contour = FALSE)
@@ -114,7 +150,7 @@ dsmall %>%
 
 ### Heteroskedasticity
 
-```{r non constant variance}
+```{r heteroskedasticity}
 diamonds %>%
   filter(carat < 3) %>% 
   ggplot(aes(x = carat, y = price)) +
@@ -122,6 +158,7 @@ diamonds %>%
   geom_smooth(color = "blue") + 
   geom_smooth(method = "lm", color = "red")
 ```
+
 ### Logarithmic Transformation
 
 ```{r logarithmic transformation}
@@ -134,6 +171,7 @@ diamonds %>%
 ```
 
 ## Explore the Old Faithful data frame
+
 ### Density for eruption length
 ```{r density for eruption length}
 faithful %>%

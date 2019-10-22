@@ -1,0 +1,278 @@
+movie,type,rating,year,domestic,worldwide,director
+'Crocodile' Dundee II,Comedy,PG,1988,109.3,239.6,J. Cornell
+101 Dalmatians,Family,G,1996,135.5,304.9,S. Herek
+8 Mile,Drama,R,2002,116.7,229.7,C. Hanson
+A Beautiful Mind,Drama,PG-13,2001,170.7,312.1,R. Howard
+A Bug's Life,Family,G,1998,162.8,358,J. Lasseter/A. Stanton
+A Few Good Men,Drama,R,1992,141.3,237.3,R. Reiner
+A League of Their Own,Comedy,PG,1992,107.4,130.5,P. Marshall
+A Time to Kill,Mystery-Suspense,R,1996,108.3,152.3,J. Schumacher
+Ace Ventura: When Nature Calls,Comedy,PG-13,1995,108.4,212.3,S. Oedekerk
+Air Force One,Mystery-Suspense,R,1997,173,315.1,W. Petersen
+Airport,Action,G,1970,100.5,100.5,G. Seaton
+Aladdin,Family,G,1992,217.4,502.4,R. Clements/J. Musker
+American Beauty,Drama,R,1999,130.1,348.1,S. Mendes
+American Graffiti,Drama,PG,1973,115,115,G. Lucas
+American Pie,Comedy,R,1999,101.7,201.8,P. Weitz
+American Pie 2,Comedy,R,2001,145.1,285.4,J. B. Rogers
+An Officer and a Gentleman,Drama,R,1982,129.8,129.8,T. Hackford
+Analyze This,Comedy,R,1999,106.7,176.9,H. Ramis
+Anger Management,Comedy,PG-13,2003,132.8,149.4,P. Segal
+Apollo 13,Drama,PG,1995,172.1,334.1,R. Howard
+Armageddon,Action,PG-13,1998,201.6,554.6,M. Bay
+As Good As It Gets,Comedy,PG-13,1997,148.5,313.4,J. L. Brooks
+Austin Powers in Goldmember,Comedy,PG-13,2002,213.1,287.9,J. Roach
+Austin Powers: The Spy Who Shagged Me,Comedy,PG-13,1999,206,310.3,M. Roach
+Back to the Future,Comedy,PG,1985,210.6,350.6,R. Zemeckis
+Back to the Future Part II,Comedy,PG,1989,118.5,332,R. Zemeckis
+Bambi,Family,G,1942,102.8,268,J. Algar/S. Armstrong
+Basic Instinct,Mystery-Suspense,R,1992,117.7,352.7,P. Verhoeven
+Batman,Action,PG-13,1989,251.2,413,T. Burton
+Batman & Robin,Action,PG-13,1997,107.3,237.3,J. Schumacher
+Batman Forever,Action,PG-13,1995,184,335,J. Schumacher
+Batman Returns,Action,PG-13,1992,162.8,282.8,T. Burton
+Beauty and the Beast,Family,G,1991,171,378,G. Trousdale/K. Wise
+Beverly Hills Cop,Comedy,R,1984,234.8,316.4,M. Brest
+Beverly Hills Cop 2,Comedy,R,1987,153.7,300,T. Scott
+Big,Comedy,PG,1988,115,115,P. Marshall
+Big Daddy,Comedy,PG-13,1999,163.5,233.6,D. Dugan
+Big Momma's House,Comedy,PG-13,2000,117.6,169.7,R. Gosnell
+Black Hawk Down,Drama,R,2001,108.6,153.6,R. Scott
+Blazing Saddles,Comedy,R,1974,119.5,119.5,M. Brooks
+Bringing Down the House,Comedy,PG-13,2003,130.4,130.4,A. Shankman
+Bruce Almighty,Comedy,PG-13,2003,137.4,137.4,T. Shadyac
+Butch Cassidy and the Sundance Kid,Action,PG,1969,102.3,102.3,G. Roy Hill
+Casper,Family,PG,1995,100.3,282.3,B. Silberling
+Cast Away,Drama,PG-13,2000,233.6,424.3,R. Zemeckis
+Catch Me If You Can,Mystery-Suspense,PG-13,2002,164.4,335.8,S. Spielberg
+Charlie's Angels,Action,PG-13,2000,125.3,258.5,McG
+Chicago,Drama,PG-13,2002,168.6,286.5,R. Marshall
+Chicken Run,Family,G,2000,106.6,172,P. Lord/N. Park
+City Slickers,Comedy,PG-13,1991,123.8,179,R. Underwood
+Clear and Present Danger,Mystery-Suspense,PG-13,1994,122,207.5,P. Noyce
+Close Encounters of the Third Kind,Drama,PG,1977,128.3,300,S. Spielberg
+Coming to America,Comedy,R,1988,128.2,288.8,J. Landis
+Con Air,Action,R,1997,101.1,223.2,S. West
+Contact,Drama,PG,1997,100.9,165.9,R. Zemeckis
+Crocodile Dundee,Comedy,PG-13,1986,174.8,328.2,P. Faiman
+"Crouching Tiger, Hidden Dragon",Action,PG-13,2000,128,209.1,A. Lee
+Dances With Wolves,Drama,PG-13,1990,184.2,424.2,K. Costner
+Daredevil,Action,PG-13,2003,102.3,173.5,M. Steven Johnson
+Deep Impact,Action,PG-13,1998,140.4,348.8,M. Leder
+Dick Tracy,Drama,PG,1990,103.7,162.7,W. Beatty
+Die Another Day,Mystery-Suspense,PG-13,2002,160.2,424.7,L. Tamahori
+Die Hard 2,Action,R,1990,117.3,237.7,R. Harlin
+Die Hard: With a Vengeance,Action,R,1995,100,365,J. McTiernan
+Dinosaur,Action,PG,2000,137.7,347.8,E. Leghton/R. Zondag
+Doctor Zhivago,Drama,PG-13,1965,111.7,111.7,D. Lean
+Double Jeopardy,Mystery-Suspense,R,1999,116.7,177.8,B. Beresford
+Dr. Dolittle,Family,PG-13,1998,144.2,293.4,B. Thomas
+Dr. Dolittle 2,Family,PG,2001,113,175,S. Carr
+Dr. Seuss' How the Grinch Stole Christmas,Family,PG,2000,260,340,R. Howard
+Driving Miss Daisy,Drama,PG,1989,106.6,145.8,B. Beresford
+Dumb & Dumber,Comedy,PG-13,1994,125.5,244.4,P. Farrelly
+E.T.,Family,PG,1982,434.9,757,S. Spielberg
+Enemy of the State,Mystery-Suspense,R,1998,111.5,245.1,T. Scott
+Eraser,Action,R,1996,100.6,235,C. Russell
+Erin Brockovich,Comedy,R,2000,125.5,256.6,S. Soderbergh
+Every Which Way But Loose,Comedy,PG,1978,105.9,105.9,J. Fargo
+Face/Off,Action,R,1997,112.7,241.3,J. Woo
+Fatal Attraction,Mystery-Suspense,R,1987,156.6,320.1,A. Lyne
+Forrest Gump,Drama,PG-13,1994,329.7,680,R. Zemeckis
+George of the Jungle,Family,PG,1997,105.3,174.3,S. Weisman
+Ghost,Drama,PG-13,1990,217.6,517.6,J. Zucker
+Ghostbusters,Comedy,PG,1984,238.6,291.6,I. Reitman
+Ghostbusters II,Comedy,PG,1989,112.5,215.5,I. Reitman
+Gladiator,Drama,R,2000,187.7,456.3,R. Scott
+Godzilla,Action,PG-13,1998,136.1,376,R. Emmerich
+GoldenEye,Mystery-Suspense,PG-13,1995,106.6,351.3,M. Campbell
+Gone With the Wind,Drama,G,1939,198.7,390.5,V. Fleming
+Gone in Sixty Seconds,Action,PG-13,2000,101.6,230.5,D. Sena
+"Good Morning, Vietnam",Comedy,R,1987,123.9,123.9,B. Levinson
+Good Will Hunting,Drama,R,1997,138.3,225.9,G. Van Sant
+Grease,Drama,PG,1978,181.5,379.8,R. Kleise
+Gremlins,Drama,PG,1984,148.2,148,J. Dante
+Hannibal,Mystery-Suspense,R,2001,165.1,349.3,R. Scott
+Harry Potter and the Chamber of Secrets,Family,PG,2002,262,866.4,C. Columbus
+Harry Potter and the Sorcerer's Stone,Family,PG,2001,317.6,968.7,C. Columbus
+Home Alone,Family,PG,1990,285.8,533.8,C. Columbus
+Home Alone 2: Lost in New York,Family,PG,1992,173.6,279.6,C. Columbus
+"Honey, I Shrunk the Kids",Family,PG,1989,130.7,222.7,J. Johnston
+Hook,Drama,PG,1991,119.7,300.9,S. Spielberg
+How to Lose a Guy in 10 Days,Comedy,PG-13,2003,104.9,110.9,D. Petrie
+Ice Age,Family,PG,2002,176.4,378.4,C. Saldanha/C. Wedge
+In the Line of Fire,Drama,R,1993,102.3,187.3,W. Petersen
+Indecent Proposal,Drama,R,1993,106.6,266.6,A. Lyne
+Independence Day,Action,PG-13,1996,306.1,813.1,R. Emmerich
+Indiana Jones and the Last Crusade,Action,PG-13,1989,197.2,494.8,S. Spielberg
+Indiana Jones and the Temple of Doom,Action,PG,1984,179.9,333.1,S. Spielberg
+Interview with the Vampire: The Vampire Chronicles,Mystery-Suspense,R,1994,105.3,221.3,N. Jordan
+Jaws,Drama,PG,1975,260,471,S. Spielberg
+Jaws 2,Drama,PG,1978,102.9,208.9,J. Szwarc
+Jerry Maguire,Drama,R,1996,154,273.6,C. Crowe
+Jumanji,Family,PG,1995,100.2,264.7,J. Johnston
+Jurassic Park,Action,PG-13,1993,357.1,920,S. Spielberg
+Jurassic Park III,Action,PG-13,2001,181.2,365.3,J. Johnston
+Kramer vs. Kramer,Drama,PG,1979,106.3,106.3,R. Benton
+Lara Croft: Tomb Raider,Action,PG-13,2001,131.1,224.6,S. West
+Lethal Weapon 2,Action,R,1989,147.3,227.3,R. Donner
+Lethal Weapon 3,Action,R,1992,144.7,319.7,R. Donner
+Lethal Weapon 4,Action,R,1998,129.7,285.4,R. Donner
+Liar Liar,Comedy,PG-13,1997,181.4,306.4,T. Shadyac
+Lilo & Stitch,Family,PG,2002,145.8,262.8,D. Deblois/C. Sanders
+Look Who's Talking,Comedy,PG-13,1989,140.1,297.1,A. Hackerling
+Love Story,Drama,PG,1970,106.4,106.4,A. Hiller
+Mary Poppins,Family,G,1964,102.3,102.3,R. Stevenson
+Maverick,Comedy,PG,1994,101.6,183,R. Donner
+Meet the Parents,Comedy,PG-13,2000,166.2,295.5,J. Roach
+Men In Black,Action,PG-13,1997,250.1,587.2,B. Sonnenfeld
+Men in Black II,Action,PG-13,2002,190.4,425.6,B. Sonnenfeld
+Minority Report,Mystery-Suspense,PG-13,2002,132,342,S. Spielberg
+Miss Congeniality,Comedy,PG-13,2000,106.8,212.1,D. Petrie
+Mission: Impossible,Action,PG-13,1996,181,467,B. de Palma
+Mission: Impossible 2,Action,PG-13,2000,215.4,545.4,J. Woo
+"Monsters, Inc.",Family,G,2001,255.9,524.2,P. Docter/D. Silverman
+Mr. Deeds,Comedy,PG-13,2002,126.2,161.7,S. Brill
+Mrs. Doubtfire,Comedy,PG-13,1993,219.2,423.2,C. Columbus
+Mulan,Family,G,1998,120.6,303.6,T. Bancroft/B. Cook
+My Best Friend's Wedding,Comedy,PG-13,1997,126.8,286.9,P.J. Hogan
+My Big Fat Greek Wedding,Comedy,PG,2002,241.4,356.5,J. Zwick
+National Lampoon's Animal House,Comedy,R,1978,141.6,141.6,J. Landis
+Nine to Five,Comedy,PG,1980,103.3,103.3,C. Higgins
+Notting Hill,Drama,PG-13,1999,116,363.1,R. Michell
+Nutty Professor II: The Klumps,Comedy,PG-13,2000,123.3,163.7,P. Segal
+Ocean's Eleven,,PG-13,2001,183.4,444.3,S. Soderbergh
+On Golden Pond,Drama,PG,1981,119.3,119.2,M. Rydell
+One Flew Over the Cuckoo's Nest,Drama,R,1975,112,112,M. Forman
+One Hundred and One Dalmatians,Family,G,1961,152.6,215,C. Geronimi/H. Luske
+Parenthood,Comedy,PG-13,1989,100.1,100.1,R. Howard
+Patch Adams,Comedy,PG-13,1998,134.9,193.5,T. Shadyac
+Pearl Harbor,Action,PG-13,2001,198.5,450.4,M. Bay
+Phenomenon,Drama,PG,1996,104.6,152,J. Turteltaub
+Planet of the Apes,Action,PG-13,2001,180,358.9,T. Burton
+Platoon,Drama,R,1986,138,153,O. Stone
+Pocahontas,Family,G,1995,141.6,347.2,M. Gabriel/E. Goldberg
+Porky's,Comedy,R,1981,105.5,105.5,B. Clark
+Pretty Woman,Comedy,R,1990,178.4,463.4,G. Marshall
+Pulp Fiction,Drama,R,1994,107.9,212.9,Q. Tarantino
+Raiders of the Lost Ark,Action,PG,1981,242.4,384,S. Spielberg
+Rain Man,Drama,R,1988,172.8,412.8,B. Levinson
+Rambo: First Blood Part 2,Action,R,1985,150.4,300.4,G. P. Costamos
+Ransom,Action,R,1996,136.4,308.8,R. Howard
+Remember the Titans,Drama,PG,2000,115.6,130,B. Yakin
+Return of the Jedi,Drama,PG,1983,309.1,573,R. Marquand
+Road to Perdition,Drama,R,2002,104.1,161.4,S. Mendes
+Robin Hood: Prince of Thieves,Drama,PG-13,1991,165.5,390.5,K. Reynolds
+Rocky,Drama,PG,1976,117.2,117.2,J. G. Avildsen
+Rocky III,Drama,PG,1982,122.8,122.8,S. Stallone
+Rocky IV,Drama,PG,1985,127.9,300.5,S. Stallone
+Runaway Bride,Comedy,PG,1999,152.3,307.9,G. Marshall
+Rush Hour,Comedy,PG-13,1998,141.2,245.3,B. Ratner
+Rush Hour 2,Comedy,PG-13,2001,226.2,329.1,B. Ratner
+Saturday Night fever,Drama,PG,1977,142.5,285.4,J. Badham
+Saving Private Ryan,Drama,R,1998,216.3,479.3,S. Spielberg
+Scary Movie,Comedy,R,2000,157,277,K. Ivory Wayans
+Scooby-Doo,Family,PG,2002,153.3,267.7,R. Gosnell
+Scream,Mystery-Suspense,R,1996,103,173,W. Craven
+Scream 2,Mystery-Suspense,R,1997,101.3,172.4,W. Craven
+Se7en,Mystery-Suspense,R,1995,100.1,350.1,D. Fincher
+Shakespeare in Love,Drama,R,1998,100.2,289.1,J. Madden
+Shrek,Family,PG,2001,267.7,469.7,A. Adamson/V. Jenson
+Signs,Mystery-Suspense,PG-13,2002,228,408,M. Night Shyamalan
+Sister Act,Comedy,PG,1992,139.6,231.6,E. Ardolino
+Sleeping with the Enemy,Mystery-Suspense,R,1991,101.6,173,J. Ruben
+Sleepless in Seattle,Comedy,PG,1993,126.7,227.9,N. Ephron
+Sleepy Hollow,Drama,R,1999,101.1,202.1,T. Burton
+Smokey and the Bandit,Comedy,PG,1977,126.7,126.7,H. Needham
+Snow White and the Seven Dwarfs,Family,G,1937,184.9,184.9,D. Hand
+Speed,Action,R,1994,121.2,283.2,J. de Bont
+Spider-Man,Action,PG-13,2002,403.7,806.7,S. Raimi
+Spy Kids,Family,PG,2001,112.7,143.8,R. Rodriguez
+Star Trek IV: The Voyage Home,Drama,PG,1986,109.7,133,L. Nimoy
+Star Wars,Drama,PG,1977,460.9,797.9,G. Lucas
+Star Wars: Episode I -- The Phantom Menace,Drama,PG,1999,431.1,925.5,G. Lucas
+Star Wars: Episode II -- Attack of the Clones,Drama,PG,2002,310.7,648.3,G. Lucas
+Stir Crazy,Comedy,R,1980,101.5,101.5,S. Poitier
+Stuart Little,Family,PG,1999,140,297.6,R. Minkoff
+Superman,Drama,PG,1978,134.2,300.2,R. Donner
+Superman II,Drama,PG,1980,108.2,108.2,R. Lester
+Sweet Home Alabama,Comedy,PG-13,2002,127.2,149.7,A. Tennant
+Tarzan,Family,G,1999,171.1,435.3,C. Buck/K. Lima
+Teenage Mutant Ninja Turtles,Family,PG,1990,135.3,202,S. Barron
+Terminator 2: Judgment Day,Action,R,1991,204.8,516.8,J. Cameron
+Terms of Endearment,Drama,PG,1983,108.4,164.2,J. L. Brooks
+The Addams Family,Comedy,PG-13,1991,113.5,191.5,B. Sonnenfeld
+The Birdcage,Comedy,R,1996,124,185.2,M. Nichols
+The Blair Witch Project,Mystery-Suspense,R,1999,140.5,240.5,D. Myrick/E. Sanchez
+The Bodyguard,Action,R,1992,121.9,410.9,M. Jackson
+The Bourne Identity,Mystery-Suspense,PG-13,2002,121.5,213.6,D. Liman
+The Empire Strikes Back,Drama,PG,1980,290.2,533.9,I. Kershner
+The Exorcist,Mystery-Suspense,R,1973,204.7,357.5,W. Friedkin
+The Fast and the Furious,Action,PG-13,2001,144.5,206.5,R. Cohen
+The Firm,Mystery-Suspense,R,1993,158.3,262.3,S. Pollack
+The First Wives Club,Comedy,PG,1996,105.3,181.3,H. Wilson
+The Flintstones,Family,PG,1994,130.5,358.5,B. Levant
+The Fugitive,Action,PG-13,1993,183.9,368.9,A. Davis
+The General's Daughter,Mystery-Suspense,R,1999,102.7,143.3,S. West
+The Godfather,Drama,R,1972,134.6,134.8,F. Ford Coppola
+The Graduate,Drama,PG,1967,104.4,104.4,M. Nichols
+The Green Mile,Drama,R,1999,136.8,268.7,F. Darabont
+The Hunchback of Notre Dame,Family,G,1996,100.1,325.7,G. Trousdale/K. Wise
+The Hunt for Red October,Action,PG,1990,120.7,199.2,J. McTiernan
+The Jungle Book,Family,G,1967,141.8,205.8,W. Reitherman
+"The Karate Kid, Part II",Drama,PG,1986,115.1,115.1,J. G. Avildsen
+The Lion King,Family,G,1994,312.9,771.9,R. Allers/R. Minkoff
+The Little Mermaid,Family,G,1989,111.5,222.3,R. Clements/J. Musker
+The Lord of the Rings: The Fellowship of the Ring,Drama,PG-13,2001,313.4,860.3,P. Jackson
+The Lord of the Rings: The Two Towers,Drama,PG-13,2002,339,909,P. Jackson
+The Lost World,Drama,PG-13,1997,229.1,614.4,S. Spielberg
+The Mask,Comedy,PG-13,1994,119.9,320.9,C. Russell
+The Matrix,Action,R,1999,171.5,456.5,A. Wachowski/L. Wachowski
+The Matrix: Reloaded,Action,R,2003,232.7,389.8,A. Wachowski/L. Wachowski
+The Mummy,Drama,PG-13,1999,155.4,413.5,S. Sommers
+The Mummy Returns,Drama,PG-13,2001,202,429.5,S. Sommers
+The Nutty Professor,Comedy,PG-13,1996,128.8,269.4,T. Shadyac
+The Patriot,Drama,R,2000,113.3,215.3,R. Emmerich
+The Pelican Brief,Mystery-Suspense,PG-13,1993,100.8,195,A. J. Pakula
+The Perfect Storm,Drama,PG-13,2000,182.6,325.8,W. Petersen
+The Prince of Egypt,Family,PG,1998,101.2,218.5,B. Chapman/S. Hickner
+The Princess Diaries,Family,G,2001,108.2,153.7,G. Marshall
+The Ring,Mystery-Suspense,PG-13,2002,128.6,229.2,G. Verbinski
+The Rock,Action,R,1996,134.1,330.5,M. Bay
+The Rocky Horror Picture Show,Comedy,R,1975,134.2,134.2,J. Sharman
+The Rugrats Movie,Family,G,1998,100.5,140.9,I. Kovalyov/N. Virgien
+The Santa Clause,Family,PG,1994,144.8,194.8,J. Pasquin
+The Santa Clause 2,Family,G,2002,139.2,167.3,M. Lembeck
+The Silence of the Lambs,Drama,R,1991,130.7,272.7,J. Demme
+The Sixth Sense,Mystery-Suspense,PG-13,1999,293.5,661.5,M. Night Shyamalan
+The Sound of Music,Family,G,1965,163.2,163.2,R. Wise
+The Sting,Drama,PG,1973,159.6,159.6,G. Roy Hill
+The Sum of All Fears,Action,PG-13,2002,118.5,176.2,P. Alden Robinson
+The Towering Inferno,Action,PG,1974,116,116,I. Allen/J. Guillermin
+The Truman Show,Drama,PG,1998,126.5,248.4,P. Weir
+The Waterboy,Comedy,PG-13,1998,161.5,190.2,F. Coraci
+The World Is Not Enough,Mystery-Suspense,PG-13,1999,126.9,352,M. Apted
+There's Something About Mary,Comedy,R,1998,176.5,360.1,B. Farrelly/P. Farrelly
+Three Men and a Baby,Comedy,PG,1987,167.8,167.8,L. Nimoy
+Titanic,Drama,PG-13,1997,600.8,1835,J. Cameron
+Tomorrow Never Dies,Mystery-Suspense,PG-13,1997,125.3,346.6,R. Spottiswoode
+Tootsie,Comedy,PG,1982,177.2,177.2,S. Pollack
+Top Gun,Drama,PG,1986,176.8,344.8,T. Scott
+Total Recall,Action,R,1990,119.4,261.4,P. Verhoeven
+Toy Story,Family,G,1995,191.8,358.8,J. Lasseter
+Toy Story 2,Family,G,1999,245.8,485.7,J. Lasseter
+Traffic,Drama,R,2000,124.1,207,S. Soderbergh
+True Lies,Action,R,1994,146.3,365.3,J. Cameron
+Twins,Comedy,PG,1988,111.9,216.6,I. Reitman
+Twister,Action,PG-13,1996,241.7,495,J. de Bont
+Unforgiven,Drama,R,1992,101.2,159.2,C. Eastwood
+Vanilla Sky,Drama,R,2001,100.6,201.1,C. Crowe
+Wayne's World,Comedy,PG-13,1992,121.7,183.1,P. Spheeris
+What Lies Beneath,Mystery-Suspense,PG-13,2000,155.4,275.6,R. Zemeckis
+What Women Want,Comedy,PG-13,2000,182.8,372.3,N. Meyers
+Who Framed Roger Rabbit,Comedy,PG,1988,154.1,349.2,R. Zemeckis
+Wild Wild West,Action,PG-13,1999,113.7,217.8,B. Sonnenfeld
+X-Men,Action,PG-13,2000,157.3,294.3,B. Singer
+X2: X-Men United,Action,PG-13,2003,199.4,365,B. Singer
+XXX,Action,PG-13,2002,141.2,267.2,R. Cohen
+You've Got Mail,Drama,PG,1998,115.7,250.7,N. Ephron

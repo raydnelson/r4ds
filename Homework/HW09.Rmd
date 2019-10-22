@@ -1,6 +1,7 @@
 ---
 title: 'Homework #9'
 author: 'Covariation'
+date: "Due: 7 Oct 2019"
 output: word_document
 ---
 
@@ -11,16 +12,19 @@ library(tidyverse)
 
 ## Concepts  
 
-1.  Under what conditions is it appropriate to use covariance and correlation as measures of the strength of relationships between variables.
+#### 1.  Explain how Tukey's five number summary is related to the boxplot.
 
+#### 2.  Identify at least five geom's that help you explore the covariation between two variables.
+  
+#### 3. Explain how you can use violin plots to determine whether a distribution is symmetrical.
+
+#### 4. Explain how you can use violin plots to determine whether a distribution has fat tail relative to the normal.
     
 ## Interpretation of code  
 
-Interpret the following R code:  
-
-```{r code chunk interpretation I}
+```{r code chunk interpretation}
 mpg %>%
-  ggplot(aes(x = reorder(class, cty, FUN = IQR), y = hwy)) +
+  ggplot(aes(x = reorder(class, cty, FUN = IQR), y = cty)) +
   geom_violin(fill = "lightgreen") +
   geom_boxplot(width = 0.1, fill = "lightblue") +
   labs(
@@ -28,24 +32,24 @@ mpg %>%
     x = "Class of Vehicle",
     y = "Miles Per Gallon") +
   coord_flip()
-```
-
-```{r code chunk interpretation II}
-diamonds %>%
-  filter(carat < 3) %>% 
-  ggplot(aes(x = carat, y = price)) +
-  geom_boxplot(aes(group = cut_width(carat, 0.1))) +
-  coord_flip()
-```
-
+```  
 
 ## Write code  
 
-Using the mpg data set, use covariance, correlation, scatterplots, and heat maps to investigate the relationship between highway and city mileage. Use geom_smooth to determine whether the relationship is linear.
+Use the mpg data frame and ggplot to investigate the covariation between
+
+#### 1. Highway (hwy) and city (cty) mileage
 
 ```{r relationship between highway and city mileage}
 
 ```
+
+#### 2. Highway mileage and drive train
+
+```{r relationship betwen highway and drive train}
+
+```
+
 
 
 

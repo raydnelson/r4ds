@@ -1,0 +1,58 @@
+---
+title: "Midterm - 1"
+author: "Erdenebaatar"
+date: "10/9/2019"
+output: html_document
+---
+
+## Problem 1 - Coding
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+nycflights13::flights
+```
+
+
+```{r}
+flights %>%
+  filter(dest %in% c("ATL", "BOS"), 
+         sched_arr_time, 
+         arr_delay, 
+         arr_delay <= 30) %>%
+  ggplot(aes(x = origin, 
+             y = arr_delay, 
+             fill = origin
+             )) + 
+  geom_violin(position = "dodge") +
+  geom_boxplot(show.legend = FALSE, 
+               fill = "grey", 
+               width = 0.20) +
+  coord_flip() +
+  facet_grid(rows = vars(dest))
+
+```
+
+## Problem 2 - Coding
+
+```{r}
+not_cancelled <- flights %>%
+  filter(!is.na(dep_time), !is.na(arr_time)) %>% 
+  select(sched_dep_time,
+         arr_time,
+         dep_time) %>% 
+  group_by(origin) %>% 
+  summarise(
+    on_time_percentage = mean(dep_time <= 0)
+    ) %>%
+  arrange(desc(on_time_percentage)) %>%
+  rename(Percentage = on_time_percentage) %>% 
+  ggplot(aes(x = as.factor(), 
+               y = Percentage)) +
+  geom_col(show.legend = FALSE, fill = origin)
+
+```
+
+
+
+

@@ -1,0 +1,50 @@
+---
+title: "Midterm Exam F2019"
+author: "Haris Rozajac"
+date: "10/13/2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(nycflights13)
+```
+
+##Problem 1
+
+```{r}
+flights %>% 
+  filter(dest == 'ATL' | dest == 'BOS') %>%
+  filter(arr_delay <= 30 & arr_delay >= -30) %>% 
+  ggplot(aes(x = origin, y = arr_delay)) +
+  geom_violin(aes(fill = origin), show.legend = FALSE) +
+  geom_boxplot(width = 0.1) +
+  coord_flip() +
+  facet_grid(vars(dest)) +
+  labs(
+    title = 'First Coding Problem',
+    subtitle = 'NYC 2013 Flights Within 30 Minutes of Scheduled Arrival',
+    x = 'Origin',
+    y = 'Arrival Delay'
+  )
+  
+```
+
+##Problem 2
+
+```{r}
+flights %>% 
+  filter(!is.na(dep_delay), !is.na(arr_delay)) %>% 
+  filter(dep_delay < 0) %>% 
+  group_by(origin) %>% 
+  summarise(Percentage = mean(arr_delay <= 0) * 100) %>% 
+  ggplot(aes(x = origin, y = Percentage)) +
+  geom_col(aes(fill = origin), show.legend = FALSE) +
+  labs(title = 'Second Coding Problem',
+       subtitle = 'Bar Chart (Pareto) of Percentage On Time',
+       x = '')
+
+  
+```
+

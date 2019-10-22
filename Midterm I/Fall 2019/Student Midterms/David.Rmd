@@ -1,0 +1,59 @@
+---
+title: 'Midterm 1 Fall 2019'
+author: 'David Steed'
+date: "Due: 14 Oct 2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(nycflights13)
+```
+# Problem 1 
+
+Visualizing the distributions of arrival delays for each destination airport by origin.
+
+```{r violin plots of arrival delays by origin}
+flights %>%
+  #Filter by destination, only included those flying to Atlanta or Boston
+  filter(dest %in% c("ATL", "BOS")) %>% 
+  #Filter out all flights are are not within 30 minutes of scheduled arrival
+  filter(arr_delay <= 30, arr_delay >= -30) %>% 
+  #Plot the results, drawing violin and box blots for each airport.
+  ggplot(aes(x = origin, y = arr_delay, fill = origin)) + 
+  geom_violin(show.legend = FALSE) +
+  geom_boxplot(width = 0.2, fill = "gray") +
+  labs( #Addition of labels
+    title = "First Coding Problem",
+    subtitle = "NYC 2013 Flights Within 30 Minutes of Scheduled Arrival",
+    x = "Origin",
+    y = "Arrival Delay") +
+  coord_flip() +
+  facet_grid(rows = vars(dest))
+```  
+
+# Problem 2
+
+Visualizing the percentage of flights ariving on time by airport of origin.
+
+```{r percentage of on-time flights by origin bar chart}
+flights %>%
+  #Filter so that only non-cancelled flights are passed on
+  filter(!is.na(arr_delay), !is.na(dep_delay)) %>% 
+  #Only include flights that left early. 
+  filter(dep_time < sched_dep_time) %>% 
+  group_by(origin) %>% 
+  summarise(
+  #Caclulate the percentage of flights that arrived on-time by origin
+    percent_on_time = (sum((arr_delay) <= 0) / n()) * 100
+    ) %>% 
+  #Plot the percentages in a bar chart by origin
+  ggplot(aes(x = origin, y = percent_on_time, fill = origin)) + 
+  geom_col(show.legend = FALSE) +
+  labs( #Add labels for the chart
+    title = "Second Coding Problem",
+    subtitle = "Bar Chart (Pareto) of Percentage On Time",
+    x = "Origin",
+    y = "Percentage")
+```

@@ -1,0 +1,49 @@
+---
+title: 'Midterm 1'
+author: 'Justin Perfili'
+date: '14 October 2019'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(nycflights13)
+```
+
+# Problem 1    
+
+```{r Problem 1}
+flights %>% 
+  filter(dest %in% c('ATL', 'BOS')) %>% 
+  filter(arr_delay <= 30, arr_delay >= -30) %>% 
+  ggplot(aes(x = origin, y = arr_delay)) +
+  geom_violin(aes(fill = origin), show.legend = FALSE) +
+  geom_boxplot(width = 0.3) +
+  facet_grid(rows = vars(dest)) +
+  labs(
+    title = "NYC Flights Within 30 Minutes of Scheduled Arrival",
+    x = "Origin",
+    y = "Arrival Delay") +
+  coord_flip()
+```
+
+
+# Problem 2  
+
+```{r Problem 2}
+flights %>% 
+  filter(!is.na(arr_delay), !is.na(dep_delay)) %>% 
+  filter(dep_delay < 0) %>% 
+  group_by(origin) %>% 
+  summarise(on_time = mean(arr_delay <= 0) * 100) %>% 
+  arrange(on_time) %>% 
+  ggplot(aes(x = origin, y = on_time, fill = origin)) +
+  geom_col(show.legend = FALSE) +
+  labs(
+    title = 'Bar Chart (Pareto) of Percentage On Time',
+    x = '',
+    y = 'Percentage'
+  )
+```
+

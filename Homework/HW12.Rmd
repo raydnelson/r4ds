@@ -1,11 +1,14 @@
 ---
 title: 'Homework #12'
-author: 'Relational Data '
+author: 'Relational Data'
+date: "Due: 23 Oct 2019"
 output: word_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 library(nycflights13)
 library(viridis)
@@ -42,8 +45,7 @@ flights %>%
 
 ```{r code chunk interpretation 2, message = FALSE}
 planes_gt100 <- flights %>% 
-  group_by(tailnum) %>%
-  count() %>%
+  count(tailnum) %>%
   filter(n > 100)
 
 flights %>%

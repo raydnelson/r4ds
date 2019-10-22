@@ -7,11 +7,12 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Ray Nelson" />
+<meta name="author" content="MPA 634: Data Science for Managers" />
 
-<meta name="date" content="2019-02-24" />
+<meta name="date" content="2019-10-21" />
 
 <title>Relational Data</title>
 
@@ -209,12 +210,12 @@ window.initializeCodeFolding = function(show) {
   var currentIndex = 1;
 
   // select all R code blocks
-  var rCodeBlocks = $('pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan');
+  var rCodeBlocks = $('pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan, pre.julia');
   rCodeBlocks.each(function() {
 
     // create a collapsable div to wrap the code in
     var div = $('<div class="collapse r-code-collapse"></div>');
-    if (show)
+    if (show || $(this)[0].classList.contains('fold-show'))
       div.addClass('in');
     var id = 'rcode-643E0F36' + currentIndex++;
     div.attr('id', id);
@@ -316,9 +317,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type="text/css">
 .main-container {
@@ -332,7 +331,6 @@ code {
 }
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -349,8 +347,6 @@ summary {
 </style>
 
 
-
-<div class="container-fluid main-container">
 
 <!-- tabsets -->
 
@@ -408,28 +404,20 @@ summary {
 }
 </style>
 
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
 <!-- code folding -->
 <style type="text/css">
 .code-folding-btn { margin-bottom: 4px; }
 </style>
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("hide" === "show");
-});
-</script>
 
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
 
 
 
@@ -447,114 +435,124 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Relational Data</h1>
-<h4 class="author"><em>Ray Nelson</em></h4>
-<h4 class="date"><em>24 Feb 2019</em></h4>
+<h4 class="author">MPA 634: Data Science for Managers</h4>
+<h4 class="date">10/21/2019</h4>
 
 </div>
 
 
 <div id="overview-of-tables-to-be-manipulated" class="section level2">
 <h2>Overview of tables to be manipulated</h2>
+<div id="flights-table" class="section level3">
+<h3>Flights Table</h3>
+<pre class="r"><code>flights %&gt;% glimpse()</code></pre>
+<pre><code>## Observations: 336,776
+## Variables: 19
+## $ year           &lt;int&gt; 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013,...
+## $ month          &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,...
+## $ day            &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,...
+## $ dep_time       &lt;int&gt; 517, 533, 542, 544, 554, 554, 555, 557, 557, 55...
+## $ sched_dep_time &lt;int&gt; 515, 529, 540, 545, 600, 558, 600, 600, 600, 60...
+## $ dep_delay      &lt;dbl&gt; 2, 4, 2, -1, -6, -4, -5, -3, -3, -2, -2, -2, -2...
+## $ arr_time       &lt;int&gt; 830, 850, 923, 1004, 812, 740, 913, 709, 838, 7...
+## $ sched_arr_time &lt;int&gt; 819, 830, 850, 1022, 837, 728, 854, 723, 846, 7...
+## $ arr_delay      &lt;dbl&gt; 11, 20, 33, -18, -25, 12, 19, -14, -8, 8, -2, -...
+## $ carrier        &lt;chr&gt; &quot;UA&quot;, &quot;UA&quot;, &quot;AA&quot;, &quot;B6&quot;, &quot;DL&quot;, &quot;UA&quot;, &quot;B6&quot;, &quot;EV&quot;,...
+## $ flight         &lt;int&gt; 1545, 1714, 1141, 725, 461, 1696, 507, 5708, 79...
+## $ tailnum        &lt;chr&gt; &quot;N14228&quot;, &quot;N24211&quot;, &quot;N619AA&quot;, &quot;N804JB&quot;, &quot;N668DN...
+## $ origin         &lt;chr&gt; &quot;EWR&quot;, &quot;LGA&quot;, &quot;JFK&quot;, &quot;JFK&quot;, &quot;LGA&quot;, &quot;EWR&quot;, &quot;EWR&quot;...
+## $ dest           &lt;chr&gt; &quot;IAH&quot;, &quot;IAH&quot;, &quot;MIA&quot;, &quot;BQN&quot;, &quot;ATL&quot;, &quot;ORD&quot;, &quot;FLL&quot;...
+## $ air_time       &lt;dbl&gt; 227, 227, 160, 183, 116, 150, 158, 53, 140, 138...
+## $ distance       &lt;dbl&gt; 1400, 1416, 1089, 1576, 762, 719, 1065, 229, 94...
+## $ hour           &lt;dbl&gt; 5, 5, 5, 5, 6, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5,...
+## $ minute         &lt;dbl&gt; 15, 29, 40, 45, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, ...
+## $ time_hour      &lt;dttm&gt; 2013-01-01 05:00:00, 2013-01-01 05:00:00, 2013...</code></pre>
+</div>
 <div id="airlines-table" class="section level3">
 <h3>Airlines Table</h3>
-<pre class="r"><code>airlines</code></pre>
-<pre><code>## # A tibble: 16 x 2
-##    carrier name                       
-##    &lt;chr&gt;   &lt;chr&gt;                      
-##  1 9E      Endeavor Air Inc.          
-##  2 AA      American Airlines Inc.     
-##  3 AS      Alaska Airlines Inc.       
-##  4 B6      JetBlue Airways            
-##  5 DL      Delta Air Lines Inc.       
-##  6 EV      ExpressJet Airlines Inc.   
-##  7 F9      Frontier Airlines Inc.     
-##  8 FL      AirTran Airways Corporation
-##  9 HA      Hawaiian Airlines Inc.     
-## 10 MQ      Envoy Air                  
-## 11 OO      SkyWest Airlines Inc.      
-## 12 UA      United Air Lines Inc.      
-## 13 US      US Airways Inc.            
-## 14 VX      Virgin America             
-## 15 WN      Southwest Airlines Co.     
-## 16 YV      Mesa Airlines Inc.</code></pre>
+<pre class="r"><code>airlines %&gt;% glimpse()</code></pre>
+<pre><code>## Observations: 16
+## Variables: 2
+## $ carrier &lt;chr&gt; &quot;9E&quot;, &quot;AA&quot;, &quot;AS&quot;, &quot;B6&quot;, &quot;DL&quot;, &quot;EV&quot;, &quot;F9&quot;, &quot;FL&quot;, &quot;HA&quot;, ...
+## $ name    &lt;chr&gt; &quot;Endeavor Air Inc.&quot;, &quot;American Airlines Inc.&quot;, &quot;Alaska...</code></pre>
 </div>
 <div id="airports-table" class="section level3">
 <h3>Airports Table</h3>
-<pre class="r"><code>airports</code></pre>
-<pre><code>## # A tibble: 1,458 x 8
-##    faa   name                    lat    lon   alt    tz dst   tzone        
-##    &lt;chr&gt; &lt;chr&gt;                 &lt;dbl&gt;  &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;        
-##  1 04G   Lansdowne Airport      41.1  -80.6  1044    -5 A     America/New_~
-##  2 06A   Moton Field Municipa~  32.5  -85.7   264    -6 A     America/Chic~
-##  3 06C   Schaumburg Regional    42.0  -88.1   801    -6 A     America/Chic~
-##  4 06N   Randall Airport        41.4  -74.4   523    -5 A     America/New_~
-##  5 09J   Jekyll Island Airport  31.1  -81.4    11    -5 A     America/New_~
-##  6 0A9   Elizabethton Municip~  36.4  -82.2  1593    -5 A     America/New_~
-##  7 0G6   Williams County Airp~  41.5  -84.5   730    -5 A     America/New_~
-##  8 0G7   Finger Lakes Regiona~  42.9  -76.8   492    -5 A     America/New_~
-##  9 0P2   Shoestring Aviation ~  39.8  -76.6  1000    -5 U     America/New_~
-## 10 0S9   Jefferson County Intl  48.1 -123.    108    -8 A     America/Los_~
-## # ... with 1,448 more rows</code></pre>
+<pre class="r"><code>airports %&gt;% glimpse()</code></pre>
+<pre><code>## Observations: 1,458
+## Variables: 8
+## $ faa   &lt;chr&gt; &quot;04G&quot;, &quot;06A&quot;, &quot;06C&quot;, &quot;06N&quot;, &quot;09J&quot;, &quot;0A9&quot;, &quot;0G6&quot;, &quot;0G7&quot;, ...
+## $ name  &lt;chr&gt; &quot;Lansdowne Airport&quot;, &quot;Moton Field Municipal Airport&quot;, &quot;S...
+## $ lat   &lt;dbl&gt; 41.13047, 32.46057, 41.98934, 41.43191, 31.07447, 36.371...
+## $ lon   &lt;dbl&gt; -80.61958, -85.68003, -88.10124, -74.39156, -81.42778, -...
+## $ alt   &lt;dbl&gt; 1044, 264, 801, 523, 11, 1593, 730, 492, 1000, 108, 409,...
+## $ tz    &lt;dbl&gt; -5, -6, -6, -5, -5, -5, -5, -5, -5, -8, -5, -6, -5, -5, ...
+## $ dst   &lt;chr&gt; &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;U&quot;, &quot;A&quot;, &quot;A&quot;, &quot;...
+## $ tzone &lt;chr&gt; &quot;America/New_York&quot;, &quot;America/Chicago&quot;, &quot;America/Chicago&quot;...</code></pre>
 </div>
 <div id="planes-table" class="section level3">
 <h3>Planes Table</h3>
-<pre class="r"><code>planes</code></pre>
-<pre><code>## # A tibble: 3,322 x 9
-##    tailnum  year type       manufacturer  model  engines seats speed engine
-##    &lt;chr&gt;   &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;         &lt;chr&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt; 
-##  1 N10156   2004 Fixed win~ EMBRAER       EMB-1~       2    55    NA Turbo~
-##  2 N102UW   1998 Fixed win~ AIRBUS INDUS~ A320-~       2   182    NA Turbo~
-##  3 N103US   1999 Fixed win~ AIRBUS INDUS~ A320-~       2   182    NA Turbo~
-##  4 N104UW   1999 Fixed win~ AIRBUS INDUS~ A320-~       2   182    NA Turbo~
-##  5 N10575   2002 Fixed win~ EMBRAER       EMB-1~       2    55    NA Turbo~
-##  6 N105UW   1999 Fixed win~ AIRBUS INDUS~ A320-~       2   182    NA Turbo~
-##  7 N107US   1999 Fixed win~ AIRBUS INDUS~ A320-~       2   182    NA Turbo~
-##  8 N108UW   1999 Fixed win~ AIRBUS INDUS~ A320-~       2   182    NA Turbo~
-##  9 N109UW   1999 Fixed win~ AIRBUS INDUS~ A320-~       2   182    NA Turbo~
-## 10 N110UW   1999 Fixed win~ AIRBUS INDUS~ A320-~       2   182    NA Turbo~
-## # ... with 3,312 more rows</code></pre>
+<pre class="r"><code>planes %&gt;% glimpse()</code></pre>
+<pre><code>## Observations: 3,322
+## Variables: 9
+## $ tailnum      &lt;chr&gt; &quot;N10156&quot;, &quot;N102UW&quot;, &quot;N103US&quot;, &quot;N104UW&quot;, &quot;N10575&quot;,...
+## $ year         &lt;int&gt; 2004, 1998, 1999, 1999, 2002, 1999, 1999, 1999, 1...
+## $ type         &lt;chr&gt; &quot;Fixed wing multi engine&quot;, &quot;Fixed wing multi engi...
+## $ manufacturer &lt;chr&gt; &quot;EMBRAER&quot;, &quot;AIRBUS INDUSTRIE&quot;, &quot;AIRBUS INDUSTRIE&quot;...
+## $ model        &lt;chr&gt; &quot;EMB-145XR&quot;, &quot;A320-214&quot;, &quot;A320-214&quot;, &quot;A320-214&quot;, ...
+## $ engines      &lt;int&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2...
+## $ seats        &lt;int&gt; 55, 182, 182, 182, 55, 182, 182, 182, 182, 182, 5...
+## $ speed        &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ engine       &lt;chr&gt; &quot;Turbo-fan&quot;, &quot;Turbo-fan&quot;, &quot;Turbo-fan&quot;, &quot;Turbo-fan...</code></pre>
 </div>
 <div id="weather-table" class="section level3">
 <h3>Weather Table</h3>
-<pre class="r"><code>weather  </code></pre>
-<pre><code>## # A tibble: 26,115 x 15
-##    origin  year month   day  hour  temp  dewp humid wind_dir wind_speed
-##    &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;
-##  1 EWR     2013     1     1     1  39.0  26.1  59.4      270      10.4 
-##  2 EWR     2013     1     1     2  39.0  27.0  61.6      250       8.06
-##  3 EWR     2013     1     1     3  39.0  28.0  64.4      240      11.5 
-##  4 EWR     2013     1     1     4  39.9  28.0  62.2      250      12.7 
-##  5 EWR     2013     1     1     5  39.0  28.0  64.4      260      12.7 
-##  6 EWR     2013     1     1     6  37.9  28.0  67.2      240      11.5 
-##  7 EWR     2013     1     1     7  39.0  28.0  64.4      240      15.0 
-##  8 EWR     2013     1     1     8  39.9  28.0  62.2      250      10.4 
-##  9 EWR     2013     1     1     9  39.9  28.0  62.2      260      15.0 
-## 10 EWR     2013     1     1    10  41    28.0  59.6      260      13.8 
-## # ... with 26,105 more rows, and 5 more variables: wind_gust &lt;dbl&gt;,
-## #   precip &lt;dbl&gt;, pressure &lt;dbl&gt;, visib &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+<pre class="r"><code>weather %&gt;% glimpse()  </code></pre>
+<pre><code>## Observations: 26,115
+## Variables: 15
+## $ origin     &lt;chr&gt; &quot;EWR&quot;, &quot;EWR&quot;, &quot;EWR&quot;, &quot;EWR&quot;, &quot;EWR&quot;, &quot;EWR&quot;, &quot;EWR&quot;, &quot;E...
+## $ year       &lt;int&gt; 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 201...
+## $ month      &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+## $ day        &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+## $ hour       &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, ...
+## $ temp       &lt;dbl&gt; 39.02, 39.02, 39.02, 39.92, 39.02, 37.94, 39.02, 39...
+## $ dewp       &lt;dbl&gt; 26.06, 26.96, 28.04, 28.04, 28.04, 28.04, 28.04, 28...
+## $ humid      &lt;dbl&gt; 59.37, 61.63, 64.43, 62.21, 64.43, 67.21, 64.43, 62...
+## $ wind_dir   &lt;dbl&gt; 270, 250, 240, 250, 260, 240, 240, 250, 260, 260, 2...
+## $ wind_speed &lt;dbl&gt; 10.35702, 8.05546, 11.50780, 12.65858, 12.65858, 11...
+## $ wind_gust  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,...
+## $ precip     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+## $ pressure   &lt;dbl&gt; 1012.0, 1012.3, 1012.5, 1012.2, 1011.9, 1012.4, 101...
+## $ visib      &lt;dbl&gt; 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,...
+## $ time_hour  &lt;dttm&gt; 2013-01-01 01:00:00, 2013-01-01 02:00:00, 2013-01-...</code></pre>
 </div>
 </div>
 <div id="keys-primary-and-foreign" class="section level2">
 <h2>Keys: Primary and Foreign</h2>
-<div id="check-to-see-if-keys-are-unique-for-planes-and-weather-tibbles" class="section level3">
-<h3>Check to see if keys are unique for planes and weather tibbles</h3>
+<div id="check-to-see-if-keys-are-unique-for-planes-tibbles" class="section level3">
+<h3>Check to see if keys are unique for planes tibbles</h3>
 <pre class="r"><code>planes %&gt;% 
   count(tailnum) %&gt;% 
   filter(n &gt; 1)</code></pre>
 <pre><code>## # A tibble: 0 x 2
 ## # ... with 2 variables: tailnum &lt;chr&gt;, n &lt;int&gt;</code></pre>
+</div>
+<div id="check-to-see-if-keys-are-unique-for-planes-tibbles-1" class="section level3">
+<h3>Check to see if keys are unique for planes tibbles</h3>
 <pre class="r"><code>weather %&gt;% 
   count(year, month, day, hour, origin) %&gt;% 
   filter(n &gt; 1)</code></pre>
 <pre><code>## # A tibble: 3 x 6
 ##    year month   day  hour origin     n
-##   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;  &lt;int&gt;
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;  &lt;int&gt;
 ## 1  2013    11     3     1 EWR        2
 ## 2  2013    11     3     1 JFK        2
 ## 3  2013    11     3     1 LGA        2</code></pre>
 </div>
 <div id="sometimes-we-dont-have-an-explicit-primary-key" class="section level3">
 <h3>Sometimes we don’t have an explicit primary key</h3>
+<div id="check-uniqueness-of-flight-numbers" class="section level4">
+<h4>Check uniqueness of flight numbers</h4>
 <pre class="r"><code>flights %&gt;% 
   count(year, month, day, flight) %&gt;% 
   filter(n &gt; 1)</code></pre>
@@ -572,6 +570,9 @@ $(document).ready(function () {
 ##  9  2013     1     1     32     2
 ## 10  2013     1     1     35     2
 ## # ... with 29,758 more rows</code></pre>
+</div>
+<div id="check-uniquess-of-tail-number" class="section level4">
+<h4>Check uniquess of tail number</h4>
 <pre class="r"><code>flights %&gt;% 
   count(year, month, day, tailnum) %&gt;% 
   filter(n &gt; 1)</code></pre>
@@ -591,12 +592,14 @@ $(document).ready(function () {
 ## # ... with 64,918 more rows</code></pre>
 </div>
 </div>
+</div>
 <div id="mutating-joins" class="section level2">
 <h2>Mutating joins</h2>
-<pre class="r"><code>flights2 &lt;- flights %&gt;% 
+<div id="subset-of-columns-from-flights" class="section level3">
+<h3>Subset of columns from flights</h3>
+<pre class="r"><code>(flights2 &lt;- flights %&gt;% 
   select(year:day, hour, origin, dest, tailnum, carrier)
-
-flights2</code></pre>
+)</code></pre>
 <pre><code>## # A tibble: 336,776 x 8
 ##     year month   day  hour origin dest  tailnum carrier
 ##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;  
@@ -611,6 +614,7 @@ flights2</code></pre>
 ##  9  2013     1     1     6 JFK    MCO   N593JB  B6     
 ## 10  2013     1     1     6 LGA    ORD   N3ALAA  AA     
 ## # ... with 336,766 more rows</code></pre>
+</div>
 <div id="add-the-full-airline-name-to-the-flights2-data." class="section level3">
 <h3>Add the full airline name to the flights2 data.</h3>
 <pre class="r"><code>flights2 %&gt;%
@@ -632,25 +636,37 @@ flights2</code></pre>
 ## # ... with 336,766 more rows</code></pre>
 </div>
 <div id="understanding-joins" class="section level3">
-<h3>Understanding Joins</h3>
+<h3>Understanding joins</h3>
 <div id="create-the-two-tibbles-x-and-y" class="section level4">
 <h4>Create the two tibbles x and y</h4>
-<pre class="r"><code>x &lt;- tribble(
+<pre class="r"><code>(x &lt;- tribble(
   ~key, ~val_x,
   1, &quot;x1&quot;,
   2, &quot;x2&quot;,
-  3, &quot;x3&quot;
-)
-
-y &lt;- tribble(
+  3, &quot;x3&quot;)
+)</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##     key val_x
+##   &lt;dbl&gt; &lt;chr&gt;
+## 1     1 x1   
+## 2     2 x2   
+## 3     3 x3</code></pre>
+<pre class="r"><code>(y &lt;- tribble(
   ~key, ~val_y,
   1, &quot;y1&quot;,
   2, &quot;y2&quot;,
-  4, &quot;y3&quot;
+  4, &quot;y3&quot;)
 )</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##     key val_y
+##   &lt;dbl&gt; &lt;chr&gt;
+## 1     1 y1   
+## 2     2 y2   
+## 3     4 y3</code></pre>
 </div>
-<div id="inner-join" class="section level4">
-<h4>inner join</h4>
+</div>
+<div id="inner-join" class="section level3">
+<h3>inner join</h3>
 <pre class="r"><code>x %&gt;% 
   inner_join(y, by = &quot;key&quot;)</code></pre>
 <pre><code>## # A tibble: 2 x 3
@@ -659,6 +675,8 @@ y &lt;- tribble(
 ## 1     1 x1    y1   
 ## 2     2 x2    y2</code></pre>
 </div>
+<div id="outer-join" class="section level3">
+<h3>outer join</h3>
 <div id="left-join" class="section level4">
 <h4>left join</h4>
 <pre class="r"><code>x %&gt;% 
@@ -696,42 +714,53 @@ y &lt;- tribble(
 </div>
 <div id="duplicate-keys" class="section level3">
 <h3>Duplicate Keys</h3>
-<pre class="r"><code>x &lt;- tribble(
+<div id="two-tibbles-with-duplicate-keys" class="section level4">
+<h4>Two tibbles with duplicate keys</h4>
+<pre class="r"><code>(x &lt;- tribble(
   ~key, ~val_x,
   1, &quot;x1&quot;,
   2, &quot;x2&quot;,
   2, &quot;x3&quot;,
-  3, &quot;x4&quot;
-)
-
-y &lt;- tribble(
+  1, &quot;x4&quot;)
+)</code></pre>
+<pre><code>## # A tibble: 4 x 2
+##     key val_x
+##   &lt;dbl&gt; &lt;chr&gt;
+## 1     1 x1   
+## 2     2 x2   
+## 3     2 x3   
+## 4     1 x4</code></pre>
+<pre class="r"><code>(y &lt;- tribble(
   ~key, ~val_y,
   1, &quot;y1&quot;,
-  2, &quot;y2&quot;,
-  2, &quot;y3&quot;,
-  3, &quot;y4&quot;
-)
-
-x %&gt;%
+  2, &quot;y2&quot;)
+)</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##     key val_y
+##   &lt;dbl&gt; &lt;chr&gt;
+## 1     1 y1   
+## 2     2 y2</code></pre>
+</div>
+<div id="left-join-1" class="section level4">
+<h4>Left join</h4>
+<pre class="r"><code>x %&gt;%
   left_join(y, by = &quot;key&quot;)</code></pre>
-<pre><code>## # A tibble: 6 x 3
+<pre><code>## # A tibble: 4 x 3
 ##     key val_x val_y
 ##   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;
 ## 1     1 x1    y1   
 ## 2     2 x2    y2   
-## 3     2 x2    y3   
-## 4     2 x3    y2   
-## 5     2 x3    y3   
-## 6     3 x4    y4</code></pre>
+## 3     2 x3    y2   
+## 4     1 x4    y1</code></pre>
+</div>
 </div>
 <div id="defining-the-key-columns" class="section level3">
 <h3>Defining the key columns</h3>
 <pre class="r"><code>flights2 %&gt;% 
   left_join(weather)</code></pre>
-<pre><code>## Joining, by = c(&quot;year&quot;, &quot;month&quot;, &quot;day&quot;, &quot;hour&quot;, &quot;origin&quot;)</code></pre>
 <pre><code>## # A tibble: 336,776 x 18
 ##     year month   day  hour origin dest  tailnum carrier  temp  dewp humid
-##    &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
 ##  1  2013     1     1     5 EWR    IAH   N14228  UA       39.0  28.0  64.4
 ##  2  2013     1     1     5 LGA    IAH   N24211  UA       39.9  25.0  54.8
 ##  3  2013     1     1     5 JFK    MIA   N619AA  AA       39.0  27.0  61.6
@@ -768,36 +797,36 @@ x %&gt;%
 </div>
 <div id="using-the-by-with-two-different-tables-with-different-key-names" class="section level3">
 <h3>Using the by with two different tables with different key names</h3>
-<pre class="r"><code>flights2</code></pre>
-<pre><code>## # A tibble: 336,776 x 8
-##     year month   day  hour origin dest  tailnum carrier
-##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;  
-##  1  2013     1     1     5 EWR    IAH   N14228  UA     
-##  2  2013     1     1     5 LGA    IAH   N24211  UA     
-##  3  2013     1     1     5 JFK    MIA   N619AA  AA     
-##  4  2013     1     1     5 JFK    BQN   N804JB  B6     
-##  5  2013     1     1     6 LGA    ATL   N668DN  DL     
-##  6  2013     1     1     5 EWR    ORD   N39463  UA     
-##  7  2013     1     1     6 EWR    FLL   N516JB  B6     
-##  8  2013     1     1     6 LGA    IAD   N829AS  EV     
-##  9  2013     1     1     6 JFK    MCO   N593JB  B6     
-## 10  2013     1     1     6 LGA    ORD   N3ALAA  AA     
-## # ... with 336,766 more rows</code></pre>
-<pre class="r"><code>airports</code></pre>
-<pre><code>## # A tibble: 1,458 x 8
-##    faa   name                    lat    lon   alt    tz dst   tzone        
-##    &lt;chr&gt; &lt;chr&gt;                 &lt;dbl&gt;  &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;        
-##  1 04G   Lansdowne Airport      41.1  -80.6  1044    -5 A     America/New_~
-##  2 06A   Moton Field Municipa~  32.5  -85.7   264    -6 A     America/Chic~
-##  3 06C   Schaumburg Regional    42.0  -88.1   801    -6 A     America/Chic~
-##  4 06N   Randall Airport        41.4  -74.4   523    -5 A     America/New_~
-##  5 09J   Jekyll Island Airport  31.1  -81.4    11    -5 A     America/New_~
-##  6 0A9   Elizabethton Municip~  36.4  -82.2  1593    -5 A     America/New_~
-##  7 0G6   Williams County Airp~  41.5  -84.5   730    -5 A     America/New_~
-##  8 0G7   Finger Lakes Regiona~  42.9  -76.8   492    -5 A     America/New_~
-##  9 0P2   Shoestring Aviation ~  39.8  -76.6  1000    -5 U     America/New_~
-## 10 0S9   Jefferson County Intl  48.1 -123.    108    -8 A     America/Los_~
-## # ... with 1,448 more rows</code></pre>
+<div id="variables-in-flights2" class="section level4">
+<h4>Variables in flights2</h4>
+<pre class="r"><code>flights2 %&gt;%  glimpse()</code></pre>
+<pre><code>## Observations: 336,776
+## Variables: 8
+## $ year    &lt;int&gt; 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, ...
+## $ month   &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+## $ day     &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+## $ hour    &lt;dbl&gt; 5, 5, 5, 5, 6, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 6, 6, ...
+## $ origin  &lt;chr&gt; &quot;EWR&quot;, &quot;LGA&quot;, &quot;JFK&quot;, &quot;JFK&quot;, &quot;LGA&quot;, &quot;EWR&quot;, &quot;EWR&quot;, &quot;LGA&quot;...
+## $ dest    &lt;chr&gt; &quot;IAH&quot;, &quot;IAH&quot;, &quot;MIA&quot;, &quot;BQN&quot;, &quot;ATL&quot;, &quot;ORD&quot;, &quot;FLL&quot;, &quot;IAD&quot;...
+## $ tailnum &lt;chr&gt; &quot;N14228&quot;, &quot;N24211&quot;, &quot;N619AA&quot;, &quot;N804JB&quot;, &quot;N668DN&quot;, &quot;N39...
+## $ carrier &lt;chr&gt; &quot;UA&quot;, &quot;UA&quot;, &quot;AA&quot;, &quot;B6&quot;, &quot;DL&quot;, &quot;UA&quot;, &quot;B6&quot;, &quot;EV&quot;, &quot;B6&quot;, ...</code></pre>
+</div>
+<div id="variables-in-airports" class="section level4">
+<h4>Variables in airports</h4>
+<pre class="r"><code>airports %&gt;%  glimpse()</code></pre>
+<pre><code>## Observations: 1,458
+## Variables: 8
+## $ faa   &lt;chr&gt; &quot;04G&quot;, &quot;06A&quot;, &quot;06C&quot;, &quot;06N&quot;, &quot;09J&quot;, &quot;0A9&quot;, &quot;0G6&quot;, &quot;0G7&quot;, ...
+## $ name  &lt;chr&gt; &quot;Lansdowne Airport&quot;, &quot;Moton Field Municipal Airport&quot;, &quot;S...
+## $ lat   &lt;dbl&gt; 41.13047, 32.46057, 41.98934, 41.43191, 31.07447, 36.371...
+## $ lon   &lt;dbl&gt; -80.61958, -85.68003, -88.10124, -74.39156, -81.42778, -...
+## $ alt   &lt;dbl&gt; 1044, 264, 801, 523, 11, 1593, 730, 492, 1000, 108, 409,...
+## $ tz    &lt;dbl&gt; -5, -6, -6, -5, -5, -5, -5, -5, -5, -8, -5, -6, -5, -5, ...
+## $ dst   &lt;chr&gt; &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;U&quot;, &quot;A&quot;, &quot;A&quot;, &quot;...
+## $ tzone &lt;chr&gt; &quot;America/New_York&quot;, &quot;America/Chicago&quot;, &quot;America/Chicago&quot;...</code></pre>
+</div>
+<div id="left-join-for-destination" class="section level4">
+<h4>Left join for destination</h4>
 <pre class="r"><code>flights2 %&gt;% 
   left_join(airports, c(&quot;dest&quot; = &quot;faa&quot;))</code></pre>
 <pre><code>## # A tibble: 336,776 x 15
@@ -813,8 +842,11 @@ x %&gt;%
 ##  8  2013     1     1     6 LGA    IAD   N829AS  EV      Wash~  38.9 -77.5
 ##  9  2013     1     1     6 JFK    MCO   N593JB  B6      Orla~  28.4 -81.3
 ## 10  2013     1     1     6 LGA    ORD   N3ALAA  AA      Chic~  42.0 -87.9
-## # ... with 336,766 more rows, and 4 more variables: alt &lt;int&gt;, tz &lt;dbl&gt;,
+## # ... with 336,766 more rows, and 4 more variables: alt &lt;dbl&gt;, tz &lt;dbl&gt;,
 ## #   dst &lt;chr&gt;, tzone &lt;chr&gt;</code></pre>
+</div>
+<div id="left-join-for-origin" class="section level4">
+<h4>Left join for origin</h4>
 <pre class="r"><code>flights2 %&gt;% 
   left_join(airports, c(&quot;origin&quot; = &quot;faa&quot;))</code></pre>
 <pre><code>## # A tibble: 336,776 x 15
@@ -830,11 +862,14 @@ x %&gt;%
 ##  8  2013     1     1     6 LGA    IAD   N829AS  EV      La G~  40.8 -73.9
 ##  9  2013     1     1     6 JFK    MCO   N593JB  B6      John~  40.6 -73.8
 ## 10  2013     1     1     6 LGA    ORD   N3ALAA  AA      La G~  40.8 -73.9
-## # ... with 336,766 more rows, and 4 more variables: alt &lt;int&gt;, tz &lt;dbl&gt;,
+## # ... with 336,766 more rows, and 4 more variables: alt &lt;dbl&gt;, tz &lt;dbl&gt;,
 ## #   dst &lt;chr&gt;, tzone &lt;chr&gt;</code></pre>
+</div>
 </div>
 <div id="filtering-joins" class="section level3">
 <h3>Filtering joins</h3>
+<div id="find-the-top-10-destinations" class="section level4">
+<h4>Find the top 10 destinations</h4>
 <pre class="r"><code>top_dest &lt;- flights %&gt;%
   count(dest, sort = TRUE) %&gt;%
   head(10)
@@ -852,6 +887,9 @@ top_dest  </code></pre>
 ##  8 FLL   12055
 ##  9 MIA   11728
 ## 10 DCA    9705</code></pre>
+</div>
+<div id="choose-all-flights-that-go-to-the-top-ten-destinations-using-filter" class="section level4">
+<h4>Choose all flights that go to the top ten destinations using filter</h4>
 <pre class="r"><code>flights %&gt;% 
   filter(dest %in% top_dest$dest)</code></pre>
 <pre><code>## # A tibble: 141,145 x 19
@@ -871,9 +909,11 @@ top_dest  </code></pre>
 ## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;,
 ## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
 ## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+</div>
+<div id="choose-all-flights-that-go-to-the-top-ten-destinations-using-semi_join" class="section level4">
+<h4>Choose all flights that go to the top ten destinations using semi_join</h4>
 <pre class="r"><code>flights %&gt;% 
   semi_join(top_dest)</code></pre>
-<pre><code>## Joining, by = &quot;dest&quot;</code></pre>
 <pre><code>## # A tibble: 141,145 x 19
 ##     year month   day dep_time sched_dep_time dep_delay arr_time
 ##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;
@@ -891,6 +931,9 @@ top_dest  </code></pre>
 ## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;,
 ## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
 ## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+</div>
+<div id="choose-all-flights-that-do-not-go-to-the-top-ten-destinations-using-anti_join" class="section level4">
+<h4>Choose all flights that do not go to the top ten destinations using anti_join</h4>
 <pre class="r"><code>flights %&gt;%
   anti_join(planes, by = &quot;tailnum&quot;) %&gt;%
   count(tailnum, sort = TRUE)</code></pre>
@@ -908,6 +951,7 @@ top_dest  </code></pre>
 ##  9 N542MQ    363
 ## 10 N531MQ    349
 ## # ... with 712 more rows</code></pre>
+</div>
 </div>
 </div>
 
@@ -928,6 +972,28 @@ $(document).ready(function () {
 
 
 </script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

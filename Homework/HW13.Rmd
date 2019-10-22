@@ -1,11 +1,14 @@
 ---
 title: 'Homework #13'
 author: 'Factors'
+date: "Due: 28 Oct 2019"
 output: word_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
 library(forcats)
 ```
@@ -21,11 +24,9 @@ library(forcats)
     
 ## Interpretation of code  
 
-Compare and interpret the following two R code chunks: 
-
 ### Code chunk #1  
 
-```{r code chunk interpretation 1, warning = FALSE, message = FALSE}
+```{r code chunk interpretation 1}
 gss_cat %>%
   mutate(marital = marital %>% fct_infreq() %>% fct_rev()) %>%
   ggplot(aes(x = marital, fill = marital)) +
@@ -40,7 +41,7 @@ gss_cat %>%
 
 ### Code chunk #2
 
-```{r code chunk interpretation 2, message = FALSE}
+```{r code chunk interpretation 2}
 gss_cat %>%
   mutate(partyid = fct_collapse(
     partyid,

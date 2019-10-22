@@ -24,17 +24,12 @@ Categorical:
 
 *  geom_bar
 *  geom_col  
-*  geom_boxplot (category goes with the x aesthetic)
-*  geom_bin2d
 
 Numerical:  
 
 *  geom_boxplot (numerical goes with the y aesthetic)
-*  geom_contour
 *  geom_density
-*  geom_density_2d
 *  geom_dotplot
-*  geom_errorbar
 *  geom_freqpoly
 *  geom_histogram
 *  geom_rug

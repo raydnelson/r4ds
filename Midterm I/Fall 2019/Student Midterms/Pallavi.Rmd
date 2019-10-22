@@ -1,0 +1,43 @@
+---
+title: "Devabhaktuni - Midterm 1"
+author: "Pallavi"
+date: "10/9/2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(nycflights13)
+```
+
+```{r}
+flights %>% 
+  filter(dest=="ATL"|dest=="BOS") %>% 
+  mutate(    arrival_time = (arr_time %/% 100 * 60 + arr_time %% 100) %% 1440,
+             sched_arrival_time = (sched_arr_time %/% 100 * 60 + sched_arr_time %% 100) %% 1440,
+             arrival_delay = arrival_time-sched_arrival_time) %>% 
+  filter(between(arrival_delay,-30,30)) %>% 
+  ggplot(aes(x=origin,y=arrival_delay))+
+  geom_violin(aes(fill=origin),show.legend = FALSE)+
+  geom_boxplot(width=0.2,fill="gray")+
+  coord_flip()+
+  facet_grid(vars(dest))
+```
+
+```{r}
+count_lessthan_zero <- flights %>%
+  filter(!is.na(dep_delay) & !is.na(arr_delay)) %>% 
+  filter(dep_delay<0) %>% 
+  group_by(origin) %>% 
+  count(arr_delay<0)
+
+count_lessthan_zero %>% 
+  mutate(sum_of_count= sum(n),
+         percentage=(n/sum_of_count*100))%>% 
+           filter(`arr_delay < 0`==TRUE) %>% 
+           ggplot() +
+           geom_col(aes(x = origin, y = percentage,fill=origin), show.legend = FALSE)
+```
+
+

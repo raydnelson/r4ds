@@ -1,0 +1,55 @@
+---
+title: "Midterm 1 Coding Problems"
+author: "Brooke Baker"
+date: "10/9/2019"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(nycflights13)
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 1
+
+```{r}
+flights %>% 
+  filter(dest %in% c("ATL", "BOS")) %>% 
+  filter(arr_delay >= -30 & arr_delay <= 30) %>% 
+  ggplot(aes(x = origin, y = arr_delay, fill = origin)) +
+  geom_violin(show.legend = FALSE) +
+  geom_boxplot(width = .25, fill = "gray") +
+  facet_grid(vars(dest)) +
+  labs(
+    title = "First Coding Problem",
+    subtitle = "NYC 2013 Flights Within 30 Minutes of Scheduled Arrival",
+    x = "Origin",
+    y = "Arrival Delay"
+  ) +
+  coord_flip()
+```
+
+
+## Problem 2
+
+```{r}
+flights %>% 
+  filter(!is.na(arr_delay) & !is.na(dep_delay) & dep_delay < 0) %>%
+  group_by(origin) %>% 
+  summarise(
+    percent_on_time = mean(arr_delay <= 0) * 100
+  ) %>% 
+  ggplot(aes(x = reorder(origin, desc(percent_on_time)), y = percent_on_time, fill = origin)) +
+  geom_col(show.legend = FALSE) +
+  labs(
+    title = "Second Coding Problem",
+    subtitle = "Bar Chart (Pareto) of Percentage On Time",
+    x = "",
+    y = "Percentage"
+  )
+```
+

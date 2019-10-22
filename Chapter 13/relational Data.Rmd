@@ -1,14 +1,16 @@
 ---
 title: "Relational Data"
-author: "Ray Nelson"
-date: "24 Feb 2019"
+author: "MPA 634: Data Science for Managers"
+date: "10/21/2019"
 output:
   html_document:
     code_folding: "hide"
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 # Load libraries
 library(tidyverse)
 library(nycflights13)
@@ -16,97 +18,113 @@ library(nycflights13)
 
 ## Overview of tables to be manipulated  
 
+### Flights Table
+
+```{r flights tibble}
+flights %>% glimpse()
+```
+
 ### Airlines Table
 
-```{r airlines table}
-airlines
+```{r airlines tibble}
+airlines %>% glimpse()
 ```  
 
 ### Airports Table
 
-```{r airports table}
-airports
+```{r airports tibble}
+airports %>% glimpse()
 ```  
 ### Planes Table  
 
-```{r planes table}
-planes
+```{r planes tibble}
+planes %>% glimpse()
 ```  
 ### Weather Table  
 
-```{r weather table}
-weather  
+```{r weather tibble}
+weather %>% glimpse()  
 ```  
-
 ## Keys: Primary and Foreign  
 
-### Check to see if keys are unique for planes and weather tibbles
+### Check to see if keys are unique for planes tibbles
 
-```{r check planes and weather}
+```{r check planes}
 planes %>% 
   count(tailnum) %>% 
   filter(n > 1)
+```  
+### Check to see if keys are unique for planes tibbles
 
+```{r check weather}
 weather %>% 
   count(year, month, day, hour, origin) %>% 
   filter(n > 1)
-```  
+```
 
-### Sometimes we don't have an explicit primary key  
+### Sometimes we don't have an explicit primary key 
 
-```{r check flights}  
+#### Check uniqueness of flight numbers
 
+```{r unique flights}  
 flights %>% 
   count(year, month, day, flight) %>% 
   filter(n > 1)
+```  
 
+#### Check uniquess of tail number
+
+```{r unique tail number}  
 flights %>% 
   count(year, month, day, tailnum) %>% 
   filter(n > 1)
-```  
+``` 
 
 ## Mutating joins  
 
-```{r abbreviated flights}
-flights2 <- flights %>% 
-  select(year:day, hour, origin, dest, tailnum, carrier)
+### Subset of columns from flights
 
-flights2
+```{r abbreviated flights}
+(flights2 <- flights %>% 
+  select(year:day, hour, origin, dest, tailnum, carrier)
+)
 ```  
 
 ### Add the full airline name to the flights2 data.  
 
-```{r full arline name}
+```{r full airline name}
 flights2 %>%
   select(-origin, -dest) %>% 
   left_join(airlines, by = "carrier")
 ```  
 
-### Understanding Joins  
+### Understanding joins  
 
 #### Create the two tibbles x and y  
 
 ```{r join tibbles}
-x <- tribble(
+(x <- tribble(
   ~key, ~val_x,
   1, "x1",
   2, "x2",
-  3, "x3"
+  3, "x3")
 )
 
-y <- tribble(
+(y <- tribble(
   ~key, ~val_y,
   1, "y1",
   2, "y2",
-  4, "y3"
+  4, "y3")
 )
 ```  
 
-#### inner join
+### inner join
 ```{r inner join}
 x %>% 
   inner_join(y, by = "key")
 ```  
+
+### outer join
 
 #### left join
 ```{r left join}
@@ -128,26 +146,30 @@ x %>%
 
 ### Duplicate Keys
 
+#### Two tibbles with duplicate keys
+
 ```{r duplicate}
-x <- tribble(
+(x <- tribble(
   ~key, ~val_x,
   1, "x1",
   2, "x2",
   2, "x3",
-  3, "x4"
+  1, "x4")
 )
 
-y <- tribble(
+(y <- tribble(
   ~key, ~val_y,
   1, "y1",
-  2, "y2",
-  2, "y3",
-  3, "y4"
+  2, "y2")
 )
+``` 
 
+#### Left join
+
+```{r left join duplicate keys}
 x %>%
   left_join(y, by = "key")
-```  
+```
 
 ### Defining the key columns  
 
@@ -163,34 +185,60 @@ flights2 %>%
   left_join(planes, by = "tailnum")
 ```  
 
-### Using the by with two different tables with different key names  
+### Using the by with two different tables with different key names 
 
-```{r different key names}
-flights2
-airports
+#### Variables in flights2
 
+```{r flights2 variables}
+flights2 %>%  glimpse()
+```
+#### Variables in airports
+```{r airports variables}
+airports %>%  glimpse()
+```
+
+#### Left join for destination
+
+```{r different key names destination}
 flights2 %>% 
   left_join(airports, c("dest" = "faa"))
+```  
 
+#### Left join for origin
+
+```{r different key names origin}
 flights2 %>% 
   left_join(airports, c("origin" = "faa"))
 ```  
 
-### Filtering joins  
+### Filtering joins 
 
-```{r filtering joins}
+#### Find the top 10 destinations
+
+```{r top ten destinations}
 top_dest <- flights %>%
   count(dest, sort = TRUE) %>%
   head(10)
 top_dest  
+```  
 
+#### Choose all flights that go to the top ten destinations using filter
+
+```{r top ten filter}
 flights %>% 
   filter(dest %in% top_dest$dest)
+```  
 
+#### Choose all flights that go to the top ten destinations using semi_join
+```{r top ten semi join}
 flights %>% 
   semi_join(top_dest)
+```  
 
+#### Choose all flights that do not go to the top ten destinations using anti_join 
+
+```{r not top ten}
 flights %>%
   anti_join(planes, by = "tailnum") %>%
   count(tailnum, sort = TRUE)
-```  
+``` 
