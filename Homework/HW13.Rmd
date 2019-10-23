@@ -22,7 +22,9 @@ library(forcats)
 *  Factor order
 *  Factor levels
     
-## Interpretation of code  
+## Code interpretation 
+
+You don't need to interpret and explain the ggplot, geom_bar, and labs lines of code.  
 
 ### Code chunk #1  
 
@@ -47,7 +49,7 @@ gss_cat %>%
     partyid,
     other = c("No answer", "Don't know", "Other party"),
     rep = c("Strong republican", "Not str republican"),
-    ind = c("Ind,near rep", "Independent", "Ind,near dem"),
+    ind = c("Ind, near rep", "Independent", "Ind, near dem"),
     dem = c("Not str democrat", "Strong democrat")
   )) %>%
   ggplot(aes(x = partyid, fill = partyid)) +
@@ -64,6 +66,8 @@ gss_cat %>%
 
 Create a Pareto bar chart for race with the largest category on left side of the graph. Remember that fct_infreq will help you reorder the factor race.
 
+![](http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW13Graph1.png)
+
 ```{r Pareto Chart}
 
 ```  
@@ -79,6 +83,7 @@ Create a boxplot for age by marital status. Sort the boxes by the median of age.
 5.  Reorder the boxes using fct_reorder (the default function is median)
 6.  Suppress the legend
 7.  Create appropriate titles and axis labels
+![](http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW13Graph2.png)
 
 ```{r boxplot of age by marital status, warning = FALSE}
 

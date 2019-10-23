@@ -1,7 +1,7 @@
 ---
 title: "Time Series Example"
-author: "Ray Nelson"
-date: "3/1/2019"
+author: "MPA 634: Data Science for Managers"
+date: "10/28/2019"
 output:
    html_document:
      code_folding: hide
@@ -19,7 +19,7 @@ library(xts)
 library(fImport)
 ```
 
-## [Forecasting: Principles and Prace (free online book)](https://otexts.com/fpp2/) 
+## [Forecasting: Principles and Practice (free online book)](https://otexts.com/fpp2/) 
 
 ## Time series objects and analysis
 

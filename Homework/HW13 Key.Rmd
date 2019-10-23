@@ -7,8 +7,10 @@ output:
     code_folding: show
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 library(forcats)
 ```
@@ -30,7 +32,9 @@ Factors are preferred when a character variable has a reasonably small number of
 
 *  Factor levels: We can use the fct_recode function to change the levels of a factor. The first argument to the function is the factor that we desire to recode. The next arguments come in pairs. The left part of the equals sign gives the new value for the level. The right side gives the old values of the factor. The function fct_collapse works similarly except a new level is assigned multiple levels found in the original factor definition.  
     
-## Interpretation of code  
+## Code interpretation 
+
+You don't need to interpret and explain the ggplot, geom_bar, and labs lines of code.
 
 ### Code chunk #1  
 
@@ -63,7 +67,7 @@ gss_cat %>%
     partyid,
     other = c("No answer", "Don't know", "Other party"),
     rep = c("Strong republican", "Not str republican"),
-    ind = c("Ind,near rep", "Independent", "Ind,near dem"),
+    ind = c("Ind, near rep", "Independent", "Ind, near dem"),
     dem = c("Not str democrat", "Strong democrat")
   )) %>%
   ggplot(aes(x = partyid, fill = partyid)) +

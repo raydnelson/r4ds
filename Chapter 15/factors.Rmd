@@ -1,7 +1,7 @@
 ---
 title: "Factors"
-author: "Ray Nelson"
-date: "26 Feb 2019"
+author: "MPA 634: Data Science for Managers"
+date: "10/23/2019"
 output:
   html_document:
     code_folding: "hide"
@@ -14,9 +14,21 @@ knitr::opts_chunk$set(echo = TRUE,
 # Load libraries
 library(tidyverse)
 library(forcats)
-library(janitor)
-# 
 library(kableExtra)
+library(ggmosaic)
+```
+
+## Value of factors in modeling
+
+```{r linear model with factors}
+mpg %>% summary()
+lm(hwy ~ drv + displ + drv * displ, data = mpg) %>% 
+  summary()
+
+mpg$drv <- as.factor(mpg$drv)
+mpg %>% summary()
+lm(hwy ~ drv + displ + drv * displ, data = mpg) %>% 
+  summary()
 ```
 
 ## 15.2 Creating factors
@@ -50,14 +62,12 @@ class(y1)
 #### Alphabetical order
 
 ```{r levels in alphabetical order}
-# levels in alphabetical order
 factor(x1)
 ```  
 
-#### Order of the data
+#### Order of the original data
 
 ```{r levels in data order}
-# Order of the original data
 unique(x1)
 (f1 <- factor(x1, levels = unique(x1)))
 
@@ -72,33 +82,25 @@ f2 %>% levels()
 
 ```{r familiarity with data}
 ? gss_cat
-data(gss_cat)
-gss_cat %>%
-  View()
+gss_cat %>% summary
 ```  
 
-### Value of factors in a tibble
+### Count the frequency in a tibble
 
 ```{r factors in a tibble}
-# dplyr count
 gss_cat %>% 
   count(race)
+```  
 
-# ggplot geom_bar with implied count
-gss_cat %>%
+### Visual representation of a factor using geom_bar
+
+```{r frequency with geom_bar}
+gss_cat$race %>% levels()
+gss_cat %>% 
   ggplot(aes(x = race, fill = race)) +
   geom_bar(show.legend = FALSE) +
   labs(title = "Implicit count from within geom_bar")
-
-# ggplot geom_bar that shows the missing values
-gss_cat %>% 
-  ggplot(aes(x = race, fill = race)) +
-  geom_bar(show.legend = FALSE) +
-  scale_x_discrete(drop = FALSE) +
-  labs(
-    title = "Include the category of missing values in the bar chart"
-  )
-```  
+```
 
 ### Counting multiple factors or traditional cross tabulations
 
@@ -109,28 +111,33 @@ gss_cat %>%
   count(race, marital)
 ```
 
+#### Spread the results of count
+
 ```{r spread and kable}
 gss_cat %>% 
-  group_by(race, marital) %>% 
-  summarise(n = n()) %>% 
+  count(race, marital) %>% 
   spread(marital, n) %>% 
   kable() %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
-```{r tabyl and kable}
+#### Mosaic plot of cross tab
+
+```{r mosaic chart}
 gss_cat %>% 
-  tabyl(race, marital) %>% 
-  kable() %>% 
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+  ggplot() +
+  geom_mosaic(aes(x = product(race), fill = fct_infreq(marital)),
+          na.rm = TRUE,
+          show.legend = FALSE)
 ```
 
 ## 15.4 Modifying factor order
 
 ### TV hours by religion
 
-```{r TV hours by religion}
+#### Original Order
 
+```{r TV hours by religion}
 # Create the relig_summary tibble using summary to calculate the mean and tv hours
 relig_summary <- gss_cat %>%
   group_by(relig) %>%
@@ -140,9 +147,6 @@ relig_summary <- gss_cat %>%
     n = n()
   )
 
-relig_summary$relig %>%
-  levels()
-
 relig_summary %>%
   ggplot(aes(tvhours, relig)) +
   geom_point() +
@@ -151,88 +155,18 @@ relig_summary %>%
        y = "")
 ```
 
-### Reordered factors for a more meaningful graph
+#### Religion ordered by tvhours
 
-```{r reordered factors}
-# Largest to smallest
+```{r religion sorted by tvhours}
 relig_summary %>%
-  ggplot(aes(tvhours, fct_reorder(relig, tvhours, .desc = TRUE))) +
+  ggplot(aes(tvhours, fct_reorder(relig, tvhours))) +
   geom_point() +
-  labs(title = "Largest to smallest",
+  labs(title = "Initial order of factors",
        x = "Hours",
        y = "")
-
-# Smallest to largest
-relig_summary %>%
-  mutate(relig = fct_reorder(relig, tvhours)) %>%
-  ggplot(aes(tvhours, relig)) +
-  geom_point() +
-  labs(title = "Smallest to largest",
-       x = "Hours",
-       y = "") 
-```  
-
-### Reorder the factors in the tibble
-```{r reorder factors within the tibble}
-relig_summary$relig %>% 
-  levels()
-  
-relig_summary <- relig_summary %>%
-  mutate(relig = fct_reorder(relig, tvhours, desc = TRUE))
-
-relig_summary$relig %>% 
-  levels()
 ```
 
-### Average age for each reported income levels
-
-```{r average age for different income levels}
-# Initial summary calculations 
-(rincome_summary <- gss_cat %>%
-   group_by(rincome) %>%
-   summarise(age = mean(age, na.rm = TRUE),
-             n = n()))
-
-# Graph with income ordered by age
-rincome_summary %>%
-  mutate(rincome = fct_reorder(rincome, age))  %>%
-  ggplot(aes(x = age, y = rincome)) +
-  geom_point() +
-  labs(title = "Income ordered by age")
-
-# Graph with income 
-rincome_summary %>%
-  ggplot(aes(x = age, y = rincome)) +
-  geom_point() +
-  labs(title = "No ordering")
-```
-
-### Turning income into an ordinal factor
-
-```{r current order of income}
-levels(gss_cat$rincome)
-```
-
-```{r convert to ordinal}
-income_levels <- c("Lt $1000", "$1000 to 2999", "$3000 to 3999", "$4000 to 4999",
-                   "$5000 to 5999", "$6000 to 6999", "$7000 to 7999", "$8000 to 9999",
-                   "$10000 - 14999", "$15000 - 19999", "$20000 - 24999", "$25000 or more",
-                   "No answer", "Don't know", "Refused", "Not applicable")
-gss_cat$rincome <- factor(gss_cat$rincome, levels = income_levels, ordered = TRUE)
-gss_cat$rincome %>% levels()
-```
-
-```{r graph ordered by income}
-gss_cat %>%
-   group_by(rincome) %>%
-   summarise(age = mean(age, na.rm = TRUE),
-             n = n()) %>% 
-  ggplot(aes(x = age, y = rincome)) +
-  geom_point() +
-  labs(title = "Income as an ordered factor")
-```
-
-### Age by marital status
+### Age by marital status in original order
 
 ```{r age by marital status}
 # Calculate the proportion in each age and marital status category
@@ -246,7 +180,11 @@ by_age %>%
   ggplot(aes(x = age, y = prop, color = marital)) +
   geom_line(na.rm = TRUE) +
   labs(title = "Original ordering of factors")
+```
 
+### Age by marital status with legend that matches the last observations
+
+```{r altered legend}
 by_age %>%
   ggplot(aes(age, prop, color = fct_reorder2(marital, age, prop))) +
   geom_line(na.rm = TRUE) +
@@ -254,7 +192,11 @@ by_age %>%
        x = "Age",
        y = "Percentage",
     colour = "marital")
+```
 
+### Pareto chart of marital status
+
+```{r pareto chart of marital status}
 gss_cat %>%
   mutate(marital = marital %>% fct_infreq() %>% fct_rev()) %>%
   ggplot(aes(x = marital, fill = marital)) +
@@ -267,15 +209,13 @@ gss_cat %>%
   )
 ```
 
-
 ## 15.5 Modifying factor levels
 
-### Initial levels for party ide
+### Initial levels for party id
 
 ```{r modifying factor levels}
 # Original factor levels and labels
 gss_cat %>% count(partyid)
-
 ``` 
 
 ### Change the labels for some levels of a factor
