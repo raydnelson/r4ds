@@ -112,7 +112,7 @@ one_pm + days(1)
 
 ### Problem with overnight flights  
 
-```{r overnigt flights}
+```{r overnight flights}
 flights_dt %>% 
   filter(arr_time < dep_time)
 ```
