@@ -1,14 +1,16 @@
 ---
 title: "Functions"
-author: "Ray Nelson"
-date: "6 March 2019"
+author: "MPA 634: Data Science for Managers"
+date: "10/30/2019"
 output:
   html_document:
     code_folding: "hide"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 # Load libraries
 library(tidyverse)
 library(nycflights13)
@@ -78,8 +80,10 @@ sd(x)
 
 ### The base R scale function creates a variable which has a zero mean and a standard deviation of 1. It accomplishes this by subtracting the mean and dividing by the standard deviation.  
 
-```{r investigate how the scale function works, warning = FALSE}
-x %>% scale() %>% t()
+```{r investigate how the scale function works}
+x %>%
+  scale() %>%
+  t()
 x %>%
   scale() %>%
   mean() %>%
@@ -156,7 +160,7 @@ cor(x, y)
 
 ### Create variables to pass to the function and create data from a normal distribution
 
-```{r variables for violin plot of random normal observations for a variable, warning = FALSE}
+```{r variables for violin plot of random normal observations for a variable}
 # set.seed(Sys.time())
 sample_size <- 100
 mu <- 10
@@ -237,7 +241,7 @@ flights %>%
 }
 ```
 
-### Executive the function
+### Execution of the function
 
 ```{r flights to the given airport}
 destination("LAX")
@@ -253,7 +257,7 @@ diamonds_subset <- sample_n(diamonds, size = 1000)
 
 ### Prototype graph
 
-```{r diamond by cut, message = FALSE}
+```{r diamond by cut}
 diamond_cut = "Ideal"
 diamonds_subset %>% 
   filter(cut == diamond_cut) %>% 

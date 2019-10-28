@@ -1,13 +1,16 @@
 ---
 title: 'Homework #15 Key'
 author: 'Functions'
+date: "Due: November 4, 2019"
 output:
   html_document:
-    code_folding: show
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
 library(lubridate)
 library(nycflights13)
@@ -34,19 +37,19 @@ The question is how do you write names when you have more than one word. There a
 
 Interpret the following R code chunk:  
 
-```{r code chunk interpretation, warning = FALSE, message = FALSE}
+```{r code chunk interpretation}
 graph_dest_hours <- function(dest_airport){
-flights %>% 
-  filter(dest == dest_airport) %>%
-  ggplot(aes(hour, fill = origin)) +
-  geom_bar() +
-  scale_x_continuous(breaks = seq(0, 24), labels = seq(0, 24)) +
-  labs(
-    title = paste("New York City Flights to", dest_airport),
-    x = "Hour of the day",
-    y = "Number of flights",
-    fill = "New York Airport"
-  )  
+  flights %>% 
+    filter(dest == dest_airport) %>%
+    ggplot(aes(hour, fill = origin)) +
+    geom_bar() +
+    scale_x_continuous(breaks = seq(0, 24), labels = seq(0, 24)) +
+    labs(
+      title = paste("New York City Flights to", dest_airport),
+      x = "Hour of the day",
+      y = "Number of flights",
+      fill = "New York Airport"
+    )  
 }
 
 graph_dest_hours("LAX")
@@ -102,10 +105,32 @@ graph_origin_hours("JFK")
 
 Write a function that calculates the number of days from today until the last day of class. Your function should take as an argument the last day of class. 
 
-```{r days until the end of the semester}
-calc_days <- function(last_day){
-  ymd(last_day) - today()
-}
+#### Durations
 
-calc_days(20190417)
+```{r calculation using durations}
+use_duration <- function(date){
+  ymd(date) - today()
+}
+use_duration(20191211)
 ```
+
+#### Periods
+
+```{r calculation using periods}
+# Calculation using durations
+use_periods <- function(date){
+  days(ymd(date)) - days(today())
+}
+use_periods(20191211)
+```
+
+#### Intervals
+
+```{r calculation using intervals}
+# Calculation using durations
+use_intervals <- function(date){
+  today() %--% ymd(date) %/% days(1)
+}
+```  
+
+There are only `r use_intervals(20191211)` days until the end of the semester.

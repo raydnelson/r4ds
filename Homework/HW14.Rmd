@@ -1,6 +1,7 @@
 ---
 title: 'Homework #14'
 author: 'Dates and Times'
+date: "Due: October 30, 2019"
 output: word_document
 ---
 
@@ -13,7 +14,7 @@ library(nycflights13)
 
 ## Concepts  
 
-1.  Software packages often use a reference date for their date-time functions. Excel uses January 1, 1990. One alternative for R is "Unix Epoch", which is 1970-01-01. Explain how these systems represent date and date-time values as numbers.  
+1.  Software packages often use a reference date for their date-time functions. Excel uses January 1, 1900. One alternative for R is "Unix Epoch", which is 1970-01-01. Explain how these systems represent date and date-time values as numbers.  
 
 2.  Time spans can be measured as durations, periods, or intervals. Compare and contrast these three ways of considering time.  
     
@@ -82,7 +83,7 @@ homework_graph <- "http://govfinance.byu.edu/govfinance/classes/dataScience/home
 
 Problem 2
 
-Use durations, periods, and spans to calculate your age today. The functions as.duration, as.period, years, and the %--% operator will be helpful.
+Use durations, periods, and intervals to calculate your age today. The functions as.duration, as.period, years, and the %--% operator will be helpful.
 
 ```{r age}
 
