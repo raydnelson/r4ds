@@ -200,7 +200,7 @@ normal_violin <- function(sample_size, mu, sigma) {
 ### Use the violin plot function
 
 ```{r violin plot executions}
-normal_violin(100, 10, 10)
+normal_violin(10000, 10, 10)
 ```
 
 ## Scheduled Departure times for flights leaving from a NYC airport and going to a given destination.
@@ -210,17 +210,19 @@ normal_violin(100, 10, 10)
 ```{r code outside flights }
 dest_airport <- "ATL"
 
-flights %>% 
-  filter(dest == dest_airport) %>%
-  ggplot(aes(hour, fill = origin)) +
-  geom_bar() +
-  scale_x_continuous(breaks = seq(0, 24, 1), labels = seq(0, 24, 1)) +
-  labs(
-    title = paste("New York City Flights", dest_airport),
-    x = "Hour of the day",
-    y = "Number of flights",
-    fill = "New York Airport"
-  )
+erica <- function(dest_airport) {
+  flights %>% 
+    filter(dest == dest_airport) %>%
+    ggplot(aes(hour, fill = origin)) +
+    geom_bar() +
+    scale_x_continuous(breaks = seq(0, 24, 1), labels = seq(0, 24, 1)) +
+    labs(
+      title = paste("New York City Flights", dest_airport),
+      x = "Hour of the day",
+      y = "Number of flights",
+      fill = "New York Airport"
+    )
+}
 ```  
 
 ### Create a function to draw the bar chart which takes as an argument the destination airport.  

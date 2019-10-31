@@ -6,7 +6,9 @@ output: word_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
 library(lubridate)
 library(nycflights13)
@@ -14,7 +16,7 @@ library(nycflights13)
 
 ## Concepts  
 
-1.  Give two original examples of functions where you have the function name as a verb and the arguments as  nouns.  
+1.  Give two original examples of functions where you have the function name as a verb and the arguments as nouns.  
 
 2.  Explain why style is important when you are writing functions.
 
@@ -24,7 +26,7 @@ library(nycflights13)
 
 Interpret the following R code chunk:  
 
-```{r code chunk interpretation, warning = FALSE, message = FALSE}
+```{r code chunk interpretation}
 graph_dest_hours <- function(dest_airport){
 flights %>% 
   filter(dest == dest_airport) %>%

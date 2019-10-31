@@ -1,7 +1,7 @@
 ---
 title: "Conditional Execution"
-author: "Ray Nelson"
-date: "11 March 2019"
+author: "MPA 634: Data Science for Managers"
+date: "4 November 2019"
 output:
   html_document:
     code_folding: "hide"

@@ -81,7 +81,7 @@ flights_dt %>%
   geom_freqpoly(binwidth = 900, color = "blue") +
   labs(
     title = "Flights Departing from New York City",
-    subtitle = "Number every 15 seconds on Christmas Day 2013",
+    subtitle = "Number every 15 minutes on Christmas Day 2013",
     x = "Departure Time",
     y = "Number of Flights"
   )
