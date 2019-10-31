@@ -1,14 +1,16 @@
 ---
 title: 'Homework #16'
 author: 'Conditional Execution'
+date: "Due: November 6, 2019"
 output: word_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 library(lubridate)
-library(nycflights13)
 ```
 
 ## Concepts  
@@ -51,7 +53,7 @@ Write a greeting function that says "good morning", "good afternoon", or "good e
 
 ### (Optional) Problem 2 from 19.4.4 Exercises Problem #3
 
-Implement a fizzbuzz function. It takes a single number as input. If the number is divisible by three, it returns "fizz". If it’s divisible by five it returns "buzz". If it’s divisible by three and five, it returns "fizzbuzz". Otherwise, it returns the number. Make sure you first write working code before you create the function. You should use & and | when comparing vectors. You should use && and || when comparing scalars and & and | when comparing vectors.  
+Implement a fizzbuzz function. It takes a single number as input. If the number is divisible by three, it returns "fizz". If it’s divisible by five it returns "buzz". If it’s divisible by three and five, it returns "fizzbuzz". Otherwise, it returns the number. Make sure you first write working code before you create the function. You should use & and | when comparing vectors. You should use && and || when comparing scalars.  
 
 ```{r fizzbuzz function}
 

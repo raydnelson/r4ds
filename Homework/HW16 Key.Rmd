@@ -1,16 +1,18 @@
 ---
 title: 'Homework #16'
 author: 'Conditional Execution'
+date: "Due: November 6, 2019"
 output:
   html_document:
-    code_folding: show
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 library(lubridate)
-library(nycflights13)
 ```
 
 ## Concepts  
@@ -92,7 +94,6 @@ Lines 8 - 10: All other values for temperature return the value "above"
 
 Lines 12 - 14: Test the function for various temperatures to make sure that it is working correctly.  
 
-
 Code Chunk #2
 
 ```{r code chunk interpretation, warning = FALSE, message = FALSE}
@@ -146,7 +147,7 @@ greet_time(ymd_h("2019-03-11:11"))
 
 ### (Optional) Problem 2 from 19.4.4 Exercises Problem #3
 
-Implement a fizzbuzz function. It takes a single number as input. If the number is divisible by three, it returns "fizz". If it’s divisible by five it returns "buzz". If it’s divisible by three and five, it returns "fizzbuzz". Otherwise, it returns the number. Make sure you first write working code before you create the function. You should use && and || when comparing scalars within if-else statements and & and | when comparing vectors.  You should use & and | when comparing vectors such is the case in filtering statements in dplyr. 
+Implement a fizzbuzz function. It takes a single number as input. If the number is divisible by three, it returns "fizz". If it’s divisible by five it returns "buzz". If it’s divisible by three and five, it returns "fizzbuzz". Otherwise, it returns the number. Make sure you first write working code before you create the function. You should use & and | when comparing vectors. You should use && and || when comparing scalars.
 
 ```{r fizzbuzz function}
 fizzbuzz <- function(number){
