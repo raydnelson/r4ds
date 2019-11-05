@@ -1,70 +1,75 @@
 ---
 title: "Vectors"
-author: "Ray Nelson"
-date: "11 March 2019"
+author: "MPA 634: Data Science for Managers"
+date: "6 November 2019"
 output: 
   html_document:
     code_folding: "hide"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 # Load libraries
 library(tidyverse)
 ```
 
 ## How to store and access information in R. We have the following possible objects:  
 
-*  vectors (1 dimensional: character, logical, and numeric)
+*  atomic vectors (1 dimensional: character, logical, and numeric)
 *  lists
 *  tibbles (which are a special case of lists)  
 
 ## Create vectors in which we place information 
 
-### Individuals associated with each section
+### Individuals associated with MPA 634 (past and present students)
 
 ```{r individuals associated with each section}
-individuals1 <- c(
-  "Derrik Adams",
-  "Devin Adams",
-  "Mike Carpenter",
-  "Filipe Dias Bezerra",
-  "Kiersten Ernstrom",
-  "Ruben Ferreyra",
-  "Jonathan Fortuna",
-  "Matt Hubbard",
-  "Teresa Hwang",
-  "Nate Lambert",
-  "Ryan Lancaster",
-  "Matt Lipps",
-  "Luciano Peixoto",
-  "Alex Rwankuba",
-  "Shantel Sanders",
-  "Hayden Smith",
-  "Uros Stampe",
-  "Bruno Torres",
-  "Tiago Triumpho"
+individuals_current <- c(
+  "Brooke",
+  "Tessa",
+  "Pallavi",
+  "Alex",
+  "Oogii",
+  "Sarah",
+  "Joshua",
+  "Stan",
+  "Haley",
+  "Erica",
+  "Mitchell",
+  "Justin",
+  "Haris",
+  "David",
+  "Vana"
 )
 
-individuals2 <- c(
-  "Heidy Comish",
-  "Eveline De Medeiros Miranda",
-  "Kyle Finneman",
-  "Chris Holdaway",
-  "Taylor King",
-  "Trevor Lake",
-  "Travis Lovell",
-  "Hope Morrison",
-  "Sarah Nielsen",
-  "You Yeong Oh",
-  "Chad Olesiak",
-  "Jonathan Perkins",
-  "Jameson Ranck",
-  "Seth Randall",
-  "Amanda Spencer",
-  "Joshua Thornock",
-  "Matt Widmer",
-  "Nathan Zick"
+individuals_previous <- c(
+  "Derrik",
+  "Devin",
+  "Mike",
+  "Filipe",
+  "Kiersten",
+  "Ruben",
+  "Jonathan",
+  "Matt",
+  "Teresa",
+  "Nate",
+  "Ryan",
+  "Alex",
+  "Bruno",
+  "Kyle",
+  "Chris",
+  "Taylor",
+  "Trevor",
+  "Travis",
+  "Sarah",
+  "Chad",
+  "Jonathan",
+  "Seth",
+  "Amanda",
+  "Joshua",
+  "Nathan"
 )
 ```
 
@@ -78,15 +83,16 @@ program_codes <- c(1:3)
 ### Programs that correspond to each individual  
 
 ```{r individuals in programs}
-programs1 <- c(2, 2, 2,	2, 1, 1, 2, 2, 3, 3, 3, 2, 2, 2, 3, 3, 2, 2, 2)
-programs2 <- c(3, 3, 1, 2, 1, 2, 2, 3, 3, 3, 2, 3, 2, 2, 2, 2, 2, 1)
+programs_current <- c(1, 3, 2, 3, 3, 3, 1, 3, 1, 3, 1, 1, 3, 1, 3)
+programs_previous <- c(2, 2, 2, 2, 1, 1, 2, 2, 1, 3, 3, 2, 2, 1, 2,
+                       1, 2, 2, 3, 2, 3, 2, 2, 2, 3)
 ```
 
 ### Types of the objections that we have created
 
 ```{r types of objects}
-typeof(individuals1)
-typeof(programs1)
+typeof(individuals_current)
+typeof(programs_current)
 typeof(program_names)
 typeof(program_codes)
 ```
@@ -102,28 +108,37 @@ typeof(program_codes)
 
 ### Individuals as tibbles and lists
 
-```{r individuals as tibble, error = TRUE}
-length(individuals1)
-length(individuals2)
-(classes_tibble) <- tibble(individuals1, individuals2)
-(class_list <- list(individuals1 = individuals1, individuals2 = individuals2))
+```{r individuals as tibble I}
+length(individuals_current)
+length(individuals_previous)
+```
+
+### Error in creating tibble
+```{r error in creating tibble, error = TRUE}
+(classes_tibble) <- tibble(individuals_current, individuals_previous)
+```
+
+### Lists work because vectors of different lengths are allowed.
+```{r lists work}
+(class_list <- list(individuals_current = individuals_current,
+                    individuals_previous = individuals_previous))
 ```
 
 ### Individuals as a long tibble
 
 ```{r long individual tibble}
-(section1 <- rep("section1", length(individuals1)))
-(section2 <- rep("section2", length(individuals2)))
+(current <- rep("current", length(individuals_current)))
+(previous <- rep("previous", length(individuals_previous)))
 
-section1 <- tibble(individuals1, programs1, section1)
-colnames(section1) <- c("individual", "program", "section")
-section1
+current <- tibble(individuals_current, programs_current, current)
+colnames(current) <- c("individual", "program", "section")
+current
 
-section2 <- tibble(individuals2, programs2, section2)
-colnames(section2) <- c("individual", "program", "section")
-section2
+previous <- tibble(individuals_previous, programs_previous, previous)
+colnames(previous) <- c("individual", "program", "section")
+previous
 
-(classes <- rbind(section2, section1))
+(classes <- rbind(current, previous))
 ```
 
 ##### Add program identifier to the tibble with inner join and cleanup the tibble
@@ -150,22 +165,23 @@ str(classes)
 
 *  classes (tibble that was already created)
 *  programs (tibble that was already created)
-*  sections (list that needs to be created from section1 and section2)
+*  individuals (list that needs to be created from individuals_previous and individuals_current)
 *  a list called rdn_teaching which is a list that includes the above three objects
 
 ### Create the sections list
 
 ```{r sections list}
-sections <- list(section1 = section1, section2 = section2)
+individuals <- list(individuals_current = individuals_current,
+                    individuals_previous = individuals_previous)
 ``` 
 
-### Type of the objects that we are going to put in rdn_teaching
+### Type of the objects that we are goingindividuals_current rdn_teaching
 
 ```{r type of objects for rdn}
 typeof(classes)
 is_tibble(classes)
-typeof(sections)
-is_tibble(sections)
+typeof(individuals)
+is_tibble(individuals)
 typeof(programs)
 is_tibble(programs)
 ```
@@ -173,7 +189,7 @@ is_tibble(programs)
 ### Create the list rdn_teaching
 
 ```{r rdn_teaching creation}
-rdn_teaching <- list(classes = classes, sections = sections, programs = programs)
+rdn_teaching <- list(classes = classes, individuals = individuals, programs = programs)
 ```
 
 ### Investigate rdn_teaching
