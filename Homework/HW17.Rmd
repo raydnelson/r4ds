@@ -1,9 +1,8 @@
 ---
 title: 'Homework #17 Key'
 author: "Vectors"
-output:
-  html_document:
-    code_folding: show
+date: "Due: November 11, 2019"
+output: word_document
 
 ---
 

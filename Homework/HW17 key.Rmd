@@ -1,9 +1,10 @@
 ---
 title: 'Homework #17 Key'
 author: "Vectors"
+date: "Due: November 11, 2019"
 output:
   html_document:
-    code_folding: show
+    code_folding: hide
 
 ---
 
