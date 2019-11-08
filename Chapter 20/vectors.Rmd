@@ -23,10 +23,10 @@ library(tidyverse)
 
 ## Create vectors in which we place information 
 
-### Individuals associated with MPA 634 (past and present students)
+### Favorites associated with MPA 634 (past and present students)
 
-```{r individuals associated with each section}
-individuals_current <- c(
+```{r favorite associated with each section}
+favorite_current <- c(
   "Brooke",
   "Tessa",
   "Pallavi",
@@ -44,7 +44,7 @@ individuals_current <- c(
   "Vana"
 )
 
-individuals_previous <- c(
+favorite_previous <- c(
   "Derrik",
   "Devin",
   "Mike",
@@ -73,25 +73,25 @@ individuals_previous <- c(
 )
 ```
 
-### Programs in which individuals can participate  
+### Programs in which favorite can participate  
 
 ```{r programs}
-program_names <- c("MISM", "MBA", "MPA")
+program_names <- c("MBA", "MISM", "MPA")
 program_codes <- c(1:3)
 ```
 
 ### Programs that correspond to each individual  
 
-```{r individuals in programs}
-programs_current <- c(1, 3, 2, 3, 3, 3, 1, 3, 1, 3, 1, 1, 3, 1, 3)
-programs_previous <- c(2, 2, 2, 2, 1, 1, 2, 2, 1, 3, 3, 2, 2, 1, 2,
-                       1, 2, 2, 3, 2, 3, 2, 2, 2, 3)
+```{r favorite in programs}
+programs_current <- c(2, 3, 1, 3, 3, 3, 2, 3, 2, 3, 2, 2, 3, 2, 3)
+programs_previous <- c(1, 1, 1, 1, 2, 2, 1, 1, 2, 3, 3, 1, 1, 2, 1,
+                       2, 1, 1, 3, 1, 3, 1, 1, 1, 3)
 ```
 
 ### Types of the objections that we have created
 
 ```{r types of objects}
-typeof(individuals_current)
+typeof(favorite_current)
 typeof(programs_current)
 typeof(program_names)
 typeof(program_codes)
@@ -106,35 +106,35 @@ typeof(program_codes)
 (programs_list <- list(program_names = program_names, program_codes = program_codes))
 ```
 
-### Individuals as tibbles and lists
+### favorite as tibbles and lists
 
-```{r individuals as tibble I}
-length(individuals_current)
-length(individuals_previous)
+```{r favorite as tibble I}
+length(favorite_current)
+length(favorite_previous)
 ```
 
 ### Error in creating tibble
 ```{r error in creating tibble, error = TRUE}
-(classes_tibble) <- tibble(individuals_current, individuals_previous)
+(classes_tibble) <- tibble(favorite_current, favorite_previous)
 ```
 
 ### Lists work because vectors of different lengths are allowed.
 ```{r lists work}
-(class_list <- list(individuals_current = individuals_current,
-                    individuals_previous = individuals_previous))
+(class_list <- list(favorite_current = favorite_current,
+                    favorite_previous = favorite_previous))
 ```
 
-### Individuals as a long tibble
+### favorite as a long tibble
 
 ```{r long individual tibble}
-(current <- rep("current", length(individuals_current)))
-(previous <- rep("previous", length(individuals_previous)))
+(current <- rep("current", length(favorite_current)))
+(previous <- rep("previous", length(favorite_previous)))
 
-current <- tibble(individuals_current, programs_current, current)
+current <- tibble(favorite_current, programs_current, current)
 colnames(current) <- c("individual", "program", "section")
 current
 
-previous <- tibble(individuals_previous, programs_previous, previous)
+previous <- tibble(favorite_previous, programs_previous, previous)
 colnames(previous) <- c("individual", "program", "section")
 previous
 
@@ -165,23 +165,23 @@ str(classes)
 
 *  classes (tibble that was already created)
 *  programs (tibble that was already created)
-*  individuals (list that needs to be created from individuals_previous and individuals_current)
+*  favorite (list that needs to be created from favorite_previous and favorite_current)
 *  a list called rdn_teaching which is a list that includes the above three objects
 
 ### Create the sections list
 
 ```{r sections list}
-individuals <- list(individuals_current = individuals_current,
-                    individuals_previous = individuals_previous)
+favorite <- list(favorite_current = favorite_current,
+                    favorite_previous = favorite_previous)
 ``` 
 
-### Type of the objects that we are goingindividuals_current rdn_teaching
+### Type of the objects that we are goingfavorite_current rdn_teaching
 
 ```{r type of objects for rdn}
 typeof(classes)
 is_tibble(classes)
-typeof(individuals)
-is_tibble(individuals)
+typeof(favorite)
+is_tibble(favorite)
 typeof(programs)
 is_tibble(programs)
 ```
@@ -189,7 +189,7 @@ is_tibble(programs)
 ### Create the list rdn_teaching
 
 ```{r rdn_teaching creation}
-rdn_teaching <- list(classes = classes, individuals = individuals, programs = programs)
+rdn_teaching <- list(classes = classes, favorite = favorite, programs = programs)
 ```
 
 ### Investigate rdn_teaching
