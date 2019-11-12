@@ -7,10 +7,8 @@ output:
     code_folding: show
 ---
 
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE,
-                      message = FALSE,
-                      warning = FALSE)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
 library(nycflights13)
@@ -22,7 +20,7 @@ Submit an R Markdown file for the following five problems. In order to get full 
 
 Create a function that uses intervals to calculate the number of months left before a mortgage is paid off. Your function should take two arguments, the current date and the date that the mortgage matures. As you test your function, an easy example is to set the current date to March 31, 2019 and the maturity date to March 31, 2034. This would correspond to a 15 year mortgage.  
 
-```{r problem 1}
+```{r problem 1, message=FALSE}
 calc_mortgage <- function(begin_month, end_month) {
   (ymd(begin_month) %--% ymd(end_month)) %/% months(1)
 }
@@ -97,7 +95,7 @@ flights_jfk %>%
 Write a function that classifies a given observation as either a "potential outlier" or a "not outlier". The criteria for this classification is whether or not the observation is more than three standard deviations above or below the mean. The function should:  
 
 1.  Have three arguments: the observation value, the mean of a distribution, and the standard deviation of the distribution.
-1.  Convert the observation into a z score by subtracting the mean and dividing by the standard deviation and then print out its value.
+1.  Convert the observation into a z score and print out its value.
 1.  Determine whether the observation is more than 3 standard deviations below the mean or more than 3 standard deviations above the mean.
 1.  Classify the observation as either  "potential outlier" or "not outlier" and print out the result.
 	
