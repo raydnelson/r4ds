@@ -1,14 +1,14 @@
 ---
-title: "HW18"
-author: "Ray Nelson"
-date: "21 Mar 2019"
-output:
-  html_document:
-    code_folding: "hide"
+title: "Homework #18"
+author: "Iteration"
+date: "20 November 2019"
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 library(nycflights13)
 ```
@@ -20,8 +20,6 @@ library(nycflights13)
 2.  Explain how loops are different from functions.
     
 ## Interpretation of code  
-
-Interpret the following R code chunks: 
 
 Code Chunk #1 (Section 21.2.1 Exercises Problem 1.3)
 

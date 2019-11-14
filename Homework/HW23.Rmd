@@ -1,14 +1,14 @@
 ---
 title: "HW22"
-author: "Ray Nelson"
-date: "9 Apr 2019"
-output:
-  html_document:
-    code_folding: "hide"
+author: "Interactivity"
+date: "11 December 2019"
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
 ```
 
@@ -17,8 +17,6 @@ library(tidyverse)
 Explain the function and interaction of the ui and server parts of a shiny app.
     
 ## Interpretation of code  
-
-Interpret the following R code chunks: 
 
 Code Chunk #1 UI part of a shiny app
 

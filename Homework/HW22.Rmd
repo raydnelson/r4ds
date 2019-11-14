@@ -1,14 +1,14 @@
 ---
 title: "HW22"
-author: "Ray Nelson"
-date: "8 Apr 2019"
-output:
-  html_document:
-    code_folding: "hide"
+author: "Graphics for Communication"
+date: "9 December 2019"
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
 ```
 
@@ -17,8 +17,6 @@ library(tidyverse)
 Explain the idea of themes within ggplot.
     
 ## Interpretation of code  
-
-Interpret the following R code chunks: 
 
 Code Chunk #1 Zooming using coord_cartesian
 
