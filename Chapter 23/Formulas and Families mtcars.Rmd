@@ -1,5 +1,5 @@
 ---
-title: "Formulas and Model Families: mtcars II"
+title: "Formulas and Model Families: mtcars"
 author: "Ray Nelson"
 date: "29 March 2019"
 output: 

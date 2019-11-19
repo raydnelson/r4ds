@@ -1,14 +1,16 @@
 ---
 title: "Model Basics mtcars"
-author: "Ray Nelson"
-date: "26 March 2019"
+author: "MPA 634: Data Science for Managers"
+date: "20 November 2019"
 output: 
   html_document:
     code_folding: "hide"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 # Load libraries
 library(tidyverse)
 library(car)
@@ -16,11 +18,13 @@ library(car)
 
 ## Models
 
-*  Extract patterns from data
-*  Decompose variation into explained and unexplained
-*  Extract all possible information from data
-*  Achieve balance between explanatory power and simplicity  
-
+1. Become familiar with the data using graphs
+1. Identify families of models that might be appropriate
+1. Estimate the models
+1. Check the residuals to see if information remains
+1. Achieve balance between explanatory power and simplicity 
+1. Use the model to make forecasts
+ 
 
 ## Patterns and models (From Chapter 7.6)
 
@@ -56,7 +60,27 @@ mtcars_lm %>% residuals()
 mtcars_lm %>% fitted()
 ```  
 
-### How good is the model?
+```{r how good is the model from scratch}
+estimated_model_data <-  mtcars %>% 
+  select(mpg, wt) %>% 
+  mutate(
+    estimated_values = mtcars_lm %>% fitted(),
+    estimated_residuals = mtcars_lm %>% residuals(),
+    studentized_residuals = estimated_residuals %>% scale()
+  )
+
+estimated_model_data
+
+estimated_model_data %>% 
+  ggplot(aes(estimated_values, studentized_residuals)) +
+  geom_point() +
+  geom_smooth(span = 0.9)
+
+estimated_model_data %>% 
+  filter(abs(studentized_residuals) > 2)
+```
+
+### How good is the model using the car library?
 
 ```{r simple regression model evaluation}
 ## How good is the model
@@ -97,20 +121,26 @@ mtcars_loess %>% str()
 
 ### How good is the model?
 
-```{r evaluation of loess model, message = FALSE}
+```{r evaluation of loess model}
 mtcars_loess %>% summary()
 
-fitted_values <- mtcars_loess %>%
-  fitted()
-studentized_residuals <- mtcars_loess %>%
-  residuals() %>% 
-  scale() %>% 
-  as.numeric()
+estimated_model_data <-  mtcars %>% 
+  select(mpg, wt) %>% 
+  mutate(
+    estimated_values = mtcars_loess %>% fitted(),
+    estimated_residuals = mtcars_loess %>% residuals(),
+    studentized_residuals = estimated_residuals %>% scale()
+  )
 
-tibble(fitted_values, studentized_residuals) %>% 
-  ggplot(aes(fitted_values, studentized_residuals)) +
+estimated_model_data
+
+estimated_model_data %>% 
+  ggplot(aes(estimated_values, studentized_residuals)) +
   geom_point() +
   geom_smooth(span = 0.9)
+
+estimated_model_data %>% 
+  filter(abs(studentized_residuals) > 2)
 ```  
 
 ### Forecast with loess

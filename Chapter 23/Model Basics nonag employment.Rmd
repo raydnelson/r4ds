@@ -1,31 +1,42 @@
 ---
-title: "Model Basics Nonag Employment"
-author: "Ray Nelson"
-date: "26 March 2019"
+title: "Model Basics: Nonagricultural Employment"
+author: "MPA 634: Data Science for Managers"
+date: "20 November 2019"
 output: 
   html_document:
     code_folding: "hide"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 # Load libraries
 library(tidyverse)
 library(forecast)
 library(fImport)
-library(Quandl)
 library(timeSeries)
+library(car)
 library(magrittr)
 ```  
-This R Markdown document requires the forecast, fImport, Quandl, timeSeries, car, and magrittr libraries. For this reason, you may need to install them in order for you to be able to execute the code.  
 
-## Forecast of not seasonally nonagricultural employment 
+This R Markdown document requires the forecast, fImport, timeSeries, magrittr, and car libraries. For this reason, you may need to install them in order for you to be able to execute the code. 
 
-### Obtain the data from FRED (through Quandl)
+## Modeling and forecasting steps using an exploratory approach
 
-```{r get retail from FRED}
-jobs <- Quandl('FRED/PAYNSA', type = 'ts') %>%
-  diff() %>% 
+1. Become familiar with the data using graphs
+1. Identify families of models that might be appropriate
+1. Estimate the models
+1. Check the residuals to see if information remains
+1. Use the model to make forecasts
+
+## Example: Forecast of not seasonally adjusted nonagricultural employment
+
+### Obtain the data from FRED
+
+```{r get jobs from FRED}
+jobs <- fredSeries('PAYNSA', from = "1980-01-01") %>%
+  as.ts() %>% 
   divide_by(1000)
 ```
 
@@ -34,9 +45,30 @@ jobs <- Quandl('FRED/PAYNSA', type = 'ts') %>%
 ```{r preliminary evaluation}
 jobs %>% 
   ggtsdisplay()
+```  
+
+### Remove the trend
+```{r remove the trend}
+jobs %>% 
+  diff(lag = 1) %>% 
+  ggtsdisplay()
 ```
 
-### Use the additive decomposition model to decompose the time series into:
+### Remove the trend and seasonality
+```{r remove the trend and seasonality}
+jobs %>% 
+  diff(lag = 1) %>% 
+  diff(lag = 12) %>% 
+  ggtsdisplay()
+```
+
+### Possible model families
+
+1. Season and Trend with Loess (STL)
+2. Exponetial smoothing or state space modeling
+3. Auto-regressive Integrated Moving Average (ARIMA)
+
+### Use the additive decomposition model to separate the time series into:
 
 *  Trend\Cycle
 *  Seasonality
@@ -49,7 +81,7 @@ jobs_stl %>%
   str()
 ```
 
-### Result of the decomposition  
+#### Result of the decomposition  
 
 ```{r stl components}
 jobs_stl %>% 
@@ -59,25 +91,22 @@ jobs_stl %>%
   )
 ```
 
-### Is there any information in the remainder?
+#### Information in STL residuals?
 
-```{r information in the remainder}
+```{r stl residuals}
 jobs_stl$time.series[, "remainder"] %>% 
-  ggtsdisplay() +
-  labs(
-    title = "There is still information in the remainder from STL"
-  )
+  ggtsdisplay()
 ```
 
-### Prediction using the STL model
+#### Prediction using the STL model
 
 ```{r stl prediction}
 jobs_stl %>%
-  forecast(h = 12) %>% 
+  forecast(h = 24) %>% 
   autoplot()
 ```
 
-### ETS are part of the family of state space models and are also known as exponential smoothing  
+### ETS is part of the family of state space models. These models are also known as exponential smoothing.  
 
 ```{r estimate an ets model}
 jobs_ets <- jobs %>%
@@ -92,7 +121,7 @@ jobs_ets %>%
   tail(24)
 ```  
 
-### ETS doesn't extract all of the information from the data. Information remains in the residuals  
+#### ETS doesn't extract all of the information from the data. Information remains in the residuals  
 
 ```{r information in ets residuals}
 jobs_ets %>% 
@@ -100,35 +129,36 @@ jobs_ets %>%
   ggtsdisplay()
 ```
 
-### Forecasting with the ETS model
+#### Forecasting with the ETS model
 
 ```{r ets forecasts}
 jobs_ets %>% 
-  forecast(h = 12) %>% 
+  forecast(h = 24) %>% 
   autoplot()
 ```
 
-### ARIMA is a family of models. ARIMA means auto-regressive, integrated, moving average.  
+### ARIMA model
 
-```{r estimate the ARIMA model}
-jobs_arima <- jobs %>% 
+#### Human diagnosis
+
+```{r human ARIMA model}
+jobs_human <- jobs %>% 
+  arima(order = c(3, 1, 0), seasonal = c(1, 1, 0))
+jobs_human %>% 
+  checkresiduals()
+forecast(jobs_human, h = 24) %>%
+  as.ts() %>% 
+  autoplot()
+```
+
+### Machine learning
+
+```{r machine learning}
+jobs_machine <- jobs %>% 
   auto.arima()
-jobs_arima %>% str()
-jobs_arima %>% summary()
-```
-
-### ARIMA models seem to capture the more of the information than the other techniques 
-
-```{r evaluation of ARIMA}
-jobs_arima %>% 
-  residuals() %>% 
-  ggtsdisplay()
-```
-
-### Forecasts from the ARIMA model
-
-```{r arima forecasts}
-jobs_arima %>% 
-  forecast(h = 12) %>%
+jobs_machine %>% 
+  checkresiduals()
+jobs_machine %>% 
+  forecast(h = 24) %>% 
   autoplot()
 ```
