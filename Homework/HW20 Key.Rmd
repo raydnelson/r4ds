@@ -1,7 +1,7 @@
 ---
-title: "HW20 Key"
-author: "Ray Nelson"
-date: "3 Apr 2019"
+title: "Homework #20 Key"
+author: "Formulas and Model Families"
+date: "2 December 2019"
 output:
   html_document:
     code_folding: "show"
@@ -22,13 +22,6 @@ In R, for most families of models, we specify the equation that we want to estim
 
 Dependent and response variables are the same. Independent, explanatory, and predictor variables are those that we use to explain the variation in the response variable. We need to be very careful that we don't say or conclude that the explanatory variables cause the response variable to change. We are talking about explanation, not causation.
 
-3.  Explain how you use categorical, numerical, and interactions in a linear model. What is their effect on the slopes and intercepts in your model.  
-
-The explanatory or predictor variables in a model can be categorical, numerical, or interactions among the different types of variables. These have the following effects on the slopes and intercepts of the model:
-
-*  Only categorical variables gives different intercepts and no estimated slope terms.
-*  Categorical variables and numerical variables with no interactions give different intercepts and shared slopes for each categorical variable.
-*  Categorical and numerical variables with interactions produces a unique slope and intercept for each category. 
     
 ## Interpretation of code  
 

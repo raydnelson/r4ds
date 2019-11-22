@@ -1,7 +1,7 @@
 ---
-title: "Midterm II Winter 2019"
+title: "Key: Midterm II Fall 2019"
 author: "Data Science for Managers"
-date: "Due by class: 3/25/2019"
+date: "Due by class: 11/18/2019"
 output:
   html_document:
     code_folding: show

@@ -8,7 +8,9 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 ```
 
@@ -52,7 +54,7 @@ Lines 6 - 7: Takes the model inherent in mpg_lm and uses the estimated equation 
 
 Code Chunk #2 Loess model
 
-```{r loess model, message = FALSE}
+```{r loess model}
 mpg_loess <- loess(hwy ~ displ, data = mpg)
 fitted_values <- mpg_loess %>%
   fitted()

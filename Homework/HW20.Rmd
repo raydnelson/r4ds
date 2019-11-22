@@ -1,5 +1,5 @@
 ---
-title: "HW20"
+title: "Homework #20"
 author: "Formulas and Model Families"
 date: "2 December 2019"
 output: word_document
@@ -17,8 +17,6 @@ library(tidyverse)
 1.  Explain how you specify the equation that you want to estimate in a linear model.
 
 2.  Explain how dependent and independent variables are related to response and explanatory (predictor) variables.
-
-3.  Explain how you use categorical, numerical, and interactions in a linear model. What is their effect on the slopes and intercepts in your model.  
     
 ## Interpretation of code  
 
