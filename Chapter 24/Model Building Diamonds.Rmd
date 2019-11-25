@@ -1,14 +1,16 @@
 ---
 title: "Model Building: Diamonds"
-author: "Ray Nelson"
-date: "2 Apr 2019"
+author: "MPA 634: Data Science for Managers"
+date: "2 December 2019"
 output: 
   html_document:
     code_folding: "hide"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 # Load libraries
 library(tidyverse)
 library(modelr)
@@ -31,9 +33,9 @@ boxplot("color")
 boxplot("clarity")
 ``` 
 
-## Heatmap of price and carat
+## Two dimensional density of price and carat
 
-Draw a heatmap of price and carat by using geom_hex with bins = 50
+Draw a two dimensional density of price and carat by using geom_hex with bins = 50
 
 ```{r heatmap}
 diamonds %>% 
@@ -41,7 +43,7 @@ diamonds %>%
   geom_hex(bins = 50)
 ```
 
-## Alter the heatmap in two different ways  
+## Alter the two dimensional densitiy in two different ways  
 
 1.  Limit the diamonds to those less than or equal to 2.5 carats
 2.  Use a log base 2 transformation  
@@ -53,7 +55,7 @@ diamonds2 <- diamonds %>%
           lcarat = log2(carat))
 ```
 
-### Draw a heatmap of the next data
+### Draw a two dimensional density of the next data
 
 ```{r new heatmap}
 diamonds2 %>% 
@@ -91,7 +93,7 @@ diamonds2 %>%
 
 ### Evaluate the residuals
 
-```{r}
+```{r evaluate the residuals}
 diamonds2 <- diamonds2 %>% 
   add_residuals(model_diamond, "lresid")
 
