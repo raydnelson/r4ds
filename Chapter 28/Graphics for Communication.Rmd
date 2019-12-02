@@ -1,14 +1,16 @@
 ---
 title: "Graphics for Communication"
-author: "Ray Nelson"
-date: "3 Apr 2019"
+author: "MPA 634: Data Science for Managers"
+date: "4 December 2019"
 output: 
   html_document:
     code_folding: "hide"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 # Load libraries
 library(tidyverse)
 library(ggrepel)
@@ -21,95 +23,131 @@ library(RColorBrewer)
 
 ```{r putting labels on graphs}
 mpg %>% ggplot(aes(displ, hwy)) +
-  geom_point(aes(color = class)) +
+  geom_point(aes(color = class), position = "jitter") +
   geom_smooth(se = FALSE) +
   labs(
     title = "Fuel efficiency generally decreases with engine size",
     subtitle = "Two seaters (sports cars) are an exception because of their light weight",
     caption = "Data from fueleconomy.gov",
     x = "Engine displacement (L)",
-    y = "Highway fuel economy (mpg)", 
+    y = "Highway fuel economy (mpg)",
     color = "Car type"
-    )
+  )
 ```  
 
 ## 28.3 Annotations
 
-```{r annotation of the best car}
+### Create tibble that has the name of the best in class
+
+```{r identification of best cars in class}
 ## Best MPG in each car class
 (best_in_class <- mpg %>%
   group_by(class) %>%
   filter(row_number(desc(hwy)) == 1)
 )
+```
 
-## Scatterplot using geom_text
-mpg %>% ggplot(aes(displ, hwy)) +
-  geom_point(aes(colour = class)) +
-  geom_text(aes(label = model), data = best_in_class)
+### Scatterplot using geom_text
 
-# Scatterplot using geom_label
-mpg %>% ggplot(aes(displ, hwy)) +
-  geom_point(aes(colour = class)) +
-  geom_label(aes(label = model), data = best_in_class, nudge_y = 2, alpha = 0.5)
+```{r geom_text}
+mpg %>%
+  ggplot(aes(displ, hwy)) +
+  geom_point(aes(colour = class), position = "jitter") +
+  geom_text(data = best_in_class, aes(label = model))
+```
 
-# Scaterplot using geom_label_repel
-mpg %>% ggplot(aes(displ, hwy)) +
-  geom_point(aes(colour = class)) +
+### Scatterplot using geom_label
+```{r geom_label}
+mpg %>%
+  ggplot(aes(displ, hwy)) +
+  geom_point(aes(colour = class), position = "jitter") +
+  geom_label(data = best_in_class,
+             aes(label = model),
+             nudge_y = 2,
+             alpha = 0.5)
+```
+
+### Scatterplot using geom_label_repel
+
+```{r geom_label_repel}
+mpg %>%
+  ggplot(aes(displ, hwy)) +
+  geom_point(aes(colour = class), position = "jitter") +
   geom_point(size = 3, shape = 1, data = best_in_class) +
   ggrepel::geom_label_repel(aes(label = model), data = best_in_class)
 ```
 
-```{r}
-class_avg <- mpg %>%
+### Create a tibble of medians for displacement and highway mpg
+
+```{r medians}
+(class_avg <- mpg %>%
   group_by(class) %>%
   summarise(
     displ = median(displ),
     hwy = median(hwy)
   )
+)
+```
 
-ggplot(mpg, aes(displ, hwy, colour = class)) +
-  ggrepel::geom_label_repel(aes(label = class),
+### Place the labels at the medians of displ and hwy
+
+```{r labels at the medians}
+mpg %>%
+  ggplot(aes(displ, hwy, colour = class)) +
+  ggrepel::geom_label_repel(
     data = class_avg,
+    aes(label = class),
     size = 6,
     label.size = 0,
     segment.color = NA
   ) +
-  geom_point() +
+  geom_point(position = "jitter") +
   theme(legend.position = "none")
 ```
 
+### Placement of text in upper right corner
+
 ```{r placement of text in upper right}
-label <- mpg %>%
-  summarise(
-    displ = max(displ),
-    hwy = max(hwy),
-    label = "Increasing engine size is \nrelated to decreasing fuel economy."
-  )
-
-ggplot(mpg, aes(displ, hwy)) +
-  geom_point() +
-  geom_text(aes(label = label), data = label, vjust = "top", hjust = "right")
-```
-
-```{r placement of text at extreme upper right}
-label <- tibble(
-  displ = Inf,
-  hwy = Inf,
-  label = "Increasing engine size is \nrelated to decreasing fuel economy."
+(label <- mpg %>%
+  summarise(displ = max(displ),
+            hwy = max(hwy),
+            label = "Increasing engine size is \nrelated to decreasing fuel economy.")
 )
 
 ggplot(mpg, aes(displ, hwy)) +
-  geom_point() +
-  geom_text(aes(label = label), data = label, vjust = "top", hjust = "right")
+  geom_point(position = "jitter") +
+  geom_text(data = label,
+            aes(label = label),
+            vjust = "top",
+            hjust = "right")
+```
+
+### Placement of text in extreme upper right corner
+
+```{r placement of text at extreme upper right}
+label <- tibble(displ = Inf,
+                hwy = Inf,
+                label = "Increasing engine size is \nrelated to decreasing fuel economy.")
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(position = "jitter") +
+  geom_text(data = label,
+            aes(label = label),
+            vjust = "top",
+            hjust = "right")
 ```
 
 ## 28.4.1 Axis ticks and legend keys
+
+### Change the breaks in the y-axis
 
 ```{r control breaks on the y axis}
 ggplot(mpg, aes(displ, hwy)) +
   geom_point() +
   scale_y_continuous(breaks = seq(15, 40, by = 5))
 ```
+
+### Time line of presidential terms
 
 ```{r presidential}
 presidential %>%
@@ -135,7 +173,7 @@ presidential %>%
 
 ## Changing the numerical scale
 
-```{r}
+```{r log transformation of diamond weight and price}
 diamonds %>% 
   ggplot(aes(carat, price)) +
   geom_hex()
@@ -153,19 +191,19 @@ diamonds %>%
 
 ## Changing the color scale
 
-```{r}
+```{r changes in the color scale}
 mpg %>%
   ggplot(aes(displ, hwy)) +
-  geom_point(aes(color = drv))
+  geom_point(aes(color = drv), position = "jitter")
 
 mpg %>%
   ggplot(aes(displ, hwy)) +
-  geom_point(aes(color = drv)) +
+  geom_point(aes(color = drv), position = "jitter") +
   scale_colour_brewer(palette = "Set1")
 
 mpg %>%
   ggplot(aes(displ, hwy)) +
-  geom_point(aes(color = drv, shape = drv)) +
+  geom_point(aes(color = drv, shape = drv), position = "jitter") +
   scale_colour_brewer(palette = "Set1")
 ```
 

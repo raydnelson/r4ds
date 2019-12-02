@@ -1,19 +1,29 @@
 ---
 title: "Graphics for Communication: Presidential"
-author: "Ray Nelson"
-date: "5 Apr 2019"
+author: "MPA 634: Data Science for Managers"
+date: "4 December 2019"
 output: 
   html_document:
     code_folding: "hide"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 # Load libraries
 library(tidyverse)
 ```  
 
-### Presidential Graph  
+## Presidential Graph
+
+### Add President Trump
+
+```{r add TRUMP}
+trump <- tibble(name = "Trump",
+                start = )
+```
+
 
 Here is the graph that we are going to create step by step
 ```{r presidential}
@@ -58,60 +68,54 @@ presidential %>%
 Draw the basic graph
 
 ```{r basic presidential graph}
-basic <- presidential %>%
+(basic <- presidential %>%
   mutate(id = 33 + row_number()) %>%
   ggplot(aes(start, id, color = party)) +
     geom_point(size = 4)
-
-basic
+)
 ```
 
 #### Add the line segment that shows duration of each administration by using geom_segment  
 
 ```{r add duration}
-add_duration <- basic +
+(add_duration <- basic +
     geom_segment(aes(xend = end, yend = id), size = 3)
-
-add_duration
+)
 ```
 
 #### Change the scale of the x axis so that it labels the beginning of each administration.  
 ```{r x-axis labels}
-x_axis <- add_duration +
+(x_axis <- add_duration +
     scale_x_date(breaks = presidential$start, date_labels = "'%y")
-
-x_axis
+)
 ```
 
 #### Change the scale of the y axis so that it corresponds to each president and use each President's last name as the label   
 
 ```{r presidential names}
-y_axis <- x_axis +
+(y_axis <- x_axis +
   scale_y_continuous(breaks = seq(34, 44, 1), labels = presidential$name)
-
-y_axis
+)
 ```
 
 #### Change the color of the bars to be red for Republican and blue for Democrat 
 
 ```{r blue for democrat and red for republican}
-blue_red <- y_axis +
+(blue_red <- y_axis +
   scale_colour_manual(values = c("Republican" = "red", "Democratic" = "blue"))
-
-blue_red
+)
 ```
 
 #### Alter the grid lines so that the graph isn't so complex and busy and put the legend at the bottom of the graph.  
 
 ```{r alter the grid lines}
-alter_grid <- blue_red +
+(alter_grid <- blue_red +
   theme(
     panel.grid.minor.x = element_blank(),
     panel.grid.minor.y = element_blank(),
     legend.position = "bottom"
   )
-
-alter_grid
+)
 ```
 
 #### Add titles and label to the graph so that it is informative  

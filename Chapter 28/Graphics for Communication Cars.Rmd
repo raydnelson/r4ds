@@ -1,14 +1,16 @@
 ---
 title: "Graphics for Communication: MPG For Almost the Last Time"
-author: "Ray Nelson"
-date: "5 Apr 2019"
+author: "MPA 634: Data Science for Managers"
+date: "4 December 2019"
 output: 
   html_document:
     code_folding: "hide"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 # Load libraries
 library(tidyverse)
 library(ggrepel)
@@ -18,7 +20,7 @@ library(ggrepel)
 
 ## Finished Graph
 
-```{r end product, message = FALSE}
+```{r end product}
 best_in_class <- mpg %>%
     group_by(class) %>%
     arrange(desc(hwy)) %>%
@@ -42,15 +44,16 @@ mpg %>%
   ) 
 ```
 
+## Step by Step
+
 ### First create this graph
 
-```{r basic graph, message = FALSE}
-basic_plot <- mpg %>%
+```{r basic graph}
+(basic_plot <- mpg %>%
   ggplot(aes(displ, hwy)) +
   geom_point(aes(color = class)) +
   geom_smooth(se = FALSE)
-
-basic_plot
+)
 ```
 
 ### Now annotate your graph so that it identifies the best car in each class
@@ -76,29 +79,28 @@ best_in_class %>%
 
 ### Put circles around the best cars  
 
-```{r identify the best cars, message = FALSE}
-best_cars <- basic_plot +
-  geom_point(size = 3, shape = 1, data = best_in_class)
-
-best_cars
+```{r identify the best cars}
+(best_cars <- basic_plot +
+  geom_point(data = best_in_class,
+             size = 3,
+             shape = 1)
+)
 ```
 
 ### Control the breaks on the y axis
 
-```{r control the breaks on the y-axis, message = FALSE}
-y_breaks <- best_cars +
+```{r control the breaks on the y-axis}
+(y_breaks <- best_cars +
     scale_y_continuous(breaks = seq(15, 40, by = 5))
-
-y_breaks
+)
 ```  
 
 ### Legend to the bottom
 
-```{r legend to the bottom, message = FALSE}
-new_basic <- y_breaks +
+```{r legend to the bottom}
+(new_basic <- y_breaks +
     theme(legend.position = "bottom")
-
-new_basic
+)
 ```
 
 ### Label the best cars in the diagram using geom_text  
@@ -116,15 +118,14 @@ new_basic +
 
 ### Label the best cars in the diagram using geom_label_repel
 ```{r use geom_label_repel, message = FALSE}
-with_labels <- new_basic +
+(with_labels <- new_basic +
   ggrepel::geom_label_repel(data = best_in_class, aes(label = model))
-
-with_labels
+)
 ```
 
 ### Add titles and labels
 
-```{r}
+```{r titles and labels}
 with_labels +
     labs(
     title = "Fuel efficiency generally decreases with engine size",

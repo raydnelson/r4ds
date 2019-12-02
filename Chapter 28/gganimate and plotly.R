@@ -1,11 +1,12 @@
 # gganimate and plotly
 # Initial: 12 Apr 2019
-# Revision: 15 Apr 2019
+# Revision: 2 Dec 2019
 # Ray Nelson
 
 # Libraries
 library(tidyverse)
 library(gganimate)
+library(gifski)
 library(plotly)
 library(gapminder)
 
