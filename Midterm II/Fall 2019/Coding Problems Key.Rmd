@@ -18,14 +18,14 @@ Submit an R Markdown file for the following five problems. In order to get full 
 
 ## Problem 1 Function and time spans  
 
-Create a function that uses intervals to calculate the number of months left before a mortgage is paid off. Your function should take two arguments, the current date and the date that the mortgage matures. As you test your function, an easy example is to set the current date to March 31, 2019 and the maturity date to March 31, 2034. This would correspond to a 15 year mortgage.  
+Create a function that uses intervals to calculate the number of months left before a mortgage is paid off. Your function should take two arguments, the current date and the date that the mortgage matures. As you test your function, an easy example is to set the current date to November 18, 2019 and the maturity date to November 30, 2034. This would correspond to a 15 year mortgage.  
 
 ```{r problem 1, message=FALSE}
 calc_mortgage <- function(begin_month, end_month) {
   (ymd(begin_month) %--% ymd(end_month)) %/% months(1)
 }
 
-calc_mortgage(20190331, 20340331)
+calc_mortgage(today(), 20341130)
 ```
 
 ## Problem 2 Lists  
@@ -110,11 +110,7 @@ Test your function using the following values:
 outliers <- function(x, mean_x, sd_x) {
   z <- (x - mean_x) / sd_x
   z %>% print()
-  if(z < -3 || z > 3) {
-    "possible outlier"
-  } else {
-    "not outlier"
-  }
+  if(abs(z) > 3) "possible outlier" else "not outlier"
 }
 
 outliers(4, 0, 1)

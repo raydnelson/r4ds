@@ -443,12 +443,12 @@ summary {
 <p>Submit an R Markdown file for the following five problems. In order to get full credit, your R Markdown document must knit properly and you shouldn’t use any software other than R.</p>
 <div id="problem-1-function-and-time-spans" class="section level2">
 <h2>Problem 1 Function and time spans</h2>
-<p>Create a function that uses intervals to calculate the number of months left before a mortgage is paid off. Your function should take two arguments, the current date and the date that the mortgage matures. As you test your function, an easy example is to set the current date to March 31, 2019 and the maturity date to March 31, 2034. This would correspond to a 15 year mortgage.</p>
+<p>Create a function that uses intervals to calculate the number of months left before a mortgage is paid off. Your function should take two arguments, the current date and the date that the mortgage matures. As you test your function, an easy example is to set the current date to November 18, 2019 and the maturity date to November 30, 2034. This would correspond to a 15 year mortgage.</p>
 <pre class="r"><code>calc_mortgage &lt;- function(begin_month, end_month) {
   (ymd(begin_month) %--% ymd(end_month)) %/% months(1)
 }
 
-calc_mortgage(20190331, 20340331)</code></pre>
+calc_mortgage(today(), 20341130)</code></pre>
 <pre><code>## [1] 180</code></pre>
 </div>
 <div id="problem-2-lists" class="section level2">
@@ -639,11 +639,7 @@ flights_jfk %&gt;%
 <pre class="r"><code>outliers &lt;- function(x, mean_x, sd_x) {
   z &lt;- (x - mean_x) / sd_x
   z %&gt;% print()
-  if(z &lt; -3 || z &gt; 3) {
-    &quot;possible outlier&quot;
-  } else {
-    &quot;not outlier&quot;
-  }
+  if(abs(z) &gt; 3) &quot;possible outlier&quot; else &quot;not outlier&quot;
 }
 
 outliers(4, 0, 1)</code></pre>
