@@ -1,14 +1,16 @@
 ---
-title: "HW22"
-author: "Ray Nelson"
-date: "8 Apr 2019"
+title: "Homework #22 Key"
+author: "Graphics for Communication"
+date: "9 December 2019"
 output:
   html_document:
     code_folding: "show"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
 ```
 
@@ -24,7 +26,7 @@ Interpret the following R code chunks:
 
 Code Chunk #1 Zooming using coord_cartesian
 
-```{r coord_cartesian zooming, message = FALSE}
+```{r coord_cartesian zooming}
 mpg %>% 
   ggplot(aes(displ, hwy)) +
   geom_point(aes(color = class)) +
@@ -38,7 +40,7 @@ Line 5:  Plots all of the points but limits the graph to those cars with displac
 
 Code Chunk #2 Zooming using filtering
 
-```{r filtered zooms, message = FALSE}
+```{r filtered zooms}
 mpg %>%
   filter(displ >= 5, displ <= 7, hwy >= 10, hwy <= 30) %>%
   ggplot(aes(displ, hwy)) +
@@ -60,7 +62,7 @@ Problem 3 from 28.2.1 Exercises
 
 Take an exploratory graphic that you've created during the semester, and add informative labels, annotations, scales, and themes to make it easier for others to understand.  
 
-```{r diamonds, message = FALSE}
+```{r diamonds}
 diamonds %>% 
   sample_n(1000) %>% 
   filter(carat <= 2.5) %>% 

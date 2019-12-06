@@ -1,6 +1,6 @@
 # Box Cox Transformation of Air Passengers
-# Initial: 8 Apr 2019
-# Revision: 8 Apr 2019
+# Initial: 8 April 2019
+# Revision: 6 December 2019
 # Ray Nelson
 
 # Libraries

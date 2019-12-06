@@ -1,14 +1,16 @@
 ---
-title: "HW22"
-author: "Ray Nelson"
-date: "9 Apr 2019"
+title: "Homework #23"
+author: "Interactivity"
+date: "11 December 2019"
 output:
   html_document:
     code_folding: "hide"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
 ```
 

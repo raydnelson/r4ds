@@ -1,6 +1,6 @@
-# FRED Shiny App
+# City Manager Briefing App
 # Initial: 9 Apr 2019
-# Revision: 9 Apr 2019
+# Revision: 6 December 2019
 # Ray Nelson
 
 # Libraries

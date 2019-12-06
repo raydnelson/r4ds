@@ -1,6 +1,6 @@
 # Lowess Smoothing App
 # Initial: 8 Apr 2019
-# Revision: 8 Apr 2019
+# Revision: 6 December 2019
 # Ray Nelson
 
 # Libraries
