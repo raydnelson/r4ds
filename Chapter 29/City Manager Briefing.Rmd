@@ -1,12 +1,14 @@
 ---
 title: "City Manager Briefing"
-author: "Ray Nelson"
-date: "4/9/2019"
+author: "MPA 634: Data Science for Managers"
+date: "9 December 2019"
 output: powerpoint_presentation
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
 library(fImport)
 library(forecast)
 library(tidyverse)

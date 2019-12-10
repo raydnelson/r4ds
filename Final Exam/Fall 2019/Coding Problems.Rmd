@@ -1,14 +1,15 @@
 ---
-title: "Key: Final Exam Winter 2019"
+title: "Final Exam Winter 2019"
 author: "Data Science for Managers"
-date: "Due by midnight: 12/19/2019"
+date: "Due by midnight: 4/24/2019"
 output:
-  html_document:
-    code_folding: "show"
+  html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 ```
 
@@ -43,7 +44,7 @@ Estimate a linear model with price as the response variable and cut and carat fr
 2.  Estimate a linear model with price as the response variable and carat and cut as explanatory variables. Your model should generate different slopes and intercepts for each cut of diamond.  
 3.  Use your estimated model to predict the price of a diamond that weighs 0.6 carats and has an ideal cut. Round your prediction to the nearest ten dollars.  
 
-```{r problem 2, message=FALSE}
+```{r problem 2}
 set.seed(1234)
 diamonds %>% 
   sample_n(1000) %>% 

@@ -1,6 +1,6 @@
 # Companies Data Set for Review
 # Initial: 11 December 2018
-# Revision: 12 December 2018
+# Revision: 09 December 2019
 # Ray Nelson
 
 # Libraries
@@ -73,7 +73,6 @@ for(i in 1:2){
 }
 
 # Type of company and the linear model
-
 companies_model <- lm(profits ~ sales + type, data = companies)
 companies_model %>% summary()
 
@@ -88,6 +87,7 @@ companies %>%
     geom_point() +
     geom_smooth(method = "lm", se = FALSE)
 
-
-companies_model <- lm(profits ~ sales * type, data = companies %>% filter(sales < max(sales)))
+companies_model <- lm(profits ~ type + sales + sales * type,
+                      data = companies %>% filter(sales < max(sales)))
 companies_model %>% summary()
+

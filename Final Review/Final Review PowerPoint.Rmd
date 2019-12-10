@@ -1,12 +1,14 @@
 ---
 title: "Final Review PowerPoint"
-author: "Ray Nelson"
-date: "12/12/2018"
+author: "MPA 634: Data Science for Managers"
+date: "11 December 2019"
 output: powerpoint_presentation
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 library(readxl)
 library(gridExtra)
@@ -40,11 +42,11 @@ companies %>% glimpse()
 The linear model suggests that there is a strong relationship between sales and profits but there is one very large company that is exerting undue influence on the estimated equation.
 
 ```{r sales and profits scatterplot, message = FALSE}
-companies %>% 
+companies %>%
   ggplot(aes(x = sales, y = profits)) +
-    geom_point() +
-    geom_smooth(color = "hotpink") +
-    geom_smooth(method = "lm", color = "lightblue")
+  geom_point() +
+  geom_smooth(color = "red", se = FALSE) +
+  geom_smooth(method = "lm", color = "blue", se = FALSE)
 ```  
 
 ## The linear model
@@ -59,12 +61,12 @@ lm(profits ~ sales, data = companies) %>%
 ## Let's exclude the very large company from our analysis  
 
 ```{r remove large company from scatterplot, message = FALSE}
-companies %>% 
-  filter(sales < max(sales)) %>% 
+companies %>%
+  filter(sales < max(sales)) %>%
   ggplot(aes(x = sales, y = profits)) +
-    geom_point() +
-    geom_smooth(color = "hotpink") +
-    geom_smooth(method = "lm", color = "lightblue")
+  geom_point() +
+  geom_smooth(color = "red", se = FALSE) +
+  geom_smooth(method = "lm", color = "blue", se = FALSE)
 ```
 
 ## Model without the large company
@@ -81,7 +83,7 @@ There is one company with really large profits in absolute terms.
 ```{r large company effect on distribution}
 companies %>%
   ggplot(aes(x = profits)) +
-    geom_density(fill = "lightblue")
+  geom_density(fill = "lightblue")
 ```
 
 ## Distribution of profit per employee  
@@ -91,17 +93,17 @@ The large company also has large sales. What happens if we look at profit relati
 ```{r sales relative to employees}
 companies %>%
   ggplot(aes(x = profit_per_employee)) +
-    geom_density(fill = "lightblue")
+  geom_density(fill = "lightblue")
 ```
 
 ## Distribution of profit as a percentage of sales  
 
 The large company also has large sales. What happens if we look at profit relative to sales.
 
-```{r sales as a percentage of profits}
+```{r profits as a percentage of sales}
 companies %>%
   ggplot(aes(x = profit_sales_percent)) +
-    geom_density(fill = "lightblue")
+  geom_density(fill = "lightblue")
 ```
 
 ## Control Distribution of Sales with Log Transformation   
@@ -111,17 +113,11 @@ The large company also has large sales. What happens to the distribution if we t
 ```{r comparison of sales}
 untransformed <- companies %>%
   ggplot(aes(x = sales)) +
-    geom_density(fill = "lightblue") +
-    labs(
-      title = "(a) Untransformed Data"
-    )
+  geom_density(fill = "lightblue") +
+  labs(title = "(a) Untransformed Data")
 transformed <- companies %>%
   ggplot(aes(x = log(sales))) +
-    geom_density(fill = "lightblue") +
-    labs(
-      title = "(b) Transformed Data"
-    )
+  geom_density(fill = "lightblue") +
+  labs(title = "(b) Transformed Data")
 grid.arrange(untransformed, transformed, nrow = 1)
 ```
-
-
