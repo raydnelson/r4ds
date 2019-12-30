@@ -1,7 +1,7 @@
 ---
 title: "Final Exam Winter 2019"
 author: "Data Science for Managers"
-date: "Due by midnight: 4/24/2019"
+date: "Due by midnight: 12/19/2019"
 output:
   html_document:
     code_folding: "show"
@@ -45,14 +45,16 @@ Estimate a linear model with price as the response variable and cut and carat fr
 
 ```{r problem 2, message=FALSE}
 set.seed(1234)
-diamonds %>% 
+diamonds_sub <- diamonds %>% 
+  sample_n(1000)
+diamonds_sub %>% 
   sample_n(1000) %>% 
   ggplot(aes(carat, price, color = cut)) +
   geom_point(show.legend = FALSE) +
   geom_smooth(method = "lm", show.legend = FALSE) +
   facet_grid(rows = vars(cut))
 
-diamonds_lm <- lm(price ~ cut + carat + cut * carat, data = diamonds)
+diamonds_lm <- lm(price ~ cut + carat + cut * carat, data = diamonds_sub)
 
 new_data <- tibble(carat = 0.6, cut = "Ideal")
 diamonds_lm %>% predict(newdata = new_data) %>% round(digits = -1)
