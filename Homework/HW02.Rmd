@@ -1,12 +1,14 @@
 ---
 title: 'Homework #2'
 author: "Aesthetic Mappings and Facets"
-date: "Due: 9/11/2019"
+date: "Due: 13 Jan 2020"
 output: word_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
 ```
 

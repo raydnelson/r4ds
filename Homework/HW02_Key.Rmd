@@ -1,7 +1,7 @@
 ---
 title: 'Homework #2 Key'
 author: "Aesthetic Mappings and Facets"
-date: "Due: 9/11/2019"
+date: "Due: 13 Jan 2020"
 output:
   html_document:
     code_folding: hide
