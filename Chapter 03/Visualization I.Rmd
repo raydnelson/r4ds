@@ -13,7 +13,8 @@ library(tidyverse)
 ```
 
 ## Basic smoothed scatterplot  
-* Highway miles per gallon (hwy) on displacement (displ)  
+* Highway miles per gallon (hwy) on displacement (displ)
+* Smoothed line
 
 ```{r basic smoothed scatterplot}
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
@@ -22,20 +23,20 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
 ```
 
 ## Regression scatterplot    
-*  Highway miles per gallon on displacement  
-*  Color by drive train (drv)  
-*  Linetype by drive train  
-*  Linear regression with no confidence interval  
-*  Increase the size of the lines  
+*  Scatterplot of highway miles per gallon on displacement
+*  Linear regression with no confidence interval 
+*  Color regression line by drive train (drv)  
+*  Linetype of regression line by drive train  
+*  Increase the size of the regression lines  
 
 ```{r linear regression}
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
-  geom_point(aes(size = drv)) +
+  geom_point(aes(size = drv, color = drv)) +
   geom_smooth(mapping = aes(linetype = drv), method = "lm", se = FALSE, size = 2)
 ```
 
 ## Loess smoothed scatterplot with points of various sizes
-*  Highway miles per gallon on displacement    
+*  Scatterplot of highway miles per gallon on displacement    
 *  Color points by car class  
 *  Point size by city miles per gallon (cty)  
 *  Large red loess line for all point and no confidence interval  
@@ -47,7 +48,8 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
 ```
 
 ## Linear regression of highway on displacement
-*  Color by vehicle class
+*  Scatterplot of hwy on displ
+*  Color points by vehicle class
 *  Simple regression by vehicle class
 *  Show all points
 
@@ -58,6 +60,7 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
 ```
 
 ## Linear regression of highway on displacement
+*  Scatterplot of hwy on displ
 *  Color by vehicle class
 *  Simple regression by vehicle class
 *  Each class has its own scatterplot
@@ -72,6 +75,7 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
 ```  
 
 ## Linear regression of highway on displacement
+*  Scatterplot of hwy on displ
 *  Color by drivetrain type
 *  Simple regression (hwy on displacement) by drive train type and number of cylinders
 *  Draw a larger, black regression line
