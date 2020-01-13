@@ -28,6 +28,7 @@ We will talk about:
 1.  Graphs for categorical variables
 2.  Graphs for one numerical variables
 3.  Graphs for two numerical variables
+4.  Graphs for one categorical and one numerical
 
 ## Important Definition  
 
@@ -36,7 +37,7 @@ Distribution of a variable is:
 1. Range of values
 2. Probability or frequency of each value  
 
-### Distribution of  categorical variables
+### Distribution of categorical variables
 
 #### Bar Chart  
 
@@ -47,14 +48,21 @@ ggplot(data = mpg, mapping = aes(x = class, fill = class)) +
 
 ### Distribution numerical variables
 
-### Histograms  
+### Histograms 
+
+* Use a blue fill
+* Use binwidth of 2.5
+
 
 ```{r histogram of highway miles per gallon}
 ggplot(data = mpg, mapping = aes(x = hwy)) +
   geom_histogram(fill = "blue", binwidth = 2.5)
 ```  
 
-### Frequency Polygons  
+### Frequency Polygons 
+
+* Use a blue fill
+* Use binwidth of 2.5
 
 ```{r frequency polygons}
 ggplot(data = mpg, mapping = aes(x = hwy)) +
@@ -62,6 +70,8 @@ ggplot(data = mpg, mapping = aes(x = hwy)) +
 ``` 
 
 ### Densities  
+
+Use a blue fill
 
 ```{r density for highway miles per gallon}
 ggplot(data = mpg, mapping = aes(x = hwy)) +
@@ -93,10 +103,9 @@ ggplot(data = mpg, mapping = aes(x = class, fill = class)) +
 
 ```{r column chart}
 class_count <- mpg %>% 
-  group_by(class) %>% 
-  summarize(count = n())
+  count(class)
 print(class_count)
-ggplot(data = class_count, mapping = aes(x = class, y = count, fill = class)) +
+ggplot(data = class_count, mapping = aes(x = class, y = n, fill = class)) +
   geom_col(show.legend = FALSE)
 ```  
 

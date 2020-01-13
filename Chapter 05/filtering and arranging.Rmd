@@ -1,7 +1,7 @@
 ---
 title: "Filtering and Arranging"
 author: "MPA 634: Data Science for Managers"
-date: "9/18/2019"
+date: "15 Jan 2020"
 output:
   html_document:
     code_folding: hide

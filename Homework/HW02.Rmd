@@ -16,7 +16,7 @@ library(tidyverse)
 
 Explain how aesthetics, scaling, and mapping are related to each other within the context of the grammar of graphcs and ggplot. 
 
-Write your answer here.
+Here is my answer
 
 ## Interpretation of code
 
