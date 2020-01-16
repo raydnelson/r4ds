@@ -1,14 +1,16 @@
 ---
 title: "R Markdown"
 author: "Developers at RStudio"
-date: "9/16/2019"
+date: "15 Jan 2020"
 output:
   html_document:
     code_folding: hide
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 ```
 
@@ -68,9 +70,9 @@ Here are some potential resources when using R Markdown: **(This is an unordered
 
 ### Links and images
 
-<http://govfinance.byu.edu/govfinance/classes/dataScience/dataScienceSyllabus.html>
+<http://govfinance.byu.edu/govfinance/classes/dataScience/syllabus/dataScienceSyllabus.html>
 
-[Class Web Site](http://govfinance.byu.edu/govfinance/classes/dataScience/dataScienceSyllabus.html)
+[Class Web Site](http://govfinance.byu.edu/govfinance/classes/dataScience/syllabus/dataScienceSyllabus.html)
 
 
 ![Outline for Our Class](http://govfinance.byu.edu/govfinance/resources/chartFigureTable/dataScience/Data%20Science%20Workflow.png)
