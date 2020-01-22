@@ -1,14 +1,16 @@
 ---
 title: "Select and Mutate"
 author: "MPA 634: Data Science for Managers"
-date: "9/23/2019"
+date: "27 Jan 2020"
 output:
   html_document:
     code_folding: hide
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 library(nycflights13)
 ```

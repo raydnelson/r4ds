@@ -1,14 +1,16 @@
 ---
 title: "Filtering and Arranging"
 author: "MPA 634: Data Science for Managers"
-date: "15 Jan 2020"
+date: "22 Jan 2020"
 output:
   html_document:
     code_folding: hide
 ---
 
-```{r setup, include = FALSE, message = FALSE, warning =FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 library(nycflights13)
 ```
@@ -34,9 +36,9 @@ head(flights)
 tail(flights)
 ```  
 
-### Use a boxplot plot to compare the departure delays for the three different airports for New Years Day flights 
+### Use a boxplot to compare the departure delays for the three different airports for New Years Day flights 
 
-```{r New Years departure delays, warning = FALSE}
+```{r New Years departure delays}
 flights %>%
   filter(month == 1, day == 1) %>%
   ggplot(aes(x = origin, y = dep_delay)) +
@@ -78,7 +80,8 @@ flights %>%
 
 ```{r destinations}
 # First create a new data frame with Atlanta, LA, and Chicago
-three_airports <- flights %>% filter(dest %in% c("ATL", "LAX", "ORD"), arr_delay < 120)
+three_airports <- flights %>%
+  filter(dest %in% c("ATL", "LAX", "ORD"), arr_delay < 120)
 
 # Density plot
 three_airports %>%
@@ -88,14 +91,15 @@ three_airports %>%
   facet_grid(rows = vars(dest))
 
 # Boxplot
-three_airports %>% ggplot(aes(x = dest, y = arr_delay)) +
+three_airports %>%
+  ggplot(aes(x = dest, y = arr_delay)) +
   geom_boxplot(fill = "lightgreen") +
   coord_flip()
 ```  
 
 ### Distribution of arrival delays of less than an hour for American (AA), Delta (DL), and United (UA) flights that left on time
 
-```{r on time departure arrival delays, warning = FALSE}
+```{r on time departure arrival delays}
 flights %>%
   filter(dep_delay <= 0,
          carrier %in% c("AA", "UA", "DL"),
