@@ -2,11 +2,15 @@
 title: "Final Exam Key"
 author: "Ray Nelson"
 date: "12/19/2018"
-output: html_document
+output:
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 movies <- readxl::read_excel("Movies.xlsx")
 ```
@@ -15,9 +19,9 @@ movies <- readxl::read_excel("Movies.xlsx")
 
 1.  Carefully explain the differences between exploratory data analysis (EDA) and confirmatory modeling.  
 
-Exploratory data analysis is similiar to being a detective. We are looking for patterns and facts. We don't have specific hypotheses. In exploratory data analysis, we "generate questions about our data, search for answers by visualising, transforming, and modelling." We then "... use what we learn to refine our questions and/or generate new questions." (r4ds, section 7.1)  
+Exploratory data analysis is similar to being a detective. We are looking for patterns and facts. We don't have specific hypotheses. In exploratory data analysis, we "generate questions about our data, search for answers by visualising, transforming, and modeling." We then "... use what we learn to refine our questions and/or generate new questions." (r4ds, section 7.1)  
 
-Confirmatory modeling seeks to formally investigate a specific question or hypothesis. Some liken confirmatory modelling to being a trial lawyer trying to establish guilt or innocence. If we aren't focused on prediction, models are often constructed to investigate the validity of a conjecture. Whenever we engage in confirmatory hypothesis tests, we can only use our data one time. As soon as we reuse our data, we are engaging in data exploration.  
+Confirmatory modeling seeks to formally investigate a specific question or hypothesis. Some liken confirmatory modeling to being a trial lawyer trying to establish guilt or innocence. If we aren't focused on prediction, models are often constructed to investigate the validity of a conjecture. Whenever we engage in confirmatory hypothesis tests, we can only use our data one time. As soon as we reuse our data, we are engaging in data exploration.  
 
 2.	Explain the advantages of declaring a categorical variable as a factor.  
 

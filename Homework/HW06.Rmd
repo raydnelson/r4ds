@@ -1,7 +1,7 @@
 ---
 title: 'Homework #6'
 author: "Select and Mutate"
-date: "Due: 25 Sep 2019"
+date: "Due: 29 Jan 2020"
 output: word_document
 ---
 

@@ -33,7 +33,7 @@ departures_delays <- flights %>%
 
 ## Calculate the difference between dep_time and sched_dep_time and compare the result with dep_delay. How do we explain the difference? 
 
-*  Use transmute to calcuate the new time difference
+*  Use transmute to calculate the new time difference
 *  Compare dep_time with your calculation to see where they are different
 *  Choose the first 20 observations
 
@@ -124,12 +124,14 @@ diamonds %>%
 ### We often don't need to create new variables because we have functions that accomplish transformations. Two of these often used transformations are the functions scale and log. We can actually use these transformations within ggplot.
 
 ```{r scatterplots of transformed variables, message = FALSE}
-ggplot(data = diamonds, mapping = aes(x = scale(carat), y = scale(price))) +
+diamonds %>% 
+  ggplot(aes(x = scale(carat), y = scale(price))) +
   geom_point(alpha = 1/100) +
   geom_smooth(color = "red", se = FALSE) +
   geom_smooth(method = "lm", color = "blue", se = FALSE)
 
-ggplot(data = diamonds, mapping = aes(x = log(carat), y = log(price))) +
+diamonds %>% 
+  ggplot(aes(x = log(carat), y = log(price))) +
   geom_point(alpha = 1/100) +
   geom_smooth(color = "red", se = FALSE) +
   geom_smooth(method = "lm", color = "blue", se = FALSE)

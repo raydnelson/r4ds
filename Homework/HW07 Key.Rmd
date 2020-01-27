@@ -1,7 +1,7 @@
 ---
 title: 'Homework #7 Key'
 author: 'Summarization by Group'
-date: "Due: 30 Sep 2019"
+date: "Due: 3 Feb 2020"
 output:
   html_document:
     code_folding: hide
