@@ -1,10 +1,10 @@
 ---
 title: 'Homework #8 Key'
 author: 'Univariate Distributions'
-date: "Due: 2 Oct 2019"
+date: "Due: 5 Feb 2020"
 output: 
   html_document:
-    code_folding: hide
+    code_folding: show
 ---
 
 ```{r setup, include = FALSE}

@@ -8,7 +8,9 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
 library(nycflights13)
 ```
@@ -27,7 +29,7 @@ The mean of a variable gives its center of gravity or the balance point. If we p
 
 3.  How the standard deviation measures the scale or spread of a distribution  
 
-The standard deviation attempts to measure the average size of deviations. A deviation is defined as the distance of an observation from the mean. We can't simply add up the deviations because the sum of the deviations in a sample is always zero. The negative and positive deviations cancel each other out. For this reason we have to square the deviations. We then average these squared deviations and take the square root to get the standard deviation. The standard deviation has the units of the original observations.
+The standard deviation attempts to measure the average size of deviations. A deviation is defined as the distance of an observation from the mean. We can't simply add up the deviations because the sum of the deviations in a sample is always zero. The negative and positive deviations cancel each other out. For this reason we have to square the deviations. We then average these squared deviations and take the square root to get the standard deviation. The standard deviation has the same units as the original observations.
 
 ## Interpretation 
 
@@ -43,13 +45,13 @@ flights %>%
   geom_smooth(color = "red")
 ```
 
-Lines 1 - 2: group the observations in the flights data set by day and month. Although R doesn't actually sort the observations, the subsequent calcuations act as though all of the observations have first been sorted by month and then by day.  
+Lines 1 - 2: group the observations in the flights data set by day and month. Although R doesn't actually sort the observations, the subsequent calculations act as though all of the observations have first been sorted by month and then by day.  
 
-Lines 3: calculate proportion of cancelled flights. The term is.na(dep_time) creates a logical variable. If dep_time is missing, then the expression evaluates as true and receives a value of one. If dep_time isn't missing, then the expression evaluates as false and receives a value of zero. Summing the logical variable gives the number of cancelled flights. Calculating the mean gives the proportion of cancelled flights. Multiplying by 100 converts the proportion into a percentage.  
+Lines 3: calculate proportion of canceled flights. The term is.na(dep_time) creates a logical variable. If dep_time is missing, then the expression evaluates as true and receives a value of one. If dep_time isn't missing, then the expression evaluates as false and receives a value of zero. Summing the logical variable gives the number of canceled flights. Calculating the mean gives the proportion of canceled flights. Multiplying by 100 converts the proportion into a percentage.  
 
 Line 4: calculates the average delay after removing missing values with the na.rm function.  
 
-Line 5: puts the average delay on the x axis and the percentage of cancelled flights on the y axis  
+Line 5: puts the average delay on the x axis and the percentage of canceled flights on the y axis  
 
 Lines 6 - 7: creates a scatterplot using the geom_point with a loess smoothed line that results from the geom_smooth  
 
@@ -57,7 +59,7 @@ The remainder of the code creates the labels on the graph.
 
 ## Coding Problems
 
-1.  Create a new data frame that excludes cancelled flights
+1.  Create a new data frame that excludes canceled flights
 
 ```{r exclude cancelled flights}
 not_cancelled <- flights %>% 
@@ -67,7 +69,7 @@ not_cancelled <- flights %>%
 
 This data frame should have 327346 observations.
 
-2.  For the not cancelled flights, rank carriers from best to worst by their average arrival delays. Count the number of flights for each carrier.
+2.  For the not canceled flights, rank carriers from best to worst by their average arrival delays. Count the number of flights for each carrier.
 
 ```{r carrier ranking}
 not_cancelled %>%
@@ -79,7 +81,7 @@ not_cancelled %>%
   arrange(average_arrival_delay)
 ```  
 
-3.  For the not cancelled flights, rank carriers from best to worst by their on time percentage as measured by the arrival delay. Count the number of flights for each carrier.
+3.  For the not canceled flights, rank carriers from best to worst by their on time percentage as measured by the arrival delay. Count the number of flights for each carrier.
 
 ```{r time percentage}
 not_cancelled %>% 
