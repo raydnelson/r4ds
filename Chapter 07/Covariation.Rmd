@@ -35,8 +35,14 @@ mpg %>%
 
 ```{r distribution of class of car}
 mpg %>%
-  ggplot(aes(x = class, fill = class)) +
-  geom_bar(show.legend = FALSE)
+  ggplot(aes(x = fct_infreq(class), fill = class)) +
+  geom_bar(show.legend = FALSE) +
+  labs(
+    title = "There are more SUV's than other vehicle classes.",
+    x = "Vehicle Class",
+    y = "Number of Vehicles"
+  ) +
+  scale_fill_brewer(palette = "Set2")
 ```
 
 ## Relationship between categorical and continuous variables
@@ -45,9 +51,13 @@ mpg %>%
 
 ```{r distribution of hwy by vehicle class}
 mpg %>%
-  ggplot(aes(x = reorder(class, hwy, FUN = median), y = hwy)) +
+  ggplot(aes(x = fct_reorder(class, hwy, median), y = hwy)) +
   geom_violin(fill = "lightgreen") +
   geom_boxplot(width = 0.1, fill = "lightblue") +
+  stat_summary(fun.y = "mean",
+  geom = "point",
+  shape = 18,
+  size = 1.5) 
   labs(title = "Violin Plot of Mileage",
        x = "Class of Vehicle",
        y = "Miles Per Gallon") +

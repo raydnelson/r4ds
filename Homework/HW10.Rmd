@@ -1,11 +1,14 @@
 ---
 title: 'Homework #10'
-author: 'Creating Tibbles'
+author: 'Data Wrangling'
+date: "Due: 10 Feb 2020"
 output: word_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 ```
 
