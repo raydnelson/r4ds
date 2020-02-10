@@ -20,12 +20,11 @@ library(tidyverse)
 
 The boxplot contains each of the element that comprise Tukey's five number summary:
 
-1. *Minimum* is either an outlier or the end endcap on the lower whisker.
+1. *Minimum* is either the smallest outlier or smallest value on the left or lower whisker.
 2. *First quartile* is the lower hinge on the box part of the boxplot.
 3. *Median or second quartile* is the line in the middle of the boxplot.
 4. *Third quartile* is the upper hinge on the box part of the boxplot
-5. *Maximum* is either an outlier or the end endcap on the upper whisker.  
-
+5. *Maximum* is either the largest outlier or largest value included in the right or upper whisker. 
 
 #### 2.  Identify at least five geom's that help you explore the covariation between two variables
 
@@ -92,7 +91,9 @@ mpg %>%
 
 mpg %>%
   ggplot(aes(x = cty, y = hwy)) +
-  stat_density_2d(aes(fill = stat(density)), geom = "raster", contour = FALSE) +
+  stat_density_2d(aes(fill = stat(density)),
+                  geom = "raster",
+                  contour = FALSE) +
   labs(
     title = "Relationship between city and highway miles per gallon",
     x = "City Miles Per Gallon",
