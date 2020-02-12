@@ -10,7 +10,6 @@ library(nycflights13)
 # 
 flights %>% 
   filter(!is.na(dep_delay)) %>% 
-  filter(!is.na(arr_delay)) %>% 
   filter(origin == "JFK") %>% 
   filter(dest %in% c("ATL", "LAX", "ORD")) %>% 
   select(dest, dep_delay)  %>% 
@@ -26,13 +25,14 @@ flights %>%
 
 # Integer arithmetic
 flights %>% 
-  transmute(origin, hour = arr_time %/% 100)  %>% 
-  ggplot(aes(x = hour, fill = origin)) +
+  transmute(origin, minute = dep_time %% 100)  %>% 
+  ggplot(aes(x = minute, fill = origin)) +
   geom_bar(show.legend = FALSE) +
   facet_grid(rows = "origin")
 
+# Violin Plot
 flights %>% 
-  filter(dep_delay < 60) %>% 
+  filter(dep_delay < 60, dep_delay > -30) %>% 
   ggplot(aes(x = fct_reorder(origin, dep_delay, median), y = dep_delay)) +
   geom_violin(fill = "lightblue") +
   geom_boxplot(width = 0.1, fill = "grey60") +
