@@ -4,7 +4,7 @@ author: "Data Science for Managers"
 date: "Due by class: 2/18/2020"
 output:
   html_document:
-    code_folding: hide
+    code_folding: show
 ---
 
 ```{r setup, include=FALSE}
