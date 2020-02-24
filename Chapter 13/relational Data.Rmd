@@ -1,7 +1,7 @@
 ---
 title: "Relational Data"
 author: "MPA 634: Data Science for Managers"
-date: "10/21/2019"
+date: "24 Feb 2020"
 output:
   html_document:
     code_folding: "hide"
@@ -239,6 +239,5 @@ flights %>%
 
 ```{r not top ten}
 flights %>%
-  anti_join(planes, by = "tailnum") %>%
-  count(tailnum, sort = TRUE)
+  anti_join(top_dest)
 ``` 
