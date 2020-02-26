@@ -1,7 +1,7 @@
 ---
 title: "Functions"
 author: "MPA 634: Data Science for Managers"
-date: "10/30/2019"
+date: "4 March 2020"
 output:
   html_document:
     code_folding: "hide"

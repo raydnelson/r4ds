@@ -1,7 +1,7 @@
 ---
 title: "Vectors"
 author: "MPA 634: Data Science for Managers"
-date: "6 November 2019"
+date: "11 March 2020"
 output: 
   html_document:
     code_folding: "hide"
@@ -27,6 +27,26 @@ library(tidyverse)
 
 ```{r favorite associated with each section}
 favorite_current <- c(
+  "Dallin",
+  "Jason",
+  "McKayla",
+  "Alyssa",
+  "Jordan",
+  "Madisyn",
+  "Moira",
+  "Spencer",
+  "Andrew",
+  "Eben",
+  "Anson",
+  "Sophie",
+  "Wilson",
+  "Jarrett",
+  "Cecily",
+  "Bruce",
+  "Alex"
+)
+
+favorite_previous <- c(
   "Brooke",
   "Tessa",
   "Pallavi",
@@ -43,49 +63,20 @@ favorite_current <- c(
   "David",
   "Vana"
 )
-
-favorite_previous <- c(
-  "Derrik",
-  "Devin",
-  "Mike",
-  "Filipe",
-  "Kiersten",
-  "Ruben",
-  "Jonathan",
-  "Matt",
-  "Teresa",
-  "Nate",
-  "Ryan",
-  "Alex",
-  "Bruno",
-  "Kyle",
-  "Chris",
-  "Taylor",
-  "Trevor",
-  "Travis",
-  "Sarah",
-  "Chad",
-  "Jonathan",
-  "Seth",
-  "Amanda",
-  "Joshua",
-  "Nathan"
-)
 ```
 
 ### Programs in which favorite can participate  
 
 ```{r programs}
-program_names <- c("MBA", "MISM", "MPA")
-program_codes <- c(1:3)
+program_names <- c("CEEN", "MBA", "MISM", "MPA", "MPH")
+program_codes <- c(1:5)
 ```
 
 ### Programs that correspond to each individual  
 
 ```{r favorite in programs}
-programs_current <- c(2, 3, 1, 3, 3, 3, 2, 3, 2, 3, 2, 2, 3, 2, 3)
-programs_previous <- c(1, 1, 1, 1, 2, 2, 1, 1, 2, 3, 3, 1, 1, 2, 1,
-                       2, 1, 1, 3, 1, 3, 1, 1, 1, 3)
+programs_current <- c(4, 2, 4, 4, 2, 3, 4, 4, 2, 4, 3, 4, 2, 2, 5, 1, 2)
+programs_previous <- c(2, 3, 1, 3, 3, 3, 2, 3, 2, 3, 2, 2, 3, 2, 3)
 ```
 
 ### Types of the objections that we have created
