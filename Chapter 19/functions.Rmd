@@ -170,15 +170,19 @@ normal <- tibble(x = rnorm(sample_size, mu, sigma))
 
 ###
 ```{r draw the violin plot}
-normal %>% 
+normal %>%
   ggplot(aes(x = factor(0), y = x)) +
   geom_violin(fill = "lightblue") +
-  geom_boxplot(width = 0.25, fill = "lightgreen") + 
-  labs(
-    title = "Box Plot of a Single Variable",
-    x = "", 
-    y = "Normally Distributed random variable"
-  ) + 
+  geom_boxplot(width = 0.25, fill = "lightgreen") +
+  stat_summary(
+    fun.y = "mean",
+    geom = "point",
+    shape = 18,
+    size = 1.5
+  ) +
+  labs(title = "Box Plot of a Single Variable",
+       x = "",
+       y = "Normally Distributed random variable") +
   coord_flip()
 ```
 
@@ -190,6 +194,12 @@ normal_violin <- function(sample_size, mu, sigma) {
     ggplot(aes(x = factor(0), y = x)) +
     geom_violin(fill = "lightblue") +
     geom_boxplot(width = 0.25, fill = "lightgreen") +
+    stat_summary(
+      fun.y = "mean",
+      geom = "point",
+      shape = 18,
+      size = 1.5
+    ) +
     labs(title = "Box Plot of a Single Variable",
          x = "",
          y = "Normally Distributed random variable") +
@@ -292,6 +302,6 @@ diamonds_subset %>%
 
 ### Execution of the function
 
-```{r price_weight_cut execution, message = FALSE}
+```{r price_weight_cut execution}
 price_weight_cut("Premium")
 ```

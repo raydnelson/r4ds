@@ -62,7 +62,7 @@ mdy_hm("2-28-2019 13:13", tz = "MST")
 ```{r from individual components}
 flights %>% 
   select(year, month, day, hour, minute) %>% 
-  mutate(depature = make_datetime(year, month, day, hour, minute))
+  mutate(departure = make_datetime(year, month, day, hour, minute))
 ```  
 
 As we have done previously, we need to convert dep_time, sched_dep_time, arr_time, and sched_arr_time into time formats. Since we will do this repeatedly, we write a function.  

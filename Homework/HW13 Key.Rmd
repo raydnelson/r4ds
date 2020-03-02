@@ -119,7 +119,7 @@ Create a boxplot for age by marital status. Sort the boxes by the median of age.
 gss_cat %>% 
   select(marital, age) %>% 
   na.omit() %>% 
-  ggplot(aes(fct_reorder(marital, age), age, fill = marital)) + 
+  ggplot(aes(fct_reorder(marital, age, IQR), age, fill = marital)) + 
   geom_boxplot(show.legend = FALSE) +
   labs(
     title = 'As would be expected, "Widowed" is the oldest marital category.',
