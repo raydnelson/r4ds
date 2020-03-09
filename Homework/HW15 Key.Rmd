@@ -110,7 +110,7 @@ Write a function that calculates the number of days from today until the last da
 use_duration <- function(date){
   ymd(date) - today()
 }
-use_duration(20191211)
+use_duration(20200422)
 ```
 
 #### Periods
@@ -120,7 +120,7 @@ use_duration(20191211)
 use_periods <- function(date){
   days(ymd(date)) - days(today())
 }
-use_periods(20191211)
+use_periods(20200422)
 ```
 
 #### Intervals
@@ -132,4 +132,4 @@ use_intervals <- function(date){
 }
 ```  
 
-There are only `r use_intervals(20191211)` days until the end of the semester.
+There are only `r use_intervals(20200422)` days until the end of the semester.
