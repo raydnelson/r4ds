@@ -14,6 +14,35 @@ knitr::opts_chunk$set(echo = TRUE,
 # Load libraries
 library(tidyverse)
 ```
+## Why are atomic vectors and lists important?
+
+### Consider the mpg tibble which is really a list of atomic vectors:
+
+```{r mpg}
+str(mpg)
+```
+
+If we want to access a variable in the tibble then we use the $ to get that element of the tibble. We can also access information using [] and [[]].
+
+```{r hwy}
+mpg$hwy
+mpg[[9]]
+mpg[9]
+```
+
+### When we do a regression then we create a list
+
+```{r simple regression}
+model <- lm(hwy ~ displ, data = mpg)
+str(model)
+```
+
+Here are the coefficients of the simple regression model
+
+```{r regression coefficients}
+model$coefficients
+```
+
 
 ## How to store and access information in R. We have the following possible objects:  
 
@@ -83,9 +112,9 @@ programs_previous <- c(2, 3, 1, 3, 3, 3, 2, 3, 2, 3, 2, 2, 3, 2, 3)
 
 ```{r types of objects}
 typeof(favorite_current)
-typeof(programs_current)
 typeof(program_names)
 typeof(program_codes)
+typeof(programs_current)
 ```
 
 ## Organize our information into tibbles and lists
@@ -166,7 +195,7 @@ favorite <- list(favorite_current = favorite_current,
                     favorite_previous = favorite_previous)
 ``` 
 
-### Type of the objects that we are goingfavorite_current rdn_teaching
+### Type of the objects
 
 ```{r type of objects for rdn}
 typeof(classes)
