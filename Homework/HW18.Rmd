@@ -55,7 +55,7 @@ flips
 
 ## Write Code
 
-Compute the type for each column in the nycflights13::flights tibble. (Problem 2 from Exercises 21.2.1)
+Compute the type for each column in the nycflights13::flights tibble. (The second part of the first problem from Exercises 21.2.1)
 
 ```{r type of variables in flights}
 

@@ -1,0 +1,117 @@
+---
+title: "Midterm II Winter 2020"
+author: "Data Science for Managers"
+date: "Due by class: 3/30/2020"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+library(nycflights13)
+library(lubridate)
+```
+
+Submit a RMarkdown file for the following five problems. You will need the tidyverse, nycflights13, and lubridate libraries to in order for your code to work.
+
+## Problem #1
+
+Create a boxplot that compares highway and city mileage using the data from the mpg tibble.
+
+* Create a long tibble
+* Create a boxplot that orders the boxes for each type of mileage (which is a factor) by the IQR of mileage. Put highway lowest on the graph. 
+* Label your graph to match the example
+
+```{r Problem 1 Box plot ordered by IQR after gather}
+mpg %>% 
+  select(hwy, cty) %>% 
+  gather(key = "type_of_driving", value = "MPG") %>% 
+    ggplot(aes(x = MPG, y = fct_reorder(type_of_driving, MPG, IQR) %>% fct_rev())) +
+    geom_boxplot(fill = "lightblue") +
+  labs(
+    title = "Highway mileage is larger but has more variability.",
+    y = ""
+  )
+```
+
+## Problem #2
+
+Show that you can get the same results using map and a for loop. For the faithful tibble (variables: eruptions and waiting), calculate the means using
+
+* the appropriate map function
+* a for loop that uses all three parts of a loop
+* print out the results of your loop
+
+### Results of the map
+
+```{r Problem 2 map}
+## Map
+faithful %>% map_dbl(mean)
+```
+### Results of for loop
+
+```{r Problem 2 for loopo}
+## For loop
+Means <- vector("double", length(faithful))
+for(i in seq_along(faithful)){
+  Means[[i]] <- mean(faithful[[i]])
+}
+# Print out the result
+Means
+```
+
+## Problem #3
+
+Count the number of non-canceled flights leaving from the three New York City airports and create a table that includes the full name of the airport from the FAA information in the airports tibble.
+
+* Exclude all the flights that never departed from the flights tibble
+* Count the number of flights
+* Append information from the airports tibble using an appropriate join
+
+```{r Problem 3 join}
+flights %>% 
+  filter(!is.na(dep_time)) %>% 
+  count(origin) %>% 
+  left_join(airports, by = c("origin" = "faa")) %>% 
+  select(name, n)
+```
+
+## Problem #4
+
+Write a function that receives a date as an argument and then returns the day of the week as a literal value. For example, your own function day_of_week(20200325) returns "Wed".
+
+* Convert your argument into a date
+* Find the day of the week using a function from lubridate.
+
+```{r Problem 4 day of week function}
+day_of_week <- function(date){
+  date = ymd(date)
+  wday(date, label = TRUE)
+}
+day_of_week(20200325)
+```
+## Problem #5
+
+Use the mutate and cut functions to create a factor or categorical variable from the highway mileage (hwy) that has three different categories. They are:
+
+* good (0-18]
+* better (18-27]
+* best (27-35]
+
+The interval notation (0-18] includes the values 0 thru 18. If the value exactly equals 18, then it is included in this interval rather than (18, 27].
+
+Only print out two columns, the hwy column and your new variable.
+
+```{r Problem 5 cut}
+mpg %>%
+  mutate(hwy_class = cut(
+    hwy,
+    breaks = c(0, 18, 27, 35),
+    labels = c("good", "better", "best")
+  )) %>%
+  select(hwy, hwy_class)
+```

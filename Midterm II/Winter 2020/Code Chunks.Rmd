@@ -1,0 +1,92 @@
+---
+title: "Midterm II Winter 2020"
+author: "Data Science for Managers"
+date: "Code Interpretation"
+output:
+  html_document:
+    code_folding: show
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+library(nycflights13)
+library(viridis)
+library(lubridate)
+```
+
+## Code Chunk #1
+
+Please recall that the faithful tibble has two columns or variables. They are the waiting time between eruptions and the duration of the eruption of Old Faithful.
+
+```{r code 1}
+glimpse(faithful)
+faithful %>% 
+  gather(key = time_span, value = minutes) %>% 
+  group_by(time_span) %>% 
+  summarise(
+    Location = median(minutes),
+    Scale = IQR(minutes)
+  )
+```
+
+## Code Chunk #2
+
+Please remember that the flights tibble reports all flights leaving from one of the three New York City airports during the year 2013. The airports tibble include information about each of the airports in the FAA database.
+
+```{r code chunk 2}
+glimpse(flights)
+glimpse(airports)
+flights %>%
+  filter(year == 2013, month == 3, day == 25) %>%
+  group_by(dest) %>%
+  summarise(delay = mean(arr_delay, na.rm = TRUE)) %>%
+  inner_join(airports, by = c("dest" = "faa")) %>%
+  ggplot(aes(x = lon, y = lat, size = delay, colour = delay)) +
+  borders("state") +
+  geom_point() +
+  coord_quickmap() +
+  scale_color_viridis()
+```
+
+## Code Chunk #3
+
+```{r code chunk 3}
+make_datetime_100 <- function(year, month, day, time){
+  make_datetime(year, month, day, time %/% 100, time %% 100)
+}
+flights_dt <- flights %>%
+  filter(!is.na(dep_time)) %>% 
+  mutate(dep_time = make_datetime_100(year, month, day, dep_time)) %>% 
+  select(origin, dest, ends_with("delay"), ends_with("time"))
+```
+
+## Code Chunk #4
+
+```{r code chunk 4}
+morning_afternoon <- function() {
+  Time <- now() %>% lubridate::hour()
+  if (Time <= 12) {
+    "It's morning"
+  } else {
+    "It's afternoon"
+  }
+}
+morning_afternoon()
+```
+
+## Code Chunk #5
+
+```{r code chunk 5}
+data_science <- list(Step1 = "Wrangle",
+                     Step2 = "Explore",
+                     Step3 = "Communicate")
+our_list <- list(one = FALSE,
+                 two = 25L,
+                 three = 2020,
+                 four = "Data Science",
+                 five = data_science)
+our_list$five$Step2
+```

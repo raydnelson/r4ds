@@ -1,7 +1,7 @@
 ---
 title: "Graphics for Communication: Presidential"
 author: "MPA 634: Data Science for Managers"
-date: "4 December 2019"
+date: "26 March 2020"
 output: 
   html_document:
     code_folding: "hide"
@@ -21,19 +21,23 @@ library(tidyverse)
 
 ```{r add TRUMP}
 trump <- tibble(name = "Trump",
-                start = )
+                start = as.Date("2017-01-20"),
+                end = as.Date("2021-01-20"),
+                party = "Republican")
+
+Presidential <- rbind(presidential, trump)
 ```
 
 
 Here is the graph that we are going to create step by step
 ```{r presidential}
-presidential %>%
+Presidential %>%
   mutate(id = 33 + row_number()) %>%
   ggplot(aes(start, id, color = party)) +
   geom_point(size = 4) +
   geom_segment(aes(xend = end, yend = id), size = 3) +
-  scale_x_date(breaks = presidential$start, date_labels = "'%y") +
-  scale_y_continuous(breaks = seq(34, 44, 1), labels = presidential$name) +
+  scale_x_date(breaks = Presidential$start, date_labels = "'%y") +
+  scale_y_continuous(breaks = seq(34, 45, 1), labels = Presidential$name) +
   scale_colour_manual(values = c("Republican" = "red", "Democratic" = "blue")) +
   theme(
     panel.grid.minor.x = element_blank(),
@@ -51,7 +55,7 @@ presidential %>%
 #### What does the presidential tibble look like?  
 
 ```{r glimpse presidential}
-glimpse(presidential)
+glimpse(Presidential)
 ```
 
 #### Presidential id number
@@ -59,7 +63,7 @@ glimpse(presidential)
 Add the presidential id number to the presidential tibble. Eisenhower was the 34th president.  
 
 ```{r president id number}
-presidential %>%
+Presidential %>%
   mutate(id = 33 + row_number())
 ```
 
@@ -68,7 +72,7 @@ presidential %>%
 Draw the basic graph
 
 ```{r basic presidential graph}
-(basic <- presidential %>%
+(basic <- Presidential %>%
   mutate(id = 33 + row_number()) %>%
   ggplot(aes(start, id, color = party)) +
     geom_point(size = 4)
@@ -86,15 +90,15 @@ Draw the basic graph
 #### Change the scale of the x axis so that it labels the beginning of each administration.  
 ```{r x-axis labels}
 (x_axis <- add_duration +
-    scale_x_date(breaks = presidential$start, date_labels = "'%y")
+    scale_x_date(breaks = Presidential$start, date_labels = "'%y")
 )
 ```
 
 #### Change the scale of the y axis so that it corresponds to each president and use each President's last name as the label   
 
-```{r presidential names}
+```{r Presidential names}
 (y_axis <- x_axis +
-  scale_y_continuous(breaks = seq(34, 44, 1), labels = presidential$name)
+  scale_y_continuous(breaks = seq(34, 45, 1), labels = Presidential$name)
 )
 ```
 

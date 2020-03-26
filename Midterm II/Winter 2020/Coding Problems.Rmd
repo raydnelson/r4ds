@@ -1,0 +1,45 @@
+---
+title: "Midterm I Winter 2020"
+author: "Data Science for Managers"
+date: "Due by class: 2/18/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(nycflights13)
+```  
+
+Submit an R Markdown for the following two problems. In order to get full credit, your R Markdown document must knit properly.  
+
+## Problem 1
+
+Please write code that completes the following:
+
+*  Create a new variable for the departure hour from the scheduled departure time variable
+*  Calculate the number of flights that leave during each hour and each airport
+*  Draw a bar chart for each of the three New York airports
+*  Color the bars based on their origin airport
+*  It is not required that your graph replicate the graph labels. We will cover that in Chapter 28.
+
+```{r problem 1}
+# Put your code here
+```
+![Create a similar graph](http://govfinance.byu.edu/govfinance/classes/dataScience/exams/Midterm I/Problem 1.png)
+## Problem 2
+
+Please write code that completes the following:
+
+*  Determine the number of destinations for each NYC airport
+*  Create a bar chart that depicts the number of destinations
+*  Color the bars based on the departure airport
+*  Order the bars from smallest to largest number of destinations (This is called a Pareto Chart)
+*  It is not required that your graph replicate the graph labels. We will cover that in Chapter 28.
+
+
+```{r Problem 2}
+# Put your code here
+```
+
+![Create a similar graph](http://govfinance.byu.edu/govfinance/classes/dataScience/exams/Midterm I/Problem 2.png)
