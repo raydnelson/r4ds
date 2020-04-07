@@ -1,7 +1,7 @@
 ---
-title: "Homework #21 Key"
-author: "Model Building"
-date: "Due: 6 April 2020"
+title: "Homework #21"
+author: "Shiny II"
+date: "Due: 8 April 2020"
 output:
   html_document:
     code_folding: "hide"
@@ -12,99 +12,79 @@ knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
                       message = FALSE)
 library(tidyverse)
-library(modelr)
 ```
 
 ## Concepts  
 
-1. Compare and constrast the machine learning and the classical modeling approaches.
+Explain the function and interaction of the ui and server parts of a shiny app.  
 
-The machine learning approach focuses on the predictive ability of the model. This approach carefully uses training and testing sets to avoid overfitting models. Often, the models created by machine learning are black boxes so we don't really understand why the models are doing a good job of prediction. We do know, however, that often they perform very well because they are not subject to the assumptions of linearity and homoscedasticity that underly many of the classical modeling methodologies.
+The section ui handles the interface between the user and R. This is where the user and interact by specifying input values. It is also where the calculations completed by R are reported and depicted.  
 
-Classical model building allows builders to participate in the creative process. One result is that the domain knowledge of the model builder is often increased as they think about why variables combine to give good predictions. Models that result from the classical approach to model building often give both the creators and consumers of forecasts more insights into whether the model will continue to perform even when the fundamental conditions of the forecasting situation change. 
-
-It isn't necessary to choose between the two different types of models. Both are very useful and both should be combined. Thinking that we need to choose between machine learning and classical modeling is a false dichotomy.
-
-
-2. Explain how you use categorical, numerical, and interactions in a linear model. What is their effect on the slopes and intercepts in your model.  
-
-The explanatory or predictor variables in a model can be categorical, numerical, or interactions among the different types of variables. These have the following effects on the slopes and intercepts of the model:
-
-*  Only categorical variables gives different intercepts and no estimated slope terms.
-*  Categorical variables and numerical variables with no interactions give different intercepts and shared slopes for each categorical variable.
-*  Categorical and numerical variables with interactions produces a unique slope and intercept for each category. 
+The section severs is the part of the shiny app that does the work and calculations. This is where statistical routines are run, plots are created, and tables assembled.  
     
 ## Interpretation of code  
 
-Interpret the following R code chunks: 
+### Interpret the following R code chunks: 
 
-Code Chunk #1 Heat map of natural log transformed price and carat variables
+### Code Chunk #1 UI part of a shiny app
 
-```{r heat map of natural logarithm of diamond prices and weights}
-diamonds2 <- diamonds %>% 
-  filter(carat <= 2.5) %>% 
-  mutate(lprice = log(price),
-         lcarat = log(carat)
-         )
+> ui <- fluidPage(
 
-diamonds2 %>%
-  ggplot(aes(lcarat, lprice)) + 
-  geom_hex(bins = 50)
-```  
+> titlePanel("Old Faithful Geyser Data"),
 
-Line 1:  Creates a new tibble diamonds2 from the original tibble diamonds.  
+> sidebarLayout(
 
-Line 2:  Restricts the tibble to only those observations that are less than or equal to 2.5 carats.  
+>  sidebarPanel(
 
-Lines 3 - 5:  Creates two new variables that are the natural logarithm of price and carat.  
+> sliderInput("bins",
+                       "Number of bins:",
+                       min = 1,
+                       max = 50,
+                       value = 30)
+                ),
 
-Lines 7 - 9:  Draws a heat map using geom_hex of the log of carat and the log of price. The geom_hex creates a grid of hexagons (2,500). The algorithm then counts how many observations fit into each hexagon. The function scales the color of the hexagon to reflect the number of observations found in the hexagon.
+>  mainPanel(
 
-Code Chunk #2 Comparison of predicted with actual data when when we have a log transformation
+>  plotOutput("distPlot")
+       )
+   ) )
 
-```{r Comparison of actual and predicted valued}
-mod_diamond <- lm(lprice ~ lcarat, data = diamonds2)
+Line 1: Designates the code section as the ui or user interface and declares that the app should use fluidpage. This allows the Shiny app to adapt to the size of the screen of the device used to view the app.  
 
-grid <- diamonds2 %>% 
-  data_grid(carat = seq_range(carat, 20)) %>% 
-  mutate(lcarat = log(carat)) %>% 
-  add_predictions(mod_diamond, "lprice") %>% 
-  mutate(price = exp(lprice))
+Line 2: Gives the title "Old Faithful Geyser Data" to the app.
 
-diamonds2 %>% 
-  ggplot(aes(carat, price)) + 
-  geom_hex(bins = 50) + 
-  geom_line(data = grid, colour = "red", size = 1)
-```
+Line 3: Provides the structure for the sidebar panel which is where the input will occur in this app.
 
-Line 1:  Creates a model which is a simple linear regression of the log of price on the log of carat. The model uses the diamonds2 tibble which contains only the diamonds with  weight less than or equal to 2.5 carats.
+Lines 4 - 9:  Creates a slider which creates a variable called bins. The title seen by the user is "Number of bins:". The slider has a minimum value of 1 and a maximum value of 50. The initial value of the slider is set to 30.
 
-line 3:  Creates a new tibble called grid.  
+Line 10: Creates the section for the output that comes from the server.
 
-Line 4:  Creates a sequence of 20 points that begins with the minimum value of carat and ends with the maximum value for carat. The grid puts 18 other points equidistant between the minimum and the maximum.  
+Lne 11:  Plots the output distPlot. This plot was created in the server part of the app.
 
-Line 5:  Takes the natural logarithm of the points so that they are compatible with the line model (mod_diamond) that was created in line 1.  
+### Code Chunk #2 Server Part of a Shiny app
 
-Line 6:  Adds predictions to the grid tibble by substituting the values created in lines 2 - 3 into the linear model estimated in line 1.  
+> server <- function(input, output) {
 
-Line 7:  Converts the predictions calculated in line 5 back into the original dollar units.  
+> output$distPlot <- renderPlot({
 
-Lines 9 - 11:  Creates a heat map of the diamonds found in the tibble diamonds2 using the geom_hex function.
+>  x <- faithful[, 2]
 
-Line 12:  Plots the results of the model that was estimated in line 1 onto the heat map. The data for the line comes from the grid tibble that was created in lines 2 - 6.  
+>  bins <- seq(min(x), max(x), length.out = input$bins + 1)
+
+>  hist(x, breaks = bins, col = 'darkgray', border = 'white')})}
+
+Line 1:  Declares a server function that has input and output as arguments  
+
+Line 2:  Creates an object in the output list called distPlot which is the result of R code that creates a graph.  
+
+Line 3:  Assigns the variable x to the second column in the faithful tibble.  
+
+Line 4:  Creates a new variable called bins which is a sequence that starts at the minimum value of x and ends at the maximum value of x. The length of the sequence is the number of bins inputed from the slider in the ui plus 1.  
+
+Line 5:  Creates a histogram of x (the second column in faithful) with breaks that come from the sequence specified in line 4: the color of the histogram is "darkgray" and the border of the bars is "white".  
 
 ## Write Code
 
-Estimate the following linear model and create a boxplot by cut of the residuals:
+Alter the basic shiny app so that it draws a histogram with number of bins that are determined by the user for the hwy variable in the mpg tibble. Attach your R script file to your homework.
 
-lm(log(price) ~ log(carat) + cut + color + clarity, data = diamonds)  
-
-Do you think that there is any additional information left in the residuals? Why?
-
-```{r diamonds prediction model}
-diamonds_model <- lm(log(price) ~ log(carat) + cut + color + clarity, data = diamonds)
-diamonds %>% 
-  add_residuals(diamonds_model, "lresid") %>% 
-  ggplot(aes(cut, lresid)) +
-  geom_boxplot()
-```
+For the code, see the associated R script file.

@@ -1,0 +1,50 @@
+---
+title: "Homework #20"
+author: "Formulas and Model Families"
+date: "Due: 1 April 2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+library(tidyverse)
+```
+
+## Concepts  
+
+1.  Explain how you specify the equation that you want to estimate in a linear model.
+
+2.  Explain how dependent and independent variables are related to response and explanatory (predictor) variables.
+    
+## Interpretation of code  
+
+Code Chunk #1 Analysis of Variance Predictions
+
+```{r ANOVA and prediction}
+model_lm <- lm(mpg ~ am, data = mtcars)
+model_lm %>% summary()
+```
+
+Code Chunk #2 Analysis of Covariance Predictions
+
+```{r Analysis of Covariance I}
+model_lm <- lm(mpg ~ wt + am + wt * am, data = mtcars)
+model_lm %>% summary()
+```
+
+Code Chunk #3 Analysis of Covariance Predictions
+
+```{r Analysis of Covariance II}
+model_lm <- lm(mpg ~ wt + am, data = mtcars)
+model_lm %>% summary()
+```
+
+## Write Code
+
+Use the diamonds data set to create a model for predicting diamond prices. Use your model to predict the price of a specific diamond. Please come prepared to show your model to the class if you are selected as the guest lecturer.
+
+```{r diamonds prediction model}
+
+```

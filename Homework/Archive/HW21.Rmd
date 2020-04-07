@@ -1,0 +1,65 @@
+---
+title: "Homework #21"
+author: "Model Building"
+date: "Due: 6 April 2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+library(tidyverse)
+library(modelr)
+```
+
+## Concepts  
+
+1. Compare and constrast the machine learning and the classical modeling approaches.
+
+2. Explain how you use categorical, numerical, and interactions in a linear model. What is their effect on the slopes and intercepts in your model.  
+
+## Interpretation of code  
+
+Code Chunk #1 Heat map of natural log transformed price and carat variables
+
+```{r heat map of natural logarithm of diamond prices and weights}
+diamonds2 <- diamonds %>% 
+  filter(carat <= 2.5) %>% 
+  mutate(lprice = log(price),
+         lcarat = log(carat)
+         )
+
+diamonds2 %>%
+  ggplot(aes(lcarat, lprice)) + 
+  geom_hex(bins = 50)
+```
+
+Code Chunk #2 Comparison of predicted with actual data when when we have a log transformation
+
+```{r Comparison of actual and predicted valued}
+mod_diamond <- lm(lprice ~ lcarat, data = diamonds2)
+
+grid <- diamonds2 %>% 
+  data_grid(carat = seq_range(carat, 20)) %>% 
+  mutate(lcarat = log(carat)) %>% 
+  add_predictions(mod_diamond, "lprice") %>% 
+  mutate(price = exp(lprice))
+
+diamonds2 %>% 
+  ggplot(aes(carat, price)) + 
+  geom_hex(bins = 50) + 
+  geom_line(data = grid, colour = "red", size = 1)
+```
+
+## Write Code
+
+Estimate the following linear model and create a boxplot of the residuals by cut:
+
+lm(log(price) ~ log(carat) + cut + color + clarity, data = diamonds)
+
+Do you think that there is any additional information left in the residuals? Why?
+
+```{r diamonds prediction model}
+
+```

@@ -1,6 +1,6 @@
 # gganimate and plotly
 # Initial: 12 Apr 2019
-# Revision: 2 Dec 2019
+# Revision: 30 Mar 2020
 # Ray Nelson
 
 # Libraries
@@ -36,7 +36,7 @@ p +
 p <- mpg %>% 
   select(hwy, displ, drv, model) %>% 
   ggplot(aes(displ, hwy, color = drv)) +
-  geom_point(aes(text = paste("Model", model))) +
+  geom_point() +
   geom_smooth() +
   labs(
     title = "The drive train appears to strongly impact fuel efficiency.",
@@ -48,6 +48,12 @@ p <- mpg %>%
 p
 
 p %>% ggplotly()
+
+# Drawing directly with plotly
+
+mpg %>% 
+  plot_ly(x = ~displ, y = ~hwy, color = ~class) %>% 
+  add_trace(type = "scatter", mode = "markers")
 
 # Boxplot of highway and city
 p <- mpg %>% 
