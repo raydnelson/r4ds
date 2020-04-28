@@ -1,0 +1,443 @@
+---
+title: "Final Exam Review"
+author: "MPA 634: Data Science for Managers"
+date: "10 April 2020"
+output:
+   html_document:
+     code_folding: show
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+# Tidyverse libraries
+library(tidyverse)
+library(readxl)
+library(lubridate)
+# Libraries for map of Utah
+library(sf)
+library(maps)
+library(ggspatial)
+
+```  
+
+# Read in the Workspace
+```{r companies data}
+load(url("http://govfinance.byu.edu/govfinance/classes/dataScience/lectures/scripts/Final Exam Review/final review workspace.RData"))
+```
+
+# Companies tibble
+
+## Description of Data
+
+The tibble companies contains the following variables:
+
+- type: Type of company, Computer or Pharmaceutical
+- size: Categorical variable small or big
+- sales: In millions of dollars
+- profits: In millions of dollars
+- employees: Numeric
+- profit_per_employee: Numeric
+- assets: In millions of dollars
+- profit_sales_percent: Numeric
+
+## Variables in the data set
+
+```{r summary of variables}
+companies %>% glimpse()
+companies %>% summary()
+```
+
+# Distributions
+
+The two parts of a distribution
+
+* Range of values
+* Frequency or probability
+
+## Distribution of categorical variable: type of companies
+```{r distribution of type of company}
+companies %>% 
+  count(type)
+
+companies %>% 
+  ggplot(aes(x = type, fill = type)) +
+  geom_bar(color = "grey60") +
+  scale_fill_brewer(palette = "Set2") +
+  labs(
+    title = "More computer than pharma companies are sampled.",
+    x = "Type of Company",
+    y = "Number of Companies Sampled",
+    fill = "Type of Company"
+  )
+```
+
+## Distribution of a numerical variable: profit per employee
+
+Distributions of numerical variables are characterized by four dimensions:
+
+1. Location (mean and median)
+1. Scale (standard deviation and inter quartile range)
+1. Symmetry (right or negatively skewed)
+1. Outliers or tail thickness
+
+```{r violin plot}
+companies %>%
+  ggplot(aes(x = profit_per_employee, y = type)) +
+    geom_violin(fill = "lightblue") +
+    geom_boxplot(width = 0.10, fill = "grey60") +
+    stat_summary(fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "white") +
+  labs(
+    title = "Pharmaceutical firms have higher profits per employee",
+    y = "",
+    x = "Dollars"
+  )
+```
+
+# Review of dplyr: filter, arrange, select, mutate, group_by, and summarise
+
+## Use filter to select rows, in this case the computer companies.
+```{r filter companies}
+companies %>% 
+  filter(type == "Computer")
+```
+
+## Use select to decrease the number of columns, in this case the company type and profit_per_employee
+```{r select with companies}
+companies %>% 
+  select(type, profit_per_employee)
+```
+
+# We want to calculate summary statistics that tell us about the shape of various numerical variables in the companies tibble. The calcuation of the spread and location of variables is facilitated by:
+
+* dplyr
+* functions
+* tidyr (pivot_longer and pivot_wider)
+* for loops
+* map functions
+
+## Calculate location and spread of profit per employee for the different types of companies using dplyr
+
+```{r summary statistics for profit_per_employee}
+companies %>% 
+  group_by(type) %>% 
+  summarize(location_mean = mean(profit_per_employee),
+            location_median = median(profit_per_employee),
+            scale_sd = sd(profit_per_employee),
+            scale_iqr = IQR(profit_per_employee))
+```
+
+## Function to calculate the location and scale of a variable
+
+Parts of a function:
+
+* Name
+* Arguments
+* Body
+
+```{r function defintion}
+summary_stats <- function(variable){
+  location_mean <- mean(variable)
+  location_median <- median(variable)
+  scale_sd <- sd(variable)
+  scale_iqr <- IQR(variable)
+  tibble(location_mean = location_mean,
+         location_median = location_median,
+         scale_sd = scale_sd,
+         scale_IQR  = scale_iqr )
+}
+```
+
+## Execution of function
+```{r function execution}
+summary_stats(companies$profits)
+summary_stats(companies$profit_per_employee)
+```
+
+## Calculate summary statistics for sales from the computer industry
+
+```{r summary for computer industry}
+companies %>% 
+  filter(type == "Computer") %>% 
+  pull(sales) %>% 
+  summary_stats()
+```
+
+## Calculate summary statistics for sales from the computer industry
+```{r summary for pharmaceutical industry}
+companies %>% 
+  filter(type == "Pharmaceutical") %>% 
+  pull(profits) %>% 
+  summary_stats()
+```
+
+## Summary statistics for the two different industries
+
+* Use pivot_longer, group_by, and pivot_wider
+* Also possible using gather, group_by, and spread
+
+```{r pivot_long and pivot_wider application}
+companies %>% 
+  select(type, sales, profits) %>% 
+  pivot_longer(cols = c(profits, sales),
+               names_to = "account",
+               values_to = "dollars") %>% 
+  group_by(type, account) %>% 
+  summarise(location = median(dollars),
+            scale = IQR(dollars)
+  ) %>% 
+  pivot_wider(names_from = account, values_from = c(location, scale))
+```
+
+## Summary statistics using a for loop
+
+Parts of a for loop
+
+* Storage object
+* Index
+* Body
+
+```{r for look summary statistics}
+# Select the variables of interest
+important_variables <- companies %>% 
+  select(sales, profits, profit_per_employee, profit_sales_percent)
+
+# for loop with storage, index, and body
+summary_of_variables <- vector("list", length(important_variables))
+for(i in seq_along(important_variables)){
+  summary_of_variables[[i]] <- summary_stats(important_variables[[i]])
+}
+summary_of_variables
+```
+
+## Use of map rather than a for loop
+
+```{r use map to calculate summary statistics}
+important_variables %>%
+  map_dbl(median)
+important_variables %>%
+  map_dbl(IQR)
+```
+
+## Solution using a function that has a function as an argument
+```{r function that calls a function}
+summary_function <- function(FUN = mean){
+  important_variables %>%
+    map_dbl(FUN)
+}
+
+summary_function() # calls the mean by default
+summary_function(median)
+summary_function(FUN = IQR)
+```
+
+# Covariation
+
+Covariation (not necessarily covariance) is the relationship between two variables. Covariance is the **linear** relationship between two variables that are **homoskedastic**.
+
+```{r scatterplot}
+companies %>% 
+  ggplot(aes(x = profit_per_employee,
+             y = profit_sales_percent,
+             color = type)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_vline(xintercept = 0, color = "red", alpha = 0.25) +
+  facet_grid(rows = vars(size)) +
+  labs(
+    title = "Profits and sales are positively related.",
+    subtitle = "Some computer firms are not profitable.",
+    y = "Profit as a Percentage of Sales",
+    x = "Profit per Employee",
+    color = "Industry"
+  )
+```
+
+# Factors
+
+Factors are categorical variables. The categorical variables can be either nominal or ordinal. The number of categories should be a limited and manageable.
+
+Factor levels are the possible values for the categories. The levels can be integers or characters (strings). Sometimes, levels are codes that are difficult to remember and interpret. Labels are descriptions that are associated with each level. This makes factors easier to understand and interpret. Statistical software usually prints out the labels rather than levels when reporting the results of an analysis.
+
+R and other statistical software often automatically convert character variables to factors. When drawing charts, however, it is important to be able to control the order of the factor levels.
+
+## Initially company size is not a factor but a variable of type "character"
+
+```{r company type variable}
+companies$size
+
+companies %>% # automatic and temporary conversion to a factor
+  count(size)
+
+companies %>% 
+  ggplot(aes(x = size, fill = size)) +
+  geom_bar(color = "grey60") +
+  scale_fill_brewer(palette = "Accent") +
+  labs(
+    title = "A majority of sampled companies are small.",
+    x = "",
+    y = "Number of Companies",
+    fill = "Company Size"
+  )
+```
+
+## Conversion of type to a factor
+
+```{r conversion of type to a factor}
+companies$size <- factor(companies$size,
+                         levels = c("small", "medium", "big"),
+                         labels = c("Small", "Medium", "Big")
+)
+companies %>% 
+  glimpse()
+```
+
+## Now consider the effect on the bar chart of reordering inherent in the creation of the factor.
+
+```{r new bar chart}
+companies %>% 
+  ggplot(aes(x = size, fill = size)) +
+  geom_bar(color = "grey60") +
+  scale_fill_brewer(palette = "Accent") +
+  labs(
+    title = "A majority of sampled companies are small.",
+    x = "",
+    y = "Number of Companies",
+    fill = "Company Size"
+  )
+```
+
+## Explain why reordering size is inappropriate in the following violin plot.
+
+```{r reordering factor levels}
+companies %>%
+  ggplot(aes(x = profit_per_employee,
+             y = fct_reorder(size, profit_per_employee, median))) +
+    geom_violin(fill = "lightblue") +
+    geom_boxplot(width = 0.10, fill = "grey60") +
+    stat_summary(fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "white") +
+  labs(
+    title = "Big firms have the largest profit per employee",
+    subtitle = "Median Comparisons",
+    y = "",
+    x = "Dollars"
+  )
+```
+# Maps
+
+Our purpose is to create a map of Utah with counties shaded according to their population. This requires:
+
+1. Getting state spatial polygons
+1. Getting county spatial polygons
+1. Adding population data for the counties
+1. Creating the map using many of the detailing features available in ggplot
+
+## Polygons for the states
+```{r state shapes}
+states <- st_as_sf(map("state", plot = FALSE, fill = TRUE))
+```
+
+## Polygons for counties
+```{r county shapes}
+counties <- st_as_sf(map("county", plot = FALSE, fill = TRUE)) %>% 
+  filter(grepl("utah", ID)) %>%
+  separate(col = ID, into = c("state", "county"), sep = ",") %>% 
+  select(-state)
+```
+
+## Add population to the counties sf object
+```{r add population information}
+counties <- counties %>% 
+  left_join(county_population)
+```
+
+## Create the map
+```{r create the map}
+states %>%
+  ggplot() +
+  geom_sf() +
+  geom_sf(data = counties, aes(fill = population), color = gray(0.5)) +
+  scale_fill_viridis_c(trans = "log10", alpha = 0.5) +
+  annotation_scale(location = "br", width_hint = 0.4) +
+  annotation_north_arrow(
+    location = "tr",
+    which_north = "true",
+    pad_x = unit(1.1, "cm"),
+    pad_y = unit(0.6, "cm"),
+    height = unit(1, "cm"),
+    width = unit(1, "cm"),
+    style = north_arrow_fancy_orienteering
+  ) +
+  coord_sf(xlim = c(-115,-108),
+           ylim = c(36.5, 42.5),
+           expand = FALSE) +
+  labs(
+    title = "Utah's Population",
+    subtitle = "Wasatch Front Dominance",
+    x = "Longitude",
+    y = "Latitude",
+    fill = "Density\nLog Scale",
+    caption = "Data Source: US Bureau of Census"
+  ) +
+  guides(fill = guide_colourbar(label = FALSE, ticks = FALSE))
+```
+
+# Days until Christmas function
+
+## There are three different types of time spans:
+
+* Duration (seconds since January 1, 1970)
+* Periods (human understandable units)
+* Interval (start and end)
+
+We are going to use intervals to determine the number of days until Christmas.
+
+```{r days to Christmas function}
+days_to_christmas <- function(){
+  number_of_days <- (today() %--% mdy(12252020)) / days(1)
+  paste("There are", number_of_days, "days until Christmas.")
+}
+days_to_christmas()
+```
+
+# Grading function
+
+Remember that functions return the last calculation unless we explicitly include a return statement within the function body.
+
+## Create Function
+```{r grading function}
+grades <- function(total){
+  if(total > 400){
+    "A"
+  } else if (total < 300){
+    "C"
+  } else{
+    "B"
+  }
+}
+```
+
+## Function execution
+```{r grades function execution}
+grades(425)
+```
+
+## Data
+```{r hypothetical total scores}
+scores <- tibble(total = c(410, 190, 340, 380, 450))
+```
+
+## Grade assignment using the cut function
+```{r grading using cut}
+scores$total %>% 
+  cut(breaks = c(0, 300, 400, 500), labels = c("C", "B", "A"))
+```

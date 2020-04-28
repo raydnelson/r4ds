@@ -4,7 +4,7 @@ author: "Geospatial"
 date: "Due: 13 April 2020"
 output:
   html_document:
-    code_folding: "hide"
+    code_folding: "show"
 ---
 
 ```{r setup, include=FALSE}
@@ -12,79 +12,84 @@ knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
                       message = FALSE)
 library(tidyverse)
+library(leaflet)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
 ```
 
 ## Concepts  
 
-Explain the function and interaction of the ui and server parts of a shiny app.  
+1. Define projections and layers within the context of geospatial data visualization. Why are they so important? 
 
-The section ui handles the interface between the user and R. This is where the user and interact by specifying input values. It is also where the calculations completed by R are reported and depicted.  
+Because of the spherical shape of earth, distortions occur when we attempt to represent a 3-D object in two dimensions. For example, simply flattening the earth makes the poles look inordinately large. For this reason, many different algorithms exist for this conversion or projection. Projections can preserve angles or areas but cannot do both simultaneously. Most projection algorithms attempt to achieve a balance between angle and area distortions.
 
-The section severs is the part of the shiny app that does the work and calculations. This is where statistical routines are run, plots are created, and tables assembled.  
+2. Compare and contrast choropleths with cartograms.
+
+Often we want to communicate how a quantity varies for different locations. There are two alternatives for such visualizations: choropleths and cartograms. One of the problems with choropleths is that spatial polygons with larger areas draw more attention and make them look more important. One way around this is to create a cartogram where the maps have distorted areas so that proportionally, quantitative information is depicted accurately.
     
 ## Interpretation of code  
 
-### Interpret the following R code chunks: 
+### Code chunk #1
 
-### Code Chunk #1 UI part of a shiny app
+```{r First code chunk}
+latitude <- 40.2504
+longitude <- -111.6525
 
-> ui <- fluidPage(
+(TNRB <- leaflet() %>% 
+    addProviderTiles(provider = providers$CartoDB.Positron) %>% 
+    addMarkers(lng = longitude,
+               lat = latitude,
+               popup = "Marriott School of Business")
+)
+```
 
-> titlePanel("Old Faithful Geyser Data"),
 
-> sidebarLayout(
+Lines 1-2: Define and initial the latitude and longitude coordinates
+Line 3: Creates leaflet graph object called TNRB
+Line 4: Creates a graph layer using maps from the provider CartoDB.Positron
+Lines 5 - 7: Locates a point at the given latitude and longitude and labels the popup as "Marriott School of Business."
 
->  sidebarPanel(
+### Code chunk #2
 
-> sliderInput("bins",
-                       "Number of bins:",
-                       min = 1,
-                       max = 50,
-                       value = 30)
-                ),
+```{r Second code chunk}
+world <- ne_countries(scale = "medium", returnclass = "sf")
 
->  mainPanel(
+(world %>% 
+  ggplot() +
+  geom_sf() +
+  coord_sf(xlim = c(-88, -78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+)
+```
 
->  plotOutput("distPlot")
-       )
-   ) )
+Line 1: Retrieves the spatial polygons needed to draw a world map using the ne_countries function from the rnaturalearth library and stores the result in an object called world.
 
-Line 1: Designates the code section as the ui or user interface and declares that the app should use fluidpage. This allows the Shiny app to adapt to the size of the screen of the device used to view the app.  
+Lines 2-3: Create a layer in ggplot that contains the outline of the earth.
 
-Line 2: Gives the title "Old Faithful Geyser Data" to the app.
-
-Line 3: Provides the structure for the sidebar panel which is where the input will occur in this app.
-
-Lines 4 - 9:  Creates a slider which creates a variable called bins. The title seen by the user is "Number of bins:". The slider has a minimum value of 1 and a maximum value of 50. The initial value of the slider is set to 30.
-
-Line 10: Creates the section for the output that comes from the server.
-
-Lne 11:  Plots the output distPlot. This plot was created in the server part of the app.
-
-### Code Chunk #2 Server Part of a Shiny app
-
-> server <- function(input, output) {
-
-> output$distPlot <- renderPlot({
-
->  x <- faithful[, 2]
-
->  bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
->  hist(x, breaks = bins, col = 'darkgray', border = 'white')})}
-
-Line 1:  Declares a server function that has input and output as arguments  
-
-Line 2:  Creates an object in the output list called distPlot which is the result of R code that creates a graph.  
-
-Line 3:  Assigns the variable x to the second column in the faithful tibble.  
-
-Line 4:  Creates a new variable called bins which is a sequence that starts at the minimum value of x and ends at the maximum value of x. The length of the sequence is the number of bins inputed from the slider in the ui plus 1.  
-
-Line 5:  Creates a histogram of x (the second column in faithful) with breaks that come from the sequence specified in line 4: the color of the histogram is "darkgray" and the border of the bars is "white".  
+Lines 4-6: Uses a range for latitude and longitude that allows the world map to be focused on Florida.
 
 ## Write Code
 
-Alter the basic shiny app so that it draws a histogram with number of bins that are determined by the user for the hwy variable in the mpg tibble. Attach your R script file to your homework.
+Write a function that locates and labels a point on a map.
+* The function should take longitude, latitude, and a label as its arguments.
+* The function should use maps provided by Stamen.Toner.
+* Use your function to draw a map with the location of your home or apartment.
 
-For the code, see the associated R script file.
+
+```{r my code}
+## Map of the Nelsons Home
+### Coordinates for Nelson Home
+### Latitude: 40.268831
+### longitude: -111.644243
+leaflet_map <- function(longitude, latitude, popup){
+  require(leaflet)
+  leaflet() %>% 
+    addTiles() %>% 
+    addMarkers(lng = longitude, lat = latitude, popup = popup)
+}
+leaflet_map(longitude = -111.644243, latitude = 40.268831,
+            popup = "Mooki's Hideout")
+```
+

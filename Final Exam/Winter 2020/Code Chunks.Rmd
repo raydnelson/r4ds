@@ -1,0 +1,119 @@
+---
+title: "Final Exam Winter 2020"
+author: "Data Science for Managers"
+date: "Code Interpretation"
+output:
+  html_document:
+    code_folding: show
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+# Tidyverse libraries
+library(tidyverse)
+library(nycflights13)
+library(viridis)
+library(lubridate)
+# Libraries for map of Utah
+library(sf)
+library(maps)
+library(ggspatial)
+```
+
+# Read in the Workspace
+```{r companies data, echo = FALSE}
+load(url("http://govfinance.byu.edu/govfinance/classes/dataScience/lectures/scripts/Final Exam Review/final review workspace.RData"))
+```
+
+## Code Chunk 1
+
+```{r code 1}
+mpg %>% 
+  group_by(class) %>% 
+  mutate(nobs = n()) %>% 
+  ggplot(aes(fct_reorder(class, nobs) %>% fct_rev(), nobs)) +
+  geom_col()
+
+mpg %>% 
+  ggplot(aes(class %>% fct_infreq())) +
+    geom_bar()
+```
+
+## Code Chunk 2
+
+```{r counties calculations, echo = FALSE}
+counties <- st_as_sf(map("county", plot = FALSE, fill = TRUE)) %>% 
+  filter(grepl("utah", ID)) %>%
+  separate(col = ID, into = c("state", "county"), sep = ",") %>% 
+  select(-state)
+
+counties <- counties %>% 
+  left_join(county_population)
+```
+
+```{r code chunk 2}
+st_as_sf(map("state", plot = FALSE, fill = TRUE)) %>%
+  ggplot() +
+  geom_sf() +
+  geom_sf(data = counties, aes(fill = population), color = gray(0.5)) +
+  scale_fill_viridis_c(trans = "log10", alpha = 0.5) +
+  coord_sf(xlim = c(-115,-108),
+           ylim = c(36.5, 42.5),
+           expand = FALSE)
+```
+
+## Code Chunk #3
+
+```{r code chunk 3}
+flights %>% 
+  filter(origin != "EWR") %>% 
+  filter(dep_delay > 0) %>% 
+  group_by(origin) %>% 
+  summarise(
+    median_delay = median(dep_delay, na.rm = TRUE),
+    IQR_delay = IQR(dep_delay, na.rm = TRUE)
+  ) %>% 
+  left_join(airports, c("origin" = "faa")) %>% 
+  select(name, median_delay, IQR_delay) %>% 
+  arrange(median_delay)
+```
+
+## Code Chunk 4
+
+```{r code chunk 4}
+Mean <- function(x) {
+  if(is.numeric(x)){
+    mean(x)
+  } else {
+    NA
+  }
+}
+
+means <- vector("numeric", length(mpg))
+for (i in seq_along(mpg)) {
+  means[[i]] <- Mean(mpg[[i]])
+}
+
+tibble(means) %>% 
+  filter(!is.na(means))
+```
+
+## Code Chunk 5
+
+```{r code chunk 5}
+presidential %>%
+  mutate(id = 33 + row_number()) %>%
+  ggplot(aes(start, id, color = party)) +
+  geom_point(size = 4) +
+  geom_segment(aes(xend = end, yend = id), size = 3) +
+  scale_x_date(breaks = presidential$start, date_labels = "'%y") +
+  scale_y_continuous(breaks = seq(34, 44, 1), labels = presidential$name) +
+  scale_colour_manual(values = c("Republican" = "red", "Democratic" = "blue")) +
+  theme(
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    legend.position = "bottom"
+  )
+```

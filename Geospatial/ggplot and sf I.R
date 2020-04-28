@@ -4,9 +4,6 @@
 # Ray Nelson
 
 # Libraries
-library(tidyverse)
-library(sf)
-
 install.packages(c("cowplot", "googleway", "ggplot2", "ggrepel", 
                    "ggspatial", "libwgeom", "sf", "rnaturalearth",
                    "rnaturalearthdata"))

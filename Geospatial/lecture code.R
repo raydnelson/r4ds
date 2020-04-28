@@ -1,11 +1,14 @@
-# ggplot and sf II
-# Initial: 3 April 2020
-# Revision: 3 April 2020
+# Geospatial lecture Code
+# Initial: 7 Apr 2020
+# Revision: 7 Apr 2020
 # Ray Nelson
 
 # Libraries
 library(tidyverse)
-theme_set(theme_bw())
+library(leaflet)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
 library(sf)
 library(rnaturalearth)
 library(rnaturalearthdata)
@@ -16,16 +19,123 @@ library(lwgeom)
 library(googleway)
 library(ggrepel)
 
-world <- ne_countries(scale = "medium", returnclass = "sf")
-class(world)
+theme_set(theme_bw())
 
-# Basic outline of the map
+# Leaflet Examples
+
+## Coordinates for Tanner Building
+latitude <- 40.2504
+longitude <- -111.6525
+
+(TNRB <- leaflet() %>% 
+    addTiles() %>% 
+    addMarkers(lng = longitude,
+               lat = latitude,
+               popup = "Marriott School of Business")
+)
+
+## Function to create a map
+leaflet_map <- function(longitude, latitude, popup){
+  require(leaflet)
+  leaflet() %>% 
+    addTiles() %>% 
+    addMarkers(lng = longitude, lat = latitude, popup = popup)
+}
+
+## Map of the Nelsons Home
+### Coordinates for Nelson Home
+### Latitude: 40.268831
+### longitude: -111.644243
+
+(Nelsons <- leaflet_map(longitude = -111.644243,
+            latitude = 40.268831,
+            popup = "Mooki's Hideout")
+)
+
+## Change the map
+TNRB %>% 
+  addProviderTiles(provider = providers$MtbMap,
+                   options = providerTileOptions(opacity = 0.1))
+TNRB %>% 
+  addProviderTiles(provider = providers$Stamen.Toner)
+TNRB %>% 
+  addProviderTiles(provider = providers$CartoDB.Positron)
+
+## Use map overlays to create layers
+TNRB %>%
+  addProviderTiles(provider = providers$MtbMap,
+                   options = providerTileOptions(opacity = 0.5)) %>%
+  addProviderTiles(provider = providers$Stamen.TonerLines,
+                   options = providerTileOptions(opacity = 0.5)) %>%
+  addProviderTiles(provider = providers$Stamen.TonerLabels)
+
+
+# choropleth
+
+## Finished product
+world %>%
+  ggplot() +
+  geom_sf(fill = "antiquewhite1") +
+  geom_sf(data = counties, aes(fill = area)) +
+  geom_sf(data = states, fill = NA) +
+  geom_sf(
+    data = sites,
+    size = 4,
+    shape = 23,
+    fill = "darkred"
+  ) +
+  geom_sf(data = flcities) +
+  geom_text_repel(
+    data = flcities,
+    aes(x = lng, y = lat, label = city),
+    fontface = "bold",
+    nudge_x = c(1, -1.5, 2, 2, -1),
+    nudge_y = c(0.25, -0.25, 0.5, 0.5, -0.5)
+  ) +
+  geom_label(
+    data = states,
+    aes(X, Y, label = ID),
+    size = 5,
+    fontface = "bold",
+    nudge_y = states$nudge_y
+  ) +
+  scale_fill_viridis_c(trans = "sqrt", alpha = .4) +
+  annotation_scale(location = "bl", width_hint = 0.4) +
+  annotation_north_arrow(
+    location = "bl",
+    which_north = "true",
+    pad_x = unit(0.75, "in"),
+    pad_y = unit(0.5, "in"),
+    style = north_arrow_fancy_orienteering
+  ) +
+  coord_sf(xlim = c(-88, -78),
+           ylim = c(24.5, 33),
+           expand = FALSE) +
+  labs(
+    title = "Observation Sites",
+    subtitle = "(2 sites in Palm Beach County, Florida)",
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+  theme(
+    panel.grid.major = element_line(
+      color = gray(0.5),
+      linetype = "dashed",
+      size = 0.5
+    ),
+    panel.background = element_rect(fill = "aliceblue")
+  )
+
+
+# Get basic background map data
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# Draw the basic map
 world %>% 
   ggplot() +
   geom_sf()
 
-# Basic outline of the map but zoomed
-
+# Zoom in on Florida
 world %>% 
   ggplot() +
   geom_sf() +
@@ -34,7 +144,7 @@ world %>%
            expand = FALSE)
 
 # Now add points for two sites
-(sites <- data.frame(longitude = c(-80.144005, -80.109),
+(sites <- tibble(longitude = c(-80.144005, -80.109),
                      latitude = c(26.479005, 26.83)))
 world %>% 
   ggplot() +
@@ -48,7 +158,6 @@ world %>%
            expand = FALSE)
 
 # Let's use sf rather than geom_points
-
 (sites <- st_as_sf(sites, coords = c("longitude", "latitude"),
                    crs = 4326, agr = "constant"))
 world %>%
@@ -65,7 +174,6 @@ world %>%
            expand = FALSE)
 
 # Add states
-
 states <- st_as_sf(map("state", plot = FALSE, fill = TRUE))
 head(states)
 
@@ -82,7 +190,7 @@ world %>%
            ylim = c(24.5, 33),
            expand = FALSE)
 
-# Move the labels
+# Move the state labels
 states$nudge_y <- -1
 states$nudge_y[states$ID == "Florida"] <- 0.5
 states$nudge_y[states$ID == "South Carolina"] <- -1.5
@@ -125,7 +233,7 @@ world %>%
            expand = FALSE)
 
 # Florida Cities data preparation
-flcities <- data.frame(state = rep("Florida", 5),
+(flcities <- tibble(state = rep("Florida", 5),
                        city = c("Miami",
                                 "Tampa",
                                 "Orlando",
@@ -141,48 +249,71 @@ flcities <- data.frame(state = rep("Florida", 5),
                                -81.3792365,
                                -81.655651,
                                -82.5306527))
+)
 
 # Get the data for the cities from google
-key <- "AIzaSyBj7F5KSag_NY51j2OqvjeGD-z9kajTNTw" # google maps key
-flcities <- data.frame(state = rep("Florida", 5),
-                       city = c("Miami", 
-                                "Tampa",
-                                "Orlando",
-                                "Jacksonville",
-                                "Sarasota"))
+key <- "AIzaSyBj7F5KSag_NY51j2OqvjeGD-z9kajTNTw" # Google maps key
+flcities <- data.frame(
+  state = rep("Florida", 5),
+  city = c("Miami",
+           "Tampa",
+           "Orlando",
+           "Jacksonville",
+           "Sarasota")
+)
 coords <- apply(flcities, 1, function(x) {
-  google_geocode(address = paste(x["city"], x["state"], sep = ", "), 
+  google_geocode(address = paste(x["city"], x["state"], sep = ", "),
                  key = key)
 })
 flcities <- cbind(flcities, do.call(rbind,
                                     lapply(coords, geocode_coordinates)))
 
-(flcities <- st_as_sf(flcities, coords = c("lng", "lat"), remove = FALSE, 
-                      crs = 4326, agr = "constant"))
+(flcities <-
+    st_as_sf(
+      flcities,
+      coords = c("lng", "lat"),
+      remove = FALSE,
+      crs = 4326,
+      agr = "constant"
+    ))
 
 # Simple Cities
-
 ggplot(data = world) +
   geom_sf() +
-  geom_sf(data = counties, fill = NA, color = gray(.5)) +
+  geom_sf(data = counties,
+          fill = NA,
+          color = gray(.5)) +
   geom_sf(data = flcities) +
-  geom_text(data = flcities, aes(x = lng, y = lat, label = city), 
-            size = 3.9, col = "black", fontface = "bold") +
-  coord_sf(xlim = c(-88, -78), ylim = c(24.5, 33), expand = FALSE)
+  geom_text(
+    data = flcities,
+    aes(x = lng, y = lat, label = city),
+    size = 3.9,
+    col = "black",
+    fontface = "bold"
+  ) +
+  coord_sf(xlim = c(-88,-78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
 
 # Cities using ggrepel
-
 ggplot(data = world) +
   geom_sf() +
-  geom_sf(data = counties, fill = NA, color = gray(.5)) +
+  geom_sf(data = counties,
+          fill = NA,
+          color = gray(.5)) +
   geom_sf(data = flcities) +
-  geom_text_repel(data = flcities, aes(x = lng, y = lat, label = city), 
-                  fontface = "bold", nudge_x = c(1, -1.5, 2, 2, -1), nudge_y = c(0.25, 
-                                                                                 -0.25, 0.5, 0.5, -0.5)) +
-  coord_sf(xlim = c(-88, -78), ylim = c(24.5, 33), expand = FALSE)
+  geom_text_repel(
+    data = flcities,
+    aes(x = lng, y = lat, label = city),
+    fontface = "bold",
+    nudge_x = c(1,-1.5, 2, 2,-1),
+    nudge_y = c(0.25,-0.25, 0.5, 0.5,-0.5)
+  ) +
+  coord_sf(xlim = c(-88,-78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
 
 # Final Graph
-
 world %>%
   ggplot() +
   geom_sf(fill = "antiquewhite1") +

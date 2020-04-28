@@ -1,0 +1,62 @@
+---
+title: "Homework #22"
+author: "Geospatial"
+date: "Due: 13 April 2020"
+output:
+   html_document:
+     code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+library(tidyverse)
+library(leaflet)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+```
+
+## Concepts  
+
+1. Define projections and layers within the context of geospatial data visualization. Why are they so important? 
+2. Compare and contrast choropleths with cartograms.
+    
+## Interpretation of code  
+
+### Code chunk #1
+
+```{r First code chunk}
+latitude <- 40.2504
+longitude <- -111.6525
+
+(TNRB <- leaflet() %>% 
+    addProviderTiles(provider = providers$CartoDB.Positron) %>% 
+    addMarkers(lng = longitude,
+               lat = latitude,
+               popup = "Marriott School of Business")
+)
+```
+
+### Code chunk #2
+
+```{r Second code chunk}
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+(world %>% 
+  ggplot() +
+  geom_sf() +
+  coord_sf(xlim = c(-88, -78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+)
+```
+
+## Write Code
+
+Write a function that locates and labels a point on a map.
+
+* The function should take longitude, latitude, and a label as its arguments.
+* The function should use maps provided by Stamen.Toner.
+* Use your function to draw a map with the location of your home or apartment.

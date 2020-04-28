@@ -14,12 +14,36 @@ library(rgeos)
 library(R6)
 library(htmltools)
 
-m <- leaflet() %>% 
-  addTiles() %>% 
-  addMarkers(lng = 174.768, lat = -36.852, popup = "The birthplace of R")
-m
-
+## Parameters for leaflet
 leaflet(options = leafletOptions(minZoom = 0, maxZoom = 18))
+
+## Coordinates for Tanner Building
+latitude <- 40.2504
+longitude <- -111.6525
+
+(m <- leaflet() %>% 
+  addTiles() %>% 
+  addMarkers(lng = longitude,
+             lat = latitude,
+             popup = "Marriott School of Business")
+)
+
+## Function to create a map
+leaflet_map <- function(longitude, latitude, popup){
+  require(leaflet)
+  leaflet() %>% 
+    addTiles() %>% 
+    addMarkers(lng = longitude, lat = latitude, popup = popup)
+}
+
+## Coordinates for Nelson Home
+## Latitude: 40.268831
+## longitude: -111.644243
+
+leaflet_map(longitude = -111.644243,
+            latitude = 40.268831,
+            popup = "Mooki's Hideout")
+
 
 # add some circles to a map
 
