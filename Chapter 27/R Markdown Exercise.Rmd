@@ -7,7 +7,7 @@ output:
     code_folding: hide
 ---
 
-```{r setup, include=FALSE, message = FALSE, warning = FALSE}
+```{r setup, include = FALSE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
@@ -17,14 +17,14 @@ library(tidyverse)
 ## Definition
 
 1.  Range of values
-1.  Frequencies or probabilities
+2.  Frequencies or probabilities
 
 ## Characteristics
 
-*  **Location or center** (*mean and median*)
-*  **Scale or spread** (*standard deviation and interquartile range*)
-*  **Symmetry or skewness** (*skewness coefficient*)
-*  **Outliers, kurtosis, or tail thickness** (*coefficient of excess*)
+-   **Location or center** (*mean and median*)
+-   **Scale or spread** (*standard deviation and interquartile range*)
+-   **Symmetry or skewness** (*skewness coefficient*)
+-   **Outliers, kurtosis, or tail thickness** (*coefficient of excess*)
 
 ## Categorical Variables (Nominal and Ordinal)
 
@@ -64,13 +64,17 @@ ggplot(data = mpg, aes(x = factor(0), y = hwy)) +
 
 The boxplot helps us judge the location, scale, symmetry, and outliers of a distribution.
 
-*  Location: center line in the boxplot is the median.
-*  Scale: length of the rectangle is the interquartile range.
-*  Symmetry:
-   +  Position of the median in the box
-   +  Relative length of the whiskers
-   +  Number of outliers in each tail
-*  Kurtosis: number of outliers
+-   Location: center line in the boxplot is the median.
+
+-   Scale: length of the rectangle is the interquartile range.
+
+-   Symmetry:
+
+    -   Position of the median in the box
+    -   Relative length of the whiskers
+    -   Number of outliers in each tail
+
+-   Kurtosis: number of outliers
 
 ### Violin Plot
 

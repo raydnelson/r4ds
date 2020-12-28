@@ -16,43 +16,42 @@ library(tidyverse)
 
 # R Markdown basics
 
-  1.  YAML header and setup code chunk 
-  1.  Text and formatting 
-  1.  Code chunks  
+1.  YAML header and setup code chunk
+2.  Text and formatting
+3.  Code chunks
 
 ## YAML header and initial code chunk
 
 The following YAML header sets up an html document to have the code available but hidden:
 
-`title: "R Markdown"`  
-`author: "Developers at RStudio"`  
-`date: "9/16/2019"`
-`output:`  
-`html_document:`  
+`title: "R Markdown"`\
+`author: "Developers at RStudio"`\
+`date: "9/16/2019"` `output:`\
+`html_document:`\
 `code_folding: hide`
-    
-The setup code chunk often contains libraries.  
 
-`{r setup, include = FALSE}`  
-`knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)`  
-`library(tidyverse)`  
+The setup code chunk often contains libraries.
+
+`{r setup, include = FALSE}`\
+`knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)`\
+`library(tidyverse)`
 
 ## Text and formatting
 
 ### Purposes of R Markdown as proposed by Grolemund and Wickham *(Here is an example of an ordered list.)*
 
 1.  Communicate with decision makers, who want to focus on the conclusions, not the code behind the analysis.
-4.  Collaborate with other data scientists (including the future you!), who are interested in both your conclusions, and how you reached them (i.e. the code).
-2.  Provide an environment suitable for data science, as a modern day lab notebook where you can capture not only what you did, but also what you were thinking.
+2.  Collaborate with other data scientists (including the future you!), who are interested in both your conclusions, and how you reached them (i.e. the code).
+3.  Provide an environment suitable for data science, as a modern day lab notebook where you can capture not only what you did, but also what you were thinking.
 
 ### Resources
 
 Here are some potential resources when using R Markdown: **(This is an unordered list)**
 
-*  [Free R Books](https://bookdown.org/)
-*  [Website](https://rmarkdown.rstudio.com/)
-*  [Cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf)
-*  [Reference](https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf)
+-   [Free R Books](https://bookdown.org/)
+-   [Website](https://rmarkdown.rstudio.com/)
+-   [Cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf)
+-   [Reference](https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf)
 
 ### Consider the following heading levels
 
@@ -74,7 +73,6 @@ Here are some potential resources when using R Markdown: **(This is an unordered
 
 [Class Web Site](http://govfinance.byu.edu/govfinance/classes/dataScience/syllabus/dataScienceSyllabus.html)
 
-
 ![Outline for Our Class](http://govfinance.byu.edu/govfinance/resources/chartFigureTable/dataScience/Data%20Science%20Workflow.png)
 
 ### Equations
@@ -83,18 +81,16 @@ Here are some potential resources when using R Markdown: **(This is an unordered
 
 This is the quadratic equation: ${{ - b \pm \sqrt {{b^2} - 4ac} } \over {2a}}$
 
-
 #### Display for quadratic equation
 
 $${{ - b \pm \sqrt {{b^2} - 4ac} } \over {2a}}$$
 
-
 ### Tables using R Markdown
 
-First Header  | Second Header
-------------- | -------------
-Content Cell  | Content Cell
-Content Cell  | Content Cell
+| First Header | Second Header |
+|--------------|---------------|
+| Content Cell | Content Cell  |
+| Content Cell | Content Cell  |
 
 ## Code Chunks
 
@@ -104,7 +100,7 @@ The number of rows in the mtcars tibble is: `r nrow(mtcars)`.
 
 ### Display
 
-Scatterplot of highway miles per gallon on engine displacement    
+Scatterplot of highway miles per gallon on engine displacement\
 Built-in mpg R data set
 
 ```{r mpg versus wt}
@@ -117,7 +113,7 @@ Built-in mpg R data set
       x = "Liters",
       y = "Miles Per Gallon"
     )
-```  
+```
 
 Because of the nonlinear pattern, transformations such as those we will cover in Chapter 5 will be appropriate and desirable.
 
@@ -130,4 +126,3 @@ knitr::kable(
   caption = "A knitr kable."
 )
 ```
-

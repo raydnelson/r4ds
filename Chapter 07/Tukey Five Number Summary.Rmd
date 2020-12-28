@@ -1,0 +1,86 @@
+---
+title: "Tukey's Five Number Summary"
+author: 'MPA 634: Data Science for Managers'
+date: "18 Dec 2020"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+#### Two parts of a distribution definition
+
+-   Range of Values
+-   Frequency
+
+#### Characteristics of a Distribution
+
+-   Location (Central Tendency)
+-   Scale (Spread)
+-   Symmetry
+-   Outliers or tail thickness
+
+Consider the distribution of highway mileage in the mpg data frame which is part of tidyverse. Consider the following values for highway miles per gallon:
+
+```{r highway mile per gallon}
+mpg$hwy
+```
+
+How do we summarize the distribution of these values?
+
+We can use moment or order based statistics. If we use order based statistics, then we must first order all of the observations:
+
+```{r ordered hwy}
+mpg$hwy %>% sort()
+```
+
+The quantile function divides that finds the boundary values that leave a certain percentage below. For example, the value `r quantile(mpg$hwy, 0.25)` gives the boundary that has 25% of the observations below that value and 75% of the observations above. This is known as the first quartile.
+
+The second quartile is the middle value. Fifty percent of the observations are below `r quantile(mpg$hwy, 0.5)` which is also known as the median. The third quartile has 75% of the observations below `r quantile(mpg$hwy, 0.75)`.
+
+Measures of Location
+
+Mean
+
+Use the mean function to calculate the average: `r mean(mpg$hwy)`
+
+Median
+
+Use the median function to calculate the median: `r median(mpg$hwy)`
+
+##### Measures of Scale
+
+Standard Deviation
+
+Use the sd function to calculate the standard deviation: `r sd(mpg$hwy)`
+
+Range
+
+Use the range function to calculate the difference between the maximum and the minimum: `r range(mpg$hwy)`
+
+Interquartile range
+
+Interquartile range is the difference between the third and first quartiles. The IQR function calculates the interquartile range: `r IQR(mpg$hwy)`
+
+#### Tukey's Five Number Summary of a numerical variable includes:
+
+1.  Minimum
+2.  First Quartile
+3.  Median (Second Quartile)
+4.  Third Quartile
+5.  Maximum
+
+Summary command in R gives Tukey's five number summary and the mean: 
+
+```{r summary of hwy}
+summary(mpg$hwy)
+```
+
+John Tukey invented boxplots to depict the five number summary graphically.
+
+
+
