@@ -1,0 +1,52 @@
+---
+title: "Introduction"
+author: "Ray"
+date: "12/30/2020"
+output:
+  html_document:
+    code_folding: "hide"
+editor_options: 
+  markdown: 
+    wrap: 80
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+library(tidyverse)
+```
+
+Data Science for Managers
+
+The intersection of statistics, computer science, and domain knowledge defines
+data science. The process whereby data scientists explore, wrangle, program,
+model, and communicate quantitative relationships is greatly facilitated by the
+statistical computer language R.
+
+Learning Outcomes
+
+1.  Explore data through visualization and transformation
+
+2.  Organize data into constructs that are useful for visualizing and modeling
+
+3.  Master the philosophy, basics, and components of the R language
+
+4.  Communicate clearly the insights gleaned from data exploration
+
+```{r plot}
+ggplot(data = mpg, mapping = aes(x = displ,
+                                 y = hwy,
+                                 color = drv)) +
+  geom_point() + 
+  geom_smooth(method = "lm") +
+  labs(
+    title = "The effect of engine size on fuel efficiency",
+    subtitle = "Larger engines have lower miles per gallon.",
+    y = "Highway Miles Per Gallon",
+    x = "Engine Displacement",
+    color = "Drive Train"
+  )
+```

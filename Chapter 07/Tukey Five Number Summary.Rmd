@@ -74,13 +74,10 @@ Interquartile range is the difference between the third and first quartiles. The
 4.  Third Quartile
 5.  Maximum
 
-Summary command in R gives Tukey's five number summary and the mean: 
+Summary command in R gives Tukey's five number summary and the mean:
 
 ```{r summary of hwy}
 summary(mpg$hwy)
 ```
 
 John Tukey invented boxplots to depict the five number summary graphically.
-
-
-

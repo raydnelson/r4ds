@@ -1,0 +1,241 @@
+---
+title: "Visualization II"
+author: "MPA 634: Data Science for Managers"
+date: "21 Jan 2021"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+library(tidyverse)
+```
+
+## The grammar of graphics includes the following seven elements:
+
+1.  Data
+2.  Mapping or aesthetics
+3.  Geometric object
+4.  Stats
+5.  Position
+6.  Coordinate system
+7.  Facets
+
+## Geometric objects
+
+We will talk about:
+
+1.  Graphs for categorical variables
+2.  Graphs for one numerical variables
+3.  Graphs for two numerical variables
+4.  Graphs for one categorical and one numerical
+
+## Important Definition
+
+Distribution of a variable is:
+
+1.  Range of values
+2.  Probability or frequency of each value
+
+### Distribution of categorical variables
+
+#### Bar Chart
+
+```{r bar}
+ggplot(data = mpg, mapping = aes(x = class, fill = class)) +
+  geom_bar()
+```
+
+### Distribution numerical variables
+
+### Histograms
+
+-   Use a blue fill
+-   Use binwidth of 2.5
+
+```{r histogram of highway miles per gallon}
+ggplot(data = mpg, mapping = aes(x = hwy)) +
+  geom_histogram(fill = "blue", binwidth = 2.5)
+```
+
+### Frequency Polygons
+
+-   Use a blue fill
+-   Use binwidth of 2.5
+
+```{r frequency polygons}
+ggplot(data = mpg, mapping = aes(x = hwy)) +
+  geom_freqpoly(color = "blue", binwidth = 2.5)
+```
+
+### Densities
+
+Use a blue fill
+
+```{r density for highway miles per gallon}
+ggplot(data = mpg, mapping = aes(x = hwy)) +
+  geom_density(fill = "blue")
+```
+
+### Boxplots
+
+```{r boxplots}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_boxplot()
+```
+
+### Violin plots
+
+```{r violin plots}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_violin()
+```
+
+## Statistical Transformations
+
+### Bar Versus Column charts
+
+```{r bar chart}
+ggplot(data = mpg, mapping = aes(x = class, fill = class)) +
+  geom_bar(show.legend = FALSE)
+```
+
+```{r column chart}
+class_count <- mpg %>% 
+  count(class)
+print(class_count)
+ggplot(data = class_count, mapping = aes(x = class, y = n, fill = class)) +
+  geom_col(show.legend = FALSE)
+```
+
+### Loess Smoothing and simple regression
+
+```{r loess smoothing}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_smooth()
+```
+
+```{r simple regression}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+## Position Adjustments
+
+### Color and fill aesthetics in a bar chart
+
+#### Color aesthetic
+
+```{r color aesthetic}
+ggplot(data = diamonds, mapping = aes(x = cut, color = cut)) +
+  geom_bar(show.legend = FALSE, size = 3)
+```
+
+#### Fill aesthetic
+
+```{r fill aesthetic}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = cut)) +
+  geom_bar(show.legend = FALSE)
+```
+
+#### Bar chart with multiple categories
+
+```{r cut and clarity}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) +
+  geom_bar()
+```
+
+#### Position = identity
+
+```{r identity}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) +
+  geom_bar(alpha = 1/5, position = "identity")
+```
+
+#### Position = fill
+
+```{r fill}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) +
+  geom_bar(position = "fill")
+```
+
+#### Position = dodge
+
+```{r dodge}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) +
+  geom_bar(position = "dodge")
+```
+
+#### Position = jitter
+
+Compare and contrast the following graphs.
+
+##### Scatterplot
+
+```{r scatterplot}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point() 
+```
+
+##### Jittered Scatterplot
+
+```{r jitter}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(position = "jitter")
+```
+
+## Coordinate system
+
+### Horizontal bar chart
+
+```{r horizontal bar chart}
+ggplot(data = mpg, mapping = aes(x = class, fill = drv)) +
+  geom_bar(position = "dodge") +
+  coord_flip()
+```
+
+### Horizontal violin plot
+
+```{r violin plot}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_violin(fill = "lightgreen") +
+  geom_boxplot(fill = "lightblue", width = 0.1) +
+  coord_flip()
+```
+
+### Map of New Zealand
+
+```{r maps}
+nz <- map_data("nz")
+
+new_zealand <- ggplot(data = nz, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill = "white", color = "black")
+
+new_zealand
+
+new_zealand +
+  coord_quickmap()
+```
+
+## Summary
+
+1.  Data
+2.  Aesthetics\
+3.  Geometric objects (stats)
+4.  Positioning
+5.  Coordinate system
+6.  Faceting
+
+```{r combination}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) +
+  geom_bar(position = "dodge") +
+  coord_flip() +
+  facet_grid(vars(color))
+```

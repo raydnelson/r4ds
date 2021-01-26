@@ -1,7 +1,7 @@
 ---
 title: "R Markdown"
 author: "Developers at RStudio"
-date: "15 Jan 2020"
+date: "12 Jan 2021"
 output:
   html_document:
     code_folding: hide
@@ -79,11 +79,11 @@ Here are some potential resources when using R Markdown: **(This is an unordered
 
 #### Inline
 
-This is the quadratic equation: ${{ - b \pm \sqrt {{b^2} - 4ac} } \over {2a}}$
+The sum of the observations divided by the sample size gives the mean: $\frac{1}{n}\sum\limits_{i = 1}^n {{X_i}}$
 
-#### Display for quadratic equation
+#### Display mean formula
 
-$${{ - b \pm \sqrt {{b^2} - 4ac} } \over {2a}}$$
+$$\frac{1}{n}\sum\limits_{i = 1}^n {{X_i}}$$
 
 ### Tables using R Markdown
 

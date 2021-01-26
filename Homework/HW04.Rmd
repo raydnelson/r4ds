@@ -1,57 +1,98 @@
 ---
 title: 'Homework #4'
-author: "R Markdown"
-date: "Due: 22 Jan 2020"
-output: word_document
+author: "Bar Charts and Position"
+date: "Due: 26 Jan 2021"
+output:
+  html_document:
+    code_folding: hide
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
 ```
 
-## Concepts
+## Concepts 
 
-Explain the sequence whereby a word file is created from a R Markdown document. What is the purpose of the YAML header?
+1. Explain how statistical transformations are related to geometric objects.
 
-## Interpretation of R Markdown code
+Put your answer here.
 
-### New lines and paragraphs can be very confusing. This is one of the most inconsistent and confusing parts of R Markdown.
+2. Explain why you should not use Pareto Charts with ordinal categorical variables.
 
-When using R Markdown, you insert a new line by putting two spaces and a carriage return at the end of your text.  
-A new paragraph requires two carriage returns.
+Put your answer here.
 
-R Markdown allows you to have italics, bold, and code
 
-* *italics*
-* **bold**
-* `code`. (A monospaced font is usually used for code.)
+## Code Interpretation
 
-### Include graphics
+Problem #1 Diamonds
 
-![You can insert graphics from the web:](http://govfinance.byu.edu/govfinance/images/dataScience/DataScience.png)
+```{r dodged bar chart}
+diamonds %>% 
+  ggplot(aes(y = cut, fill = color)) +
+  geom_bar(position = "dodge") +
+  scale_fill_brewer(palette = "Spectral") +
+  labs(
+    title = "Most diamonds in this data set have an ideal cut.",
+    subtitle = "Diamonds is a tidyverse data set",
+    y = "Cut of Diamond",
+    x = "Number of Diamonds"
+  )
+```
 
-### You can create your own graphics like this one that compares highway mpg for different class and drive train combinations.
+Lines 1 - 2:
+Line 3:
+Line 4:
+Lines 5 - 10:
 
-```{r distribution of mpg by auto class and drive train}
-ggplot(data = mpg, aes(x = class, y = hwy, fill = class)) +
-  geom_boxplot(show.legend = FALSE) +
-  coord_flip() +
-  facet_grid(rows = vars(drv))
-```  
+Problem #2  MPG
+```{r stacked bar chart}
+mpg %>% 
+  ggplot(aes(y = fct_infreq(drv), fill = as.factor(cyl))) +
+  geom_bar() +
+  scale_fill_brewer(palette = "Accent") +
+  labs(
+    title = "Rear wheel drive vehicles constitute the least frequent occurence.",
+    subtitle = "MPG internal tidyverse data set",
+    fill = "Number of Cylinders",
+    y = "Type of Drive Train",
+    x = "Number of Vehicles"
+  )
+```
 
-You can also use include tables  
+Lines 1 - 2:
+Line 3:
+Line 4:
+Lines 5 - 10 :
 
-# Number of Students in *MPA 634: Data Science for Managers* 
+## Coding
 
-Department | Students
----------- | ----------
-MBA        | 2
-MISM       | 6
-MPA        | 8
+Problem 1
 
-## Write your own code
+* Use the mpg data frame
+* Vertical bar chart based on the class of vehicle
+* Fill the bars based on the type of drive train
+* Scale colors using brewer palette "Accent"
+* Add the labels and titles as shown
 
-Write RMarkdown code that creates the following document. You don't need another YAML header and setup R chunk because they are already part of this R Markdown document.
+![Desired result shown above.](http://govfinance.byu.edu/govfinance/classes/dataViz/homework/graphs/HW 04 Problem 1.png)
+```{r problem 1}
+# Put your code here
+```
 
-![Write code that creates the above document.](http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW04.png)
+Problem 2
+
+* Diamonds data frame
+* Horizontal bar chart of cut
+* Fill each bar based on the color of the diamond
+* Scale fill using brewer palette "Pastel1"
+* Add the labels and titles as shown
+
+![Desired result shown above.](http://govfinance.byu.edu/govfinance/classes/dataViz/homework/graphs/HW 04 Problem 2.png)
+```{r problem 2}
+# Put your code here
+```
+
+

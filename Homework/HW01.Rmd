@@ -1,0 +1,62 @@
+---
+title: 'Homework #1'
+author: "R Markdown"
+date: "Due: 14 Jan 2021"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+```
+
+## Concepts
+
+### Problem 1.  Format the information from the data science syllabus so that it matches the knitted file.
+
+Data Science for Managers
+
+The intersection of statistics, computer science, and domain knowledge defines data science. The process whereby data scientists explore, wrangle, program, model, and communicate quantitative relationships is greatly facilitated by the statistical computer language R.
+
+Learning Outcomes
+
+Explore data through visualization and transformation
+
+Organize data into constructs that are useful for visualizing and modeling
+
+Master the philosophy, basics, and components of the R language
+
+Communicate clearly the insights gleaned from data exploration
+
+### Problem 2: Format the following key definitions so that they match the knitted html file.
+
+Distribution of a Random Variable
+
+Range of values
+Frequencies or probabilities
+
+Characteristics of a distribution
+
+Location or center (mean and median)
+Scale or spread (standard deviation and interquartile range)
+Symmetry or skewness (skewness coefficient)
+Outliers, kurtosis, or tail thickness (coefficient of excess)
+
+## Code Interpretation
+
+```{r vertical bar chart}
+ggplot(data = mpg,
+       mapping = aes(x = drv)) +
+  geom_bar()
+```
+
+## Write your own code
+
+```{r your horizontal bar chart}
+# Put your code here
+```
+

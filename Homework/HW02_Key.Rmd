@@ -1,7 +1,7 @@
 ---
 title: 'Homework #2 Key'
 author: "Aesthetic Mappings and Facets"
-date: "Due: 13 Jan 2020"
+date: "Due: 19 Jan 2021"
 output:
   html_document:
     code_folding: hide
@@ -14,11 +14,11 @@ knitr::opts_chunk$set(echo = TRUE,
 library(tidyverse)
 ```
 
-## Concepts  
+## Concepts
 
-Explain how aesthetics, scaling, and mapping are related to each other within the context of the grammar of graphcs and ggplot.  
+Explain how aesthetics, scaling, and mapping are related to each other within the context of the grammar of graphcs and ggplot.
 
-Aesthetics, scaling, and mapping are referring to the same concept. This is the process whereby the x-axis, y-axis, color, fill, shape, linetype, size, transparency, etc. of a given observation are assigned values based on variables in the data frame. Aesthetics are visual properties in a graph. Mapping and scaling assign levels to describe aesthetic properties.  
+Aesthetics are visual properties in a graph. They include x-axis, y-axis, color, fill, linetype, transparency, shape, and stroke. Scaling and mapping are referring to the same concept. Mapping and scaling assign levels to elements in a graph. These levels can be assigned based on variables in a data frame. They can also be assigned values that apply globally to all observations.
 
 ## Interpretation of code
 
@@ -27,9 +27,9 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) +
   geom_point(show.legend = FALSE) +
   geom_smooth(mapping = aes(linetype = drv), method = "lm", se = FALSE, show.legend = FALSE) +
   facet_wrap(vars(drv))
-``` 
+```
 
-Line 1: calls the ggplot function. It gets the data from the data frame (tibble) mpg and assigns displacement to the x-axis, highway miles per gallon to the y axis, and associates color with the vehicle’s drive train.
+Line 1: calls the ggplot function. It gets the data from the data frame (tibble) mpg and assigns displacement to the x-axis, highway miles per gallon to the y axis, and associates color with the vehicle's drive train.
 
 Line 2: draws a scatterplot. It suppresses the legend that would result because of the color = drv statement.
 
@@ -42,15 +42,15 @@ Line 4: creates a separate scatterplot for each class of vehicle
 Draw a scatterplot of linear regressions of city mileage on displacement
 
 1.  Put displ on the x-axis
-1.  Put cty on the y-axis
-1.  Color the plot symbols by class
-1.  Draw a simple regression line for each car class without a confidence interval
-1.  Use facet_wrap to create a graph for each class
-1.  Suppress the legend
+2.  Put cty on the y-axis
+3.  Color the plot symbols by class
+4.  Draw a simple regression line for each car class without a confidence interval
+5.  Use facet_wrap to create a graph for each class
+6.  Suppress the legend
 
 ```{r facets}
 ggplot(data = mpg, mapping = aes(x = displ, y = cty, color = class)) +
   geom_point(show.legend = FALSE) +
   geom_smooth(method = "lm", se = FALSE, show.legend = FALSE) +
-  facet_wrap(vars(class))
+  facet_wrap(vars(class), ncol = 2)
 ```

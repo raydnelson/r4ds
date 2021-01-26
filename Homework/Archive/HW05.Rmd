@@ -1,0 +1,57 @@
+---
+title: 'Homework #4'
+author: "R Markdown"
+date: "Due: 22 Jan 2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Concepts
+
+Explain the sequence whereby a word file is created from a R Markdown document. What is the purpose of the YAML header?
+
+## Interpretation of R Markdown code
+
+### New lines and paragraphs can be very confusing. This is one of the most inconsistent and confusing parts of R Markdown.
+
+When using R Markdown, you insert a new line by putting two spaces and a carriage return at the end of your text.  
+A new paragraph requires two carriage returns.
+
+R Markdown allows you to have italics, bold, and code
+
+* *italics*
+* **bold**
+* `code`. (A monospaced font is usually used for code.)
+
+### Include graphics
+
+![You can insert graphics from the web:](http://govfinance.byu.edu/govfinance/images/dataScience/DataScience.png)
+
+### You can create your own graphics like this one that compares highway mpg for different class and drive train combinations.
+
+```{r distribution of mpg by auto class and drive train}
+ggplot(data = mpg, aes(x = class, y = hwy, fill = class)) +
+  geom_boxplot(show.legend = FALSE) +
+  coord_flip() +
+  facet_grid(rows = vars(drv))
+```  
+
+You can also use include tables  
+
+# Number of Students in *MPA 634: Data Science for Managers* 
+
+Department | Students
+---------- | ----------
+MBA        | 2
+MISM       | 6
+MPA        | 8
+
+## Write your own code
+
+Write RMarkdown code that creates the following document. You don't need another YAML header and setup R chunk because they are already part of this R Markdown document.
+
+![Write code that creates the above document.](http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW04.png)

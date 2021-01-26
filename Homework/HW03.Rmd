@@ -1,12 +1,16 @@
 ---
 title: 'Homework #3'
 author: "Grammar of Graphics"
-date: "Due: 15 Jan 2020"
-output: word_document
+date: "Due: 21 Jan 2021"
+output:
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, error = FALSE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 ```
 
@@ -16,20 +20,21 @@ Define and explain each of the seven parts of the layered grammar of graphics.
 
 ## Interpretation of code
 
-```{r code chunk, message = FALSE, warning = FALSE}
-ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) +
-  geom_bar(position = "fill") +
-  facet_wrap(vars(color), ncol = 1)
+```{r code chunk}
+ggplot(data = mpg, mapping = aes(x = class, fill = class)) +
+  geom_bar() +
+  facet_wrap(vars(drv), ncol = 1)
 ```  
 
 ## Write your own code
 
-Using the mpg tibble, draw a proportional bar chart for class of vehicle (class), drive train (drv), and year
+## Using the mpg tibble, draw a smoothed scatterplot for each different drive train.
 
-1.  Put class on the x axis.
-1.  Color the bars based on the drive.
-1.  Use position to convert the proportional bar chart.
-1.  Use facet_grid to create a graph for 1999 and 2008.
+1.  Put displ on the x-axis and hwy on the y-axis.
+2.  Color the points in the scatterplots by the class of the vehicle.
+3.  Use facet_grid to create a graph for each different type of drive train.
+4.  Draw the smoothed line for all of the points in each subplot.
+5.  Suppress the confidence interval on the loess smoothed line.
 
 ![Desired result shown above.](http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW03.png)
 

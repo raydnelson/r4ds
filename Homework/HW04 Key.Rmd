@@ -1,0 +1,116 @@
+---
+title: 'Homework #4 Key'
+author: "Amounts"
+date: "Due: 26 Jan 2021"
+output: 
+  html_document:
+    code_folding: show
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+library(tidyverse)
+```
+
+## Concepts
+
+1. Explain how statistical transformations are related to geometric objects.
+
+Statistical transformations complete the calculations that are necessary to create a geometric object. For example, the default stat for geom_bar is stat_count. Before drawing a bar chart, it is necessary to count the number of observations in each category.
+
+2. Explain why you should not use Pareto Charts with ordinal categorical variables.
+
+Ordinal categorical variables have a natural ordering. Pareto charts reorder categories based on frequency of occurrence. The natural ordering has meaning and should be preserved.  
+
+## Code Interpretation
+
+Problem #1  MPG
+```{r stacked bar chart}
+ggplot(data = mpg, mapping = aes(y = fct_infreq(drv), fill = as.factor(cyl))) +
+  geom_bar() +
+  scale_fill_brewer(palette = "Accent") +
+  labs(
+    title = "Rear wheel drive vehicles constitute the least frequent occurence.",
+    subtitle = "MPG internal tidyverse data set",
+    fill = "Number of Cylinders",
+    y = "Type of Drive Train",
+    x = "Number of Vehicles"
+  )
+```
+
+Line 1: In addition to specifying the data set and variable for the bar chart, the fct_infreq function orders the drv levels from by their frequency. Without the fct_infreq function, the levels are ordered alphabetically. The as.factor function is needed because cyl is numeric and need to be treated as a factor in order for the fill mapping to work.
+
+Line 2: Adds a bar layer to the graph. Implicit in this geom is a stat which counts how many observations fit into each level of the drv variable.
+
+Line 3: Specifies that the fill use the Accent palette from the color brewer project.
+
+Lines 4-10: Labels and titles for the plot
+
+Problem #2 Diamonds
+
+```{r dodged bar chart}
+ggplot(data = diamonds, mapping = aes(y = cut, fill = color)) +
+  geom_bar(position = "dodge") +
+  scale_fill_brewer(palette = "Spectral") +
+  labs(
+    title = "Most diamonds in this data set have an ideal cut.",
+    subtitle = "Diamonds tidyverse data set",
+    y = "Cut of Diamond",
+    x = "Number of Diamonds"
+  )
+```
+
+Line 1: Identification of the data frame and the assignment of cut to the x-axis since we are drawing a bar chart. We fill the bars by the color of the diamonds.
+
+Line 2: Counts the frequency for each color of diamond and created a side by side bar chart. Position = "dodge" converts the bar chart into side by side.
+
+Line 3: Used the "Spectral" palette from the color brewer project.
+
+Lines 4-9: Titles and label the plot.
+
+## Coding
+
+Problem 1
+
+* Use the mpg data frame
+* Verticle bar chart based on the class of vehicle
+* Fill the bars based on the type of drive train
+* Scale colors using brewer palette "Accent"
+* Add the labels and titles as shown
+
+
+```{r problem 1}
+ggplot(data = mpg, mapping = aes(x = fct_infreq(class), fill = drv)) +
+  geom_bar() +
+  scale_fill_brewer(palette = "Accent") +
+  labs(
+    title = "SUV's are the most frequent class of vehicle.",
+    subtitle = "MPG internal tidyverse data set",
+    fill = "Drive Train Type",
+    x = "",
+    y = "Number of Vehicles"
+  )
+```
+
+Problem 2
+
+* Diamonds data frame
+* Horizontal bar chart of cut
+* Fill each bar based on the color of the diamond
+* Scale fill using brewer palette "Pastel1"
+* Add the labels and titles as shown
+
+```{r problem 2}
+ggplot(data = diamonds, mapping = aes(y = cut, fill = color)) +
+  geom_bar() +
+  scale_fill_brewer(palette = "Pastel1") +
+  labs(
+    title = "Ideal cut diamonds are the most frequent.",
+    subtitle = "Built in tidyverse diamonds tibble",
+    x = "Cut of Diamond (ordinal categorical variable)",
+    y = "Number of Diamonds",
+    fill = "Diamond Color"
+  )
+```

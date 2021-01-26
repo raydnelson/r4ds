@@ -1,8 +1,10 @@
 ---
 title: 'Homework #2'
 author: "Aesthetic Mappings and Facets"
-date: "Due: 13 Jan 2020"
-output: word_document
+date: "Due: 19 Jan 2021"
+output:
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}

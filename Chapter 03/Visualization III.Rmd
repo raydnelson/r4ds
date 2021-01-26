@@ -1,0 +1,215 @@
+---
+title: "Visualization III"
+author: "MPA 634: Data Science for Managers"
+date: "21 Jan 2021"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+load(url("http://govfinance.byu.edu/govfinance/classes/dataViz/lectures/illustrations/amounts/amounts.RData"))
+```
+
+# The R and RStudio Environments
+
+Your workspace include the objects that you create during an R session. Don't save your workspace when you close R. R is really good at accumulating objects and can greatly complicate finding errors.
+
+## Assignment operator
+
+In R, the "\<-" is the assignment operator. We write object_name \<- value and should be read object name gets value. The keyboard shortcut for "\<-" is alt hyphen.
+
+```{r assignment operator}
+(x <- seq(1, 100, 10))
+```
+
+## Piping symbol
+
+A recent addition to R is the piping symbol "%\>% which passes objects into function calls. It is currently part of tidyverse. Piping will become part of core R when 4.1 is released. Piping greatly simplifies coding with a sequence of calculations. The keyboard shortcut for piping %\>% is ctrl shift m.
+
+```{r piping example}
+# Chain of calculations using assignment operators
+x <- rnorm(100, 10, 4)
+scaled_x <- scale(x)
+hist(scaled_x)
+
+# Chain of calculations using parentheses
+hist(scale(rnorm(100, 10, 4)))
+
+# Chain of Calculations using pipes
+rnorm(100, 10, 4) %>%
+  scale() %>% 
+  hist()
+
+```
+
+# Income, age, and race (two different categorical variables and one numerical)
+
+In ggplot, the type of bar or col chart is determined by position. Position is set equal to one of the following:
+
+-   identity
+-   stack (default)
+-   dodge
+-   fill
+
+## Identity
+
+```{r identity}
+income_by_age %>% 
+  ggplot(aes(x = age, y = median_income, fill = race)) +
+  geom_col(position = "identity")
+```
+
+## Stack
+
+```{r stack}
+income_by_age %>% 
+  ggplot(aes(x = age, y = median_income, fill = race)) +
+  geom_col(position = "stack")
+```
+
+## Dodge
+
+```{r dodge}
+income_by_age %>% 
+  ggplot(aes(x = age, y = median_income, fill = race)) +
+  geom_col(position = "dodge")
+```
+
+## Dodge with alternative color palette
+
+```{r dodge with better colors}
+income_by_age %>% 
+  ggplot(aes(y = race, x = median_income, fill = age)) +
+  geom_col(position = "dodge") +
+  scale_fill_brewer(palette = "Blues")
+```
+
+## Fill gives proportions
+
+```{r fill}
+income_by_age %>% 
+  ggplot(aes(y = race, x = median_income, fill = age)) +
+  geom_col(position = "fill") +
+  scale_fill_brewer(palette = "Blues")
+```
+
+# Titanic
+
+## Horizontal bar chart that shows survival by sex
+
+```{r survival by sex}
+titanic %>% 
+  ggplot(aes(y = sex, fill = survived)) +
+  geom_bar() +
+  scale_fill_brewer(palette = "Pastel1")
+```
+
+## Horizontal bar chart that shows survival probability by sex
+
+```{r survival probability by sex}
+titanic %>%
+  ggplot(aes(y = sex, fill = survived)) +
+  geom_bar(position = "fill") +
+  scale_fill_brewer(palette = "Pastel1") +
+  labs(
+    title = "Male Titanic passengers were more likely to perish.",
+    y = "",
+    x = "Proportion"
+  )
+```
+
+## Horizontal Bar Chart that shows sex by passenger class
+
+```{r sex by passenger class}
+titanic %>%
+  ggplot(aes(y = passenger_class, fill = sex)) +
+  geom_bar() +
+  scale_fill_brewer(palette = "Pastel1")
+```
+
+## Bar chart with faceting
+
+-   bar chart of passenger class
+-   fill by sex
+-   use the Pastel1 color brewer
+-   faceting by survived
+
+```{r survival by passenger class and sex}
+titanic %>%
+  ggplot(aes(x = passenger_class, fill = sex)) +
+  geom_bar() +
+  scale_fill_brewer(palette = "Pastel1") +
+  facet_grid(vars(survived))
+```
+
+## Life expectancy by country in the Americas
+
+```{r dotplot of life expectancy}
+americas %>% 
+  ggplot(aes(y = fct_reorder(country, rank(lifeExp)),
+                                      x = lifeExp)) +
+  geom_point(size = 3, color = "blue")
+```
+
+## Life expectancy by country using a bar chart
+
+```{r bar chart of life expectancy}
+americas %>% 
+  ggplot(aes(y = fct_reorder(country, rank(lifeExp)),
+                                      x = lifeExp)) +
+  geom_col( fill = "blue")
+```
+
+# Pareto Charts
+
+We use fct_infreq to bar charts of nominal categorical variables. These are called Pareto Charts
+
+```{r Pareto Charts}
+mpg %>%
+  ggplot(aes(x = fct_infreq(class))) +
+  geom_bar(fill = "lightblue")
+```
+
+# Boxoffice data frame
+
+-   Revenue from the weekend of December 22 - 24, 2017
+-   Five top grossing movies
+
+## Horizontal bar chart for the variable title_short
+
+-   Use geom_col because we already have amounts
+-   Fill the bars with light blue
+-   Flip the axes
+
+```{r horizontal bar chart}
+boxoffice %>% 
+  ggplot(aes(y = title_short, x = amount)) +
+  geom_col(fill = "lightblue") +
+  labs(
+    title = "The top grossing movie was Star Wars.",
+    subtitle = "Weekend of December 22 -24, 2017",
+    y = "",
+    x = "Millions of Dollars"
+  )
+```
+
+## Pareto chart by sorting bars by the amount of revenue garnered
+
+-   Sort the bars using the fct_reorder function and the rank of amount
+
+```{r pareto chart of box office receipts}
+boxoffice %>% 
+  ggplot(aes(y = fct_reorder(title_short, rank(amount)), x = amount)) +
+  geom_col(fill = "lightblue") +
+  labs(
+    title = "The top grossing movie was Star Wars.",
+    subtitle = "Weekend of December 22 - 24, 2017",
+    y = "",
+    x = "Millions of Dollars"
+  )
+```

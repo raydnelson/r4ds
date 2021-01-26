@@ -1,12 +1,16 @@
 ---
 title: 'Homework #5'
 author: "Filtering and Arranging"
-date: "Due: 27 Jan 2020"
-output: word_document
+date: "Due: 28 Jan 2021"
+output:
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 library(nycflights13)
 ```
@@ -15,22 +19,33 @@ library(nycflights13)
 
 1.  Explain the differences among "=", "==", and "<-". Give an example of how you would use each of these symbols.
 
-1.  Compare and contrast the logical operators "x & y" and "xor(x, y)".
+2.  Compare and contrast the logical operators "x & y" and "xor(x, y)".
 
 ## Interpretation
 
 ```{r code chunk}
 flights %>%
-  filter(month == 5 | month == 9, carrier == "DL") %>%
+  filter(month == 5 | month == 9) %>% 
+  filter(carrier == "DL") %>% 
   ggplot(aes(
-    x = as.factor(month),
-    y = dep_delay,
+    y = as.factor(month),
+    x = dep_delay,
     fill = as.factor(month)
   )) +
   geom_boxplot(show.legend = FALSE) +
-  coord_flip() +
   facet_grid(rows = vars(origin))
 ```
+
+Line 2: 
+
+Line 3: 
+
+Lines 4 - 7: 
+
+Line 8: 
+
+Line 9: 
+
 
 ## Coding Problem
 
@@ -43,6 +58,10 @@ Air time and distance travelled are undoubtedly positively related. Investigate 
 *  Smooth with a linear regression
 
 ![Desired result shown above.](http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW05.png)
+```{r your code}
+# Put your code here
+```
+
 
 1.  What might explain the clusters of points in the scatterplot?
 2.  Is the relationship linear?
