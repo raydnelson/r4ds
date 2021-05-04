@@ -1,63 +1,91 @@
 ---
-title: "Homework #18"
-author: "Iteration"
-date: "25 March 2020"
-output: word_document
+title: 'Homework #18'
+author: "Time Series"
+date: "Due: 1 April 2021"
+output:
+  html_document:
+    code_folding: hide
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE,
-                      message = FALSE,
-                      warning = FALSE)
-library(tidyverse)
-library(nycflights13)
+                      warning = FALSE,
+                      message = FALSE)
+library(fpp3)
+load(url("http://govfinance.byu.edu/govfinance/classes/dataViz/homework/HW10.RData"))
 ```
 
-## Concepts  
+### Install the fpp3 library
 
-1.  Explain the basic parts of a for loop. 
+### Concepts
 
-2.  Explain how loops are different from functions.
-    
-## Interpretation of code  
+Smoothing is a very important concept for data visualization. Explain how smoothing is affected in the following cases:
 
-Code Chunk #1 (Section 21.2.1 Exercises Problem 1.3)
+1.  binwidth and number of bins on histograms and freqpoly
 
-```{r number of unique values in the iris data frame}
-unique_values <- vector("integer", length(iris))
-for (i in seq_along(iris)) {
-  unique_values[[i]] <- iris[[i]] %>% 
-    unique() %>% 
-    length()
-}
-unique_values
+2.  bandwidth (bw) on densities and violin plots
+
+3.  span on loess smoothed lines
+
+### Code Interpretation
+
+#### Problem 1: Time series plot
+
+```{r time series plot for ecommerce}
+ecommerce %>%
+  # as.Date is needed below to fix a knitting bug
+  ggplot(aes(x = as.Date(date), y = ecommerce / 1000)) + 
+  geom_point() + 
+  geom_smooth(span = 0.3) +
+  labs(title = "E-Commerce sales are growing exponentially",
+       x = "",
+       y = "Billions of Dollars")
 ```
 
-Code Chunk #2 (Section 21.3.4)
+#### Problem 2: STL decomposition
 
-```{r while loop}
-# flip a coin function
-flip <- function() sample(c("T", "H"), 1)
-# initialize variables
-flips <- 0
-nheads <- 0
-# while loop
-while (nheads < 3) {
-  if (flip() == "H") {
-    nheads <- nheads + 1
-  } else {
-    nheads <- 0
-  }
-  flips <- flips + 1
-}
-flips
-```  
-
-## Write Code
-
-Compute the type for each column in the nycflights13::flights tibble. (The second part of the first problem from Exercises 21.2.1)
-
-```{r type of variables in flights}
-
+```{r stl decomposition}
+ecommerce %>% 
+  model(
+    STL(ecommerce)
+  ) %>% 
+  components() %>% 
+  autoplot()
 ```
 
+Problem 3: ETS forecast
+
+```{r ets forecast}
+ecommerce %>% 
+  model(
+    ETS(ecommerce)
+  ) %>% 
+  forecast(h = 24) %>% 
+  autoplot(ecommerce)
+```
+
+### Coding
+
+#### Problem 1
+
+Make a time series plot of Salt Lake City housing prices.
+
+```{r problem 1}
+# insert your code here
+```
+
+Problem 2
+
+Use STL to look for the trend and seasonality SLC housing prices
+
+```{r problem 2}
+# insert your code here
+```
+
+Problem 3
+
+Forecast SLC housing prices for the next two years
+
+```{r problem 3}
+# insert your code here
+```

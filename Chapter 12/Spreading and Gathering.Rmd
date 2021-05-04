@@ -1,7 +1,7 @@
 ---
-title: "Gathering, Spreading, Separating, and Uniting"
+title: "Pivoting (long and wide), Separating, and Uniting"
 author: "MPA 634: Data Science for Managers"
-date: "19 Feb 2020"
+date: "25 Feb 2021"
 output:
   html_document:
     code_folding: "hide"
@@ -17,7 +17,7 @@ library(fImport)
 library(zoo)
 ```
 
-## Import the Data 
+## Import the Data
 
 ### Read from a csv file on a website
 
@@ -30,14 +30,16 @@ movies <- read_csv(url("http://govfinance.byu.edu/govfinance/classes/dataScience
 ```{r alternative structures for loading data}
 # Load workspace
 load(url("http://govfinance.byu.edu/govfinance/classes/dataScience/lectures/illustrations/movies_fitness.RData"))
-```  
+```
 
 ## Mechanics of gathering with an illustration using Excel
 
 ```{r gathering mechanics}
-fitness %>% 
-  select(name, runpulse:maxpulse) %>% 
-  gather(runpulse:maxpulse, key = pulse_type, value = pulse)
+fitness %>%
+  select(name, runpulse:maxpulse) %>%
+  pivot_longer(runpulse:maxpulse,
+               names_to = "pulse_type",
+               values_to = "pulse")
 ```
 
 ## Movies
@@ -52,8 +54,10 @@ movies %>%
 ### Gathering with all variables
 
 ```{r gather all}
-movies %>% 
-  gather(domestic, worldwide, key = source, value = revenue)
+movies %>%
+  pivot_longer(c("domestic", "worldwide"),
+               names_to = "source",
+               values_to = "revenue")
 ```
 
 ### Gathering with a subset of variables
@@ -61,17 +65,17 @@ movies %>%
 ```{r gather subset}
 movies %>% 
   select(year, domestic, worldwide) %>% 
-  gather(domestic, worldwide, key = source, value = revenue)
+  gather(!year, key = source, value = revenue)
 ```
 
 ### Time series trends of revenue
 
 ```{r time series of trends of revenue}
 movies %>%
-  group_by(year) %>% 
+  group_by(year) %>%
   summarize(domestic_median = median(domestic),
-            worldwide_median = median(worldwide)) %>% 
-  gather(domestic_median, worldwide_median, key = source, value = revenue) %>% 
+            worldwide_median = median(worldwide)) %>%
+  pivot_longer(!year, names_to = "source", values_to  = "revenue") %>%
   ggplot(aes(x = year, y = revenue, color = source)) +
   geom_point() +
   geom_smooth(se = FALSE)
@@ -82,32 +86,46 @@ movies %>%
 ```{r long movies tibble}
 movies_long <- movies %>%
   select(rating, year, domestic, worldwide) %>% 
-  gather(domestic:worldwide, key = source, value = revenue)
+  pivot_longer(domestic:worldwide, names_to  = "source", values_to = "revenue")
 ```
 
 ### Compare domestic and worldwide revenues by rating
+
 ```{r domestic and worldwide revenue by rating}
 movies_long %>%
-  ggplot(aes(x = source, y = revenue, fill = source)) +
-  geom_boxplot(show.legend = FALSE) + 
-  facet_grid(rows = vars(rating)) +
-  coord_flip()
+  ggplot(aes(x = revenue, y = source)) +
+  geom_boxplot(fill = "lightblue", alpha = 0.5) +
+  stat_summary(
+    fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red"
+  ) +
+  facet_grid(rows = vars(rating)) 
 ```
 
 ### Distributions of revenue by domestic by rating
 
 ```{r distributions of revenue domestic and worldwide revenue by rating}
-movies_long %>% 
-  ggplot(aes(x = rating, y = revenue, fill = rating)) +
-  geom_boxplot(show.legend = FALSE) + 
-  coord_flip() + 
+movies_long %>%
+  ggplot(aes(y = rating, x = revenue, fill = rating)) +
+  geom_boxplot(show.legend = FALSE) +
+  stat_summary(
+    fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red"
+  ) +
   facet_grid(rows = vars(source))
 ```
 
 ## Fitness
+
 ### Explore fitness
 
-```{r explore variables in Fitness}
+```{r explore variables in fitness}
 fitness %>%
   summary()
 ```
@@ -115,25 +133,42 @@ fitness %>%
 ### Comparison of all pulses by sex
 
 ```{r boxplot comparison of pulse by sex}
-fitness %>% 
-  select(sex, runpulse:maxpulse) %>% 
-  gather(runpulse:maxpulse, key = pulse_type, value = pulse) %>% 
-  ggplot(aes(x = sex, y = pulse, fill = sex)) +
-    geom_boxplot(show.legend = FALSE) +
-    facet_grid(rows = vars(pulse_type)) +
-    coord_flip()
+fitness %>%
+  select(sex, runpulse:maxpulse) %>%
+  pivot_longer(!sex,
+               names_to = "pulse_type",
+               values_to = "pulse") %>%
+  ggplot(aes(y = sex, x = pulse, fill = sex)) +
+  geom_boxplot(show.legend = FALSE) +
+  stat_summary(
+    fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red"
+  ) +
+  facet_grid(rows = vars(pulse_type))
 ```
 
 ### Violin plot of maxpulse and runpulse with facet by pulse type
+
 ```{r faceting by pulse type}
-fitness %>% 
-  select(sex, runpulse, maxpulse) %>% 
-  gather(runpulse, maxpulse, key = pulse_type, value = pulse) %>% 
-  ggplot(aes(x = sex, y = pulse, fill = sex)) +
-    geom_violin(fill = "grey") +
-    geom_boxplot(width = 0.25, show.legend = FALSE) +
-    facet_grid(rows = vars(pulse_type)) +
-    coord_flip()
+fitness %>%
+  select(sex, runpulse, maxpulse) %>%
+  pivot_longer(!sex,
+               names_to = "pulse_type",
+               values_to = "pulse") %>%
+  ggplot(aes(x = pulse, y = pulse_type)) +
+  geom_violin(fill = "lightblue", alpha = 0.5) +
+  geom_boxplot(width = 0.10, fill = "grey60") +
+  stat_summary(
+    fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red"
+  ) +
+  facet_grid(rows = vars(pulse_type))
 ```
 
 ### Violin plot with facet by sex
@@ -141,94 +176,61 @@ fitness %>%
 ```{r faceting with Sex}
 fitness %>% 
   select(sex, runpulse, maxpulse) %>% 
-  gather(runpulse, maxpulse, key = pulse_type, value = pulse) %>% 
-  ggplot(aes(x = pulse_type, y = pulse, fill = sex)) +
-    geom_violin(fill = "grey") +
-    geom_boxplot(width = 0.25, show.legend = FALSE) +
-    facet_grid(rows = vars(sex)) +
-    coord_flip()
+  pivot_longer(!sex,
+               names_to = "pulse_type",
+               values_to = "pulse") %>%
+    ggplot(aes(x = pulse, y = pulse_type)) +
+    geom_violin(fill = "lightblue", alpha = 0.5) +
+    geom_boxplot(width = 0.10, fill = "grey60") +
+    stat_summary(fun = "mean",
+      geom = "point",
+      shape = 23,
+      size = 1.5,
+      fill = "red") +
+    facet_grid(rows = vars(sex))
 ```
 
-### Relationship of runpulse and maxpulse by gender from wide tibble
+Tidy tibble example using the who tibble
 
-```{r relationship of Run and Max Pulse by Gender}
-fitness %>% 
-  ggplot(aes(x = runpulse, y = maxpulse, color = sex)) +
-    geom_point() +
-    geom_smooth(method = "lm", se = FALSE)
+```{r}
+who
 ```
 
-### Linear Model
 
-```{r linear model}
-# Extracting components
-regression <- lm(maxpulse ~ runpulse, data = fitness )
-regression %>%
-  summary()
-regression %>%
-  coef()
+```{r pivot longer}
+who1 <- who %>% 
+  pivot_longer(
+    cols = new_sp_m014:newrel_f65, 
+    names_to = "key", 
+    values_to = "cases", 
+    values_drop_na = TRUE
+  )
 ```
 
-### Analysis of residuals
+count key
 
-```{r analysis of residuals}
-# Plot of Predicted versus actual
-plot_data <- tibble(regression$fitted.values, fitness$maxpulse, fitness$sex)
-colnames(plot_data) <- c("fitted", "actual", "sex")
-
-plot_data %>% 
-  ggplot(aes(x = fitted, y = actual)) +
-    geom_point(aes(color = sex)) +
-    geom_smooth(method = "lm", color = "grey")
+```{r}
+who1 %>% 
+  count(key)
 ```
 
-## Example of how time series gathering  
+The first three letters of each column denote whether the column contains new or old cases of TB. In this dataset, each column contains new cases.
 
-### Get time series functions, get Data from FRED, and create a data frame
+The next two letters describe the type of TB:
 
-```{r FRED}
-# Get time series functions
-"http://govfinance.byu.edu/govfinance/quantTools/R/manipulations.R" %>%
-  url() %>%
-  source()
-# Time series of income and sales taxes in Utah using from FRED using fImport
-revenue <- fredSeries(c("UTSLGRTAX", "UTINCTAX"), from = "1992-01-01") %>%
-  as.zoo() %>% 
-  pca()
-colnames(revenue) <- c("sales", "income")
+rel stands for cases of relapse
+ep stands for cases of extrapulmonary TB
+sn stands for cases of pulmonary TB that could not be diagnosed by a pulmonary smear (smear negative)
+sp stands for cases of pulmonary TB that could be diagnosed by a pulmonary smear (smear positive)
+The sixth letter gives the sex of TB patients. The dataset groups cases by males (m) and females (f).
 
-# Get the dates variable
-dates <- revenue %>%
-  time() %>%
-  as.Date()
+The remaining numbers gives the age group. The dataset groups cases into seven age groups:
 
-# Create a data frame
-revenue <- data.frame(dates, revenue)
-colnames(revenue) <- c("dates", "sales", "income")
-```
-
-### Violin plots to compare the distribution of sales and income tax revenues  
-
-```{r violin plot comparison}
-# Violin Plot
-revenue %>%
-  gather(sales, income, key = "tax", value = "revenue") %>%
-  ggplot(aes(x = tax, y = revenue)) +
-  geom_violin(fill = "lightgreen") +
-  geom_boxplot(width = 0.25, fill = "lightblue") +
-  labs(
-    title = "Comparison of Sales and Income Tax Growth Rates",
-    subtitle = "State of Utah, 1992 - 2016",
-    x = "Tax",
-    y = "Percentage Change"
-  ) +
-  coord_flip()
-```  
-
-
-
-
-
-
-
+014 = 0 – 14 years old
+1524 = 15 – 24 years old
+2534 = 25 – 34 years old
+3544 = 35 – 44 years old
+4554 = 45 – 54 years old
+5564 = 55 – 64 years old
+65 = 65 or older
 

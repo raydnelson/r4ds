@@ -1,8 +1,10 @@
 ---
 title: 'Homework #12'
 author: 'Relational Data'
-date: "Due: 26 Feb 2020"
-output: word_document
+date: "Due: 4 March 2021"
+output:
+  html_document:
+    code_folding: show
 ---
 
 ```{r setup, include=FALSE}
@@ -14,19 +16,19 @@ library(nycflights13)
 library(viridis)
 ```
 
-## Concepts  
+## Concepts
 
 1.  Explain the differences between inner and full joins.
 
 2.  Explain the differences between mutating and filtering joins.
-    
-## Interpretation of code  
 
-Compare and interpret the following two R code chunks: 
+## Interpretation of code
 
-### Code chunk #1  
+Compare and interpret the following two R code chunks:
 
-Note: In order to run this code, you will probably need to install the viridis library.  
+### Code chunk 1
+
+Note: In order to run this code, you will probably need to install the viridis library.
 
 ```{r code chunk interpretation 1, warning = FALSE, message = FALSE}
 flights %>%
@@ -39,9 +41,9 @@ flights %>%
   geom_point() +
   coord_quickmap() +
   scale_color_viridis()
-```  
+```
 
-### Code chunk #2
+### Code chunk 2
 
 ```{r code chunk interpretation 2, message = FALSE}
 planes_gt100 <- flights %>% 
@@ -56,18 +58,18 @@ flights %>%
 
 ### Problem 1
 
-Add the location of the destination (i.e. the latitude and longitude) to flights. The lat and lon variables are in the airports tibble.   
+Add the location of the destination (i.e. the latitude and longitude) to flights. The lat and lon variables are in the airports tibble.
 
 ```{r destination location}
 
-```  
+```
 
 ### Problem 2
 
-Filter flights to show only those on planes that have less than 100 flights.
+Use a filtering join to show only those planes that have less than 100 flights.
 
 ```{r planes with less than 100 flights}
 
-```  
+```
 
-If you need a hint, consider code chunk #2.  
+If you need a hint, consider code chunk 2.

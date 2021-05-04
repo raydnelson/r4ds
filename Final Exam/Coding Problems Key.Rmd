@@ -1,0 +1,153 @@
+---
+title: "Key Final Exam Winter 2021"
+author: "Data Science for Managers"
+date: "Due by midnight: 21 April 2020"
+output:
+  html_document:
+    code_folding: show
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+library(nycflights13)
+library(leaflet)
+```
+
+Exam Parameters
+
+-   Open book but closed other persons
+-   No time limit
+
+Submit RMD and HTML files that contain code for the following five problems. You shouldn't use any software other than R to complete your calculations. Remember that if you have an error in your code chunk, you can still get your file to knit if you put error = TRUE in the code chunk header.
+
+### Problem 1: Violin plot of two numerical variables
+
+Create a real violin plot for the hwy and cty variables from the mpg tibble.
+
+-   Convert the wide mpg tibble into one that is long
+-   Create a violin and boxplot combination with no legend
+-   Include the mean as part of your violin plot
+-   Use the Pastel1 brewer palette
+-   Carefully label the graph so that yours matches the violin plot shown.
+
+```{r Problem 1}
+mpg %>%
+  select(hwy, cty) %>%
+  pivot_longer(cols = c(hwy, cty),
+               names_to = "Type_of_Driving",
+               values_to = "Miles_Per_Gallon") %>%
+  ggplot(aes(x = Miles_Per_Gallon,
+             y = Type_of_Driving,
+             fill = Type_of_Driving)) +
+  geom_violin(show.legend = FALSE) +
+  geom_boxplot(fill = "grey",
+               width = 0.10,
+               show.legend = FALSE) +
+  stat_summary(
+    fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red"
+  ) +
+  scale_fill_brewer(palette = "Pastel1") +
+  labs(
+    title = "Highway driving has higher mileage but more variation.",
+    subtitle = "Only models with new releases between 1999 and 2008.",
+    x = "Miles Per Gallon",
+    y = "Type of Driving",
+    caption = "Source: MPG tibble from the tidyverse library."
+  )
+```
+
+### Problem 2: Top 5 destinations from JFK
+
+-   Calculate the number of flights leaving from JFK for each destination airport.
+-   Sort the destinations in descending order and choose the top 5 destinations.
+-   Save the tibble so that it can be used in the next problem.
+-   Print the top five airports.
+
+```{r Problem 2}
+(top_five <- flights %>% 
+  filter(origin == "JFK") %>% 
+  count(dest) %>% 
+  arrange(desc(n)) %>% 
+  slice_head(n = 5)
+)
+```
+
+### Problem 3: Bar chart with filtering
+
+-   Use the tibble from Problem 2 and a filtering join to select only those rows from the flights tibble that fly to the top five destinations. If you haven't been able to complete Problem 2 successfully, then email me and I will send you the tibble you need to complete this problem.
+-   Choose only those flights that leave from JFK.
+-   Create a horizontal Pareto chart with the largest frequency (LAX) at the top of the graph.
+-   Use the Pastel2 brewer palette.
+-   Optionally, if you are looking for an additional challenge, you could also use a mutating join to add the airport names to your graph rather than the codes (LAX is Los Angeles).
+
+```{r Problem 3}
+flights %>% 
+  semi_join(top_five) %>%
+  filter(origin == "JFK") %>% 
+  ggplot(aes(y = fct_infreq(dest) %>% fct_rev(), fill = dest)) +
+  geom_bar(show.legend = FALSE) + 
+  scale_fill_brewer(palette = "Pastel2") +
+  labs(
+    title = "Most flights leaving JFK in New York fly to LA.",
+    x = "Number of Flights",
+    y = "Destination"
+  )
+```
+
+### Problem 4: Largest deviation
+
+Write a function that identifies the size of the most deviant observations in a numerical vector as defined by the largest absolute value of the z-score.
+
+-   Calculate the deviation from the mean.
+-   Calculate the z-score by dividing each deviation by the standard deviation.
+-   Calculate the absolute value of each z-score.
+-   Find the largest absolute z-score and round the result to two decimal places.
+-   Test your function on the hwy column from the mpg tibble.
+-   Extra Credit: Show that you can accomplish the same thing with one line of code in the body by using the **scale()** function.
+
+```{r Problem 4}
+most_deviant <- function(x) {
+  deviation <- x - mean(x)
+  z_score <- deviation / sd(x)
+  z_score %>% abs() %>% max() %>% round(2)
+}
+```
+
+The z-score for the most deviant observation in the hwy column in the mpg tibble is: `r most_deviant(mpg$hwy)`
+
+```{r Problem 4 one line body}
+most_deviant_efficient <- function(x) {
+  scale(x) %>% abs() %>% max() %>% round(2)
+}
+```
+
+The z-score for the most deviant observation in the hwy column in the mpg tibble that is found by using the scale function is: `r most_deviant_efficient(mpg$hwy)`
+
+### Problem 5: Seattle airbnb
+
+-   Import the seattle airbnb data from Kaggle
+-   Take a sample of 500 properties from the tibble
+-   Use the map set Esri.NatGeoWorldMap
+-   Add blue circle markers with radius 4 and opacity of 0.2
+
+In order to knit your exam file, put the file that has the Seattle data in the same folder as your coding problems rmd file.
+
+```{r seattle map}
+read.csv("seattle_airbnb.csv") %>%
+  slice_sample(n = 500) %>%
+  leaflet() %>%
+  addProviderTiles(provider = providers$Esri.NatGeoWorldMap) %>%
+  addCircleMarkers(
+    radius = 4,
+    color = "blue",
+    stroke = FALSE,
+    fillOpacity = 0.2
+  )
+```

@@ -1,52 +1,58 @@
 ---
 title: 'Homework #17 Key'
-author: "Vectors"
-date: "Due: 18 March 2020"
-output:
+author: "Lists and methods"
+date: "Due: 30 March 2021"
+output: 
   html_document:
-    code_folding: hide
-
+    code_folding: show
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
-library(lubridate)
-library(nycflights13)
 ```
 
-## Concepts  
+## Concepts
 
 1.  Explain why a tibble is a list but not all lists are tibbles.
 
-In R, vectors are one dimensional holders of information. Vectors have slots or positions in which information and be stored. The information can be referenced by specifying its slot number or name. Although not everyone agrees with Hadley Wickham, he states that there are two kinds of vectors:  
+In R, vectors are one dimensional holders of information. Vectors have slots or positions in which information and be stored. The information can be referenced by specifying its slot number or name. Although not everyone agrees with Hadley Wickham, he states that there are two kinds of vectors:
 
-*  atomic vectors
-*  lists or recursive vectors
+-   atomic vectors
+-   lists or recursive vectors
 
 In most programming languages, lists are heterogeneous. This means that they can hold information of a variety of different classes: logical, integer, double, character, etc. The objects in a list can also have a variety of lengths. Lists can even contain other lists. Using lists within lists is a common practice.
 
-A tibble is a collection of atomic vectors that are arranged in a list. Each of the atomic vectors must have the same length in a tibble. This means that tibbles are rectangular lists. This means that a tibble is a special case of a list.
+A tibble is a collection of atomic vectors that are arranged in a list. Each of the atomic vectors must have the same length in a tibble. This means that tibbles are rectangular lists. A tibble is a special case of a list.
 
 Because all lists do not contain just atomic vectors of the same length, lists in general do not satisfy the requirements for being a tibble.
 
-2.  Explain how you use [], [[]], and $ when subsetting a list as described in section 20.5.2. 
+2.  Explain how you use [], [[]], and \$ when subsetting a list as described in section 20.5.2.
 
-We are able to extract information from lists using [], [[]], and $.
+We are able to extract information from lists using [], [[]], and \$.
 
-The [] notation returns a sub-list and the result will always be a list.  
+The [] notation returns a sub-list and the result will always be a list.
 
-The [[]] notation returns a simple component from a list.  
+The [[]] notation returns a simple component from a list.
 
-The $ approach extracts named elements of a list. It works similarly to [[]].
-    
-## Interpretation of code  
+The \$ approach extracts named elements of a list. It works similarly to [[]].
 
-Interpret the following R code chunk: 
+3.  Explain how class and method are related to each other. Use the summary method as an example to explain your answer.
 
-Code Chunk #1
+Methods are a special kind of function. This generic function checks the class of an object that is being used as an argument to the function. Based on the class of the object, it chooses from among the family of functions included in the generic category. For example, the generic function or method summary can be applied to over 89 different classes of objects. If we ask R to summarize a data.frame, then it finds the specific function summary.data.frame. If we ask R to summarize an lm object, then it finds the specific function summary.lm to perform the operation. We can see the different methods for the generic summary call by using methods(summary)
 
-```{r code chunk for determining whether a temperature is above or below freezing}
+```{r methods for summary}
+methods(summary)
+methods(summary) %>% length()
+```
+
+## Interpretation of code
+
+Interpret the following R code chunk:
+
+```{r extracting information from lists}
 data_science <- list(transform = "Transform", model = "Model", visual = "Visual")
 our_list <- list(one = TRUE, two = 3L, three = 500, four = "EDA", five = data_science)
 our_list$five
@@ -57,55 +63,35 @@ our_list[1:2]
 our_list$five$model
 ```
 
-Line 1: Creates a name list with three slots. Slot one contains "Transform", two contains "Model", and three contains "Visual". The names of the slots are transform, model, and visual. 
+Line 1: Creates a name list with three slots. Slot one contains "Transform", two contains "Model", and three contains "Visual". The names of the slots are transform, model, and visual.
 
 Line 2: Creates a second named list. The first one samed one is a logical atomic vector with the value TRUE. The second, named two, is an integer. Three and four are also atomic and are double and character. The fifth slot named five is the list created in line 1.
 
-Line 3: Returns the data_science vector  
+Line 3: Returns the data_science vector
 
-Line 4: Returns a list which contains the atomic vector one  
+Line 4: Returns a list which contains the atomic vector one
 
-Line 5: Returns the atomic vector one  
+Line 5: Returns the atomic vector one
 
-Line 6: Returns the same atomic vector as line 5  
+Line 6: Returns the same atomic vector as line 5
 
 Line 7: Returns a list of one and two
 
-Line 8: Returns the value "Model" as it goes to the slot named five and then gets the model slot from the resulting list.  
-
-Code Chunk #2
-
-The nycflights13 library contains five tibbles: airlines, airports, flights, planes, and weather. The following code refers to these objects.
-
-```{r code chunk interpretation, warning = FALSE, message = FALSE}
-nyc <- list(airlines, airports, flights, planes, weather)
-names(nyc) <- c("airlines", "airports", "flights", "planes", "weather")
-nyc$planes %>% head(10)
-nyc$flights$arr_delay %>% head(10)
-```  
-
-Line 1: Creates an unnamed list of the five individual tibbles.
-
-Line 2: Gives names to the tibbles in the nyc list
-
-Line 3: Retrieves the planes tibble from the list and prints out the first 10 observations  
-
-Line 4: Retrieves the flights tibble from the list, extracts the arr_delay variable, and then prints out the first 10 values for the variable.  
+Line 8: Returns the value "Model" as it goes to the slot named five and then gets the model slot from the resulting list.
 
 ## Write Code
 
-Complete the following steps  
+Complete the following steps
 
-*  Create a vector of the names of the members of your family
-*  Create a vector of their birthdays as ymd (dates)
-*  Create a tibble (with variable names) for your family from the vectors that you already created
-*  Use dplyr to extract your name and birthday from your tibble
+-   Create a new object for a linear regression of cty on displ in the mpg tibble
+-   Explore the structure of the resulting list
+-   Use the coefficients function to extract the regression coefficients
+-   Use \$ to print out the R-Squared
 
-```{r family tibble}
-family_names <- c("Ray", "Pam", "Jen", "Rebecca", "Angie", "Jon")
-birthdays <- c("1951-04-14", "1956-04-20", "1981-03-13", "1984-01-26",
-               "1986-03-05", "1991-06-18") %>% ymd()
-family <- tibble(names = family_names, birthdays = birthdays)
-family %>% 
-  filter(names == "Ray")
+```{r regression}
+regression_model <- lm(cty ~ displ, data = mpg)
+regression_model %>% str()
+regression_model %>% coefficients()
+regression_model %>% summary() %>% str()
+summary(regression_model)$r.squared
 ```

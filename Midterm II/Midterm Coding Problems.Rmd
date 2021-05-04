@@ -1,0 +1,73 @@
+---
+title: "Midterm II Winter 2021 Key"
+author: "Data Science for Managers"
+date: "Due by class: 23 March 2021"
+output:
+  html_document:
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+library(nycflights13)
+```
+
+Exam Parameters
+
+-   Open book but closed other persons
+-   No time limit
+-   Due by class on 23 March
+
+Submit RMD and HTML files that contain code for the following three problems.
+
+## Problem 1
+
+Count the number of non-canceled flights leaving from the three New York City airports and create a table that includes the full name of the airport from the FAA information in the airports tibble.
+
+-   Exclude all the flights that never departed from the flights tibble
+-   Count the number of flights from each NYC airport
+-   Append information from the airports tibble using an appropriate join
+-   Print out the name of the airport and the number of flights
+
+```{r Problem 1 join}
+# Put your code here
+```
+
+## Problem 2
+
+Use the mutate and cut functions to create a factor or categorical variable from the highway mileage (hwy) that has three different categories. They are:
+
+-   good (0-18]
+-   better (18-27]
+-   best (27-35]
+
+The interval notation (0-18] includes the values 0 thru 18. If the value exactly equals 18, then it is included in this interval rather than (18, 27].
+
+Only print out two columns, the hwy column and your new variable.
+
+```{r Problem 2 cut}
+# Put your code here
+```
+
+## Problem 3
+
+Write a function that classifies a given observation as either "potential outlier" or "not outlier". The criteria for this classification is whether or not the observation is more than three standard deviations above or below the mean. The function should:
+
+1.  Have three arguments: the observation value, the mean of a distribution, and the standard deviation of the distribution.
+2.  Convert the observation into a z-score by subtracting the mean and dividing by the standard deviation
+3.  Print out the value of the scaled value.
+4.  Determine whether the observation is more than 3 standard deviations below the mean or more than 3 standard deviations above the mean. Hint: Use the absolute value of the z-score in your calculations
+5.  Classify the observation as either "potential outlier" if it is more than 3 standard deviations from the mean or "not outlier" if it is less than 3 standard deviations from the mean. Print out whether the observation is a "potential outlier" or "not outlier".
+
+Test your function using the following values:
+
+-   x = 4, mean = 0, and sd = 1 (potential outlier)
+-   x = 4, mean = 10 and sd = 10 (not outlier)
+-   x = 8, mean = 1, sd = 2 (potential outlier)
+
+```{r outliers function}
+# Put your code here
+```

@@ -1,7 +1,7 @@
 ---
 title: 'Homework #7 Key'
 author: 'Summarization by Group'
-date: "Due: 3 Feb 2020"
+date: "Due: 4 Feb 2021"
 output:
   html_document:
     code_folding: hide
@@ -87,7 +87,7 @@ not_cancelled %>%
 not_cancelled %>% 
   group_by(carrier) %>% 
   summarise(
-    on_time_percentage = mean(arr_delay <= 0),
+    on_time_percentage = (mean(arr_delay <= 0) * 100) %>% round(1),
     flights = n()) %>% 
   arrange(on_time_percentage %>% desc())
 ```

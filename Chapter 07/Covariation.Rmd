@@ -1,215 +1,434 @@
 ---
 title: "Covariation"
 author: "MPA 634: Data Science for Managers"
-date: "5 Feb 2020"
+date: "9 Feb 2021"
 output:
   html_document:
     code_folding: hide
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       message = FALSE,
                       warning = FALSE)
 library(tidyverse)
+library(plotly)
+load(url("http://govfinance.byu.edu/govfinance/classes/dataViz/lectures/illustrations/distributions/distributions.RData"))
 ```
 
-## Explore the car highway mileage
-### Distribution of mileage
+## Review
+
+### Grammar of Graphics
+
+1.  Data
+2.  Aesthetics
+3.  Geometric objects
+4.  Statistics
+5.  Position
+6.  Faceting
+7.  Coordinate system
+
+In Python, [plotnine](https://pypi.org/project/plotnine/) is a package that implements the grammar of graphics and uses ggplot2 syntax.
+
+[Plotly](%5Bhttps://plotly.com/r/)](<https://plotly.com/r/>)) enhances ggplot.
+
+### Geometric objects for exploration
+
+-   bar
+-   column
+-   count
+-   tile
+-   histogram
+-   freqpoly
+-   density
+-   violin
+-   boxplot
+-   violin
+-   point
+-   two dimensional density
+
+### Definition of distribution
+
+1.  Range of values
+2.  Frequency or probability
+
+### Dimensions of a numerical distribution
 
 1.  Location
-1.  Scale
-1.  Symmetry
-1.  Outliers
+2.  Scale
+3.  Symmetry
+4.  Outliers
 
-```{r distribution of highway mileage}
-summary(mpg$hwy)
-sd(mpg$hwy)
-IQR(mpg$hwy)
-mpg %>%
-  ggplot(aes(x = hwy)) +
-  geom_density(fill = "lightblue")
+## Data frames (tibbles and data sets) to explore
+
+-   mtcars
+-   titanic
+-   diamonds
+-   faithful
+-   cows
+
+## mtcars data frame
+
+Objective: Predict mileage using number of cylinders and the weight of the car.
+
+### Summary of data frame
+
+```{r mtcars tibble}
+mtcars <- mtcars %>%
+  mutate(cyl = factor(cyl)) %>% 
+  select(mpg, cyl, wt)
+glimpse(mtcars)
+summary(mtcars)
 ```
 
-### Distribution of class of car
+### Distribution of mileage
+
+#### Summary statistics
+
+```{r distribution of highway mileage}
+mtcars %>% 
+  summarise(
+    Mean = mean(mpg),
+    Median = median(mpg),
+    Standard_deviation = sd(mpg),
+    Interquartile_range = IQR(mpg)
+  )
+```
+
+#### Violin plot of MPG
+
+```{r violin plot of mpg}
+p <- mtcars %>%
+  ggplot(aes(y = mpg, x = factor("All Vehicles"))) +
+  geom_violin(fill = "lightblue", alpha = 0.5) +
+  geom_boxplot(width = 0.10, fill = "grey60") +
+  stat_summary(fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red") +
+  labs(
+    title = "MPG is positively skewed.",
+    subtitle = "1973-74 Models",
+    y = "Miles Per Gallon",
+    caption = "Data Source: R built-in data frame"
+  ) +
+  theme(
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+    ) +
+  coord_flip()
+
+ggplotly(p)
+```
+
+### Distribution of number of cylinders
 
 ```{r distribution of class of car}
-mpg %>%
-  ggplot(aes(x = fct_infreq(class), fill = class)) +
-  geom_bar(show.legend = FALSE) +
+mtcars %>%
+  ggplot(aes(x = as.factor(cyl), fill = as.factor(cyl))) +
+  geom_bar(show.legend = FALSE, alpha = 0.5) +
   labs(
-    title = "There are more SUV's than other vehicle classes.",
-    x = "Vehicle Class",
+    title = "Few cars in this data set have six cylinders.",
+    x = "Number of Cylinders",
     y = "Number of Vehicles"
   ) +
   scale_fill_brewer(palette = "Set2")
 ```
 
-## Relationship between categorical and continuous variables
+### Covariation of miles per gallon by number of cylinders using violin plots
 
-### Distribution of highway miles per gallon by vehicle class using violin plots
-
-```{r distribution of hwy by vehicle class}
-mpg %>%
-  ggplot(aes(x = fct_reorder(class, hwy, median), y = hwy)) +
-  geom_violin(fill = "lightgreen") +
-  geom_boxplot(width = 0.1, fill = "lightblue") +
-  stat_summary(fun.y = "mean",
-  geom = "point",
-  shape = 18,
-  size = 1.5) 
-  labs(title = "Violin Plot of Mileage",
-       x = "Class of Vehicle",
+```{r covariation of hwy by drive train}
+p <- mtcars %>%
+  ggplot(aes(x = cyl, y = mpg, fill = cyl)) +
+  geom_boxplot(show.legend = FALSE, alpha = 0.25) +
+  stat_summary(fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red") +
+  labs(title = "Four cyclinder cars get the best mileage.",
+       x = "Number of Cylinders",
        y = "Miles Per Gallon") +
   coord_flip()
+
+ggplotly(p)
 ```
 
-## Relationship between two categorical variables
+### Covariation between mileage and car weight
 
-### Contingency table for diamond color and cut using dplyr and tidyr
+```{r mileage and car weight}
+p <- mtcars %>%
+  ggplot(aes(x = wt, y = mpg, color = cyl)) +
+  geom_point(size = 2) +
+  geom_smooth(color = "blue", se = FALSE) +
+  geom_smooth(method = "lm", color = "red", se = FALSE) +
+  labs(
+    title = "Weight and MPG are inversely related.",
+    subtitle = "Nonlinear relationship",
+    x = "Weight in 1000 pounds",
+    y = "Miles Per Gallon",
+    color = "Cylinders",
+    caption = "Data Source: Core R"
+  )
+
+ggplotly(p)
+```
+
+### Covariation of weight and number of cylinders
+
+```{r covariation of weight and number of cylinders}
+p <- mtcars %>%
+  ggplot(aes(x = cyl, y = wt, fill = cyl)) +
+  geom_boxplot(alpha = 0.4) +
+  stat_summary(fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red") +
+  labs(title = "Four cyclinder cars weight the least.",
+       x = "Number of Cylinders",
+       y = "Weight in Thousands of Pounds") +
+  coord_flip()
+
+ggplotly(p)
+```
+
+## [Titanic data set](https://www.kaggle.com/c/titanic)
+
+Objective: Predict whether a Titanic passenger survived base on age and sex.
+
+### Frequency tables
+
+#### Sex
+
+```{r frequency table for sex}
+titanic %>% 
+  count(sex)
+```
+
+#### Survived
+
+```{r frequency table for survived}
+titanic %>% 
+  count(survived)
+```
+
+#### Contingency table for sex and survived using dplyr
 
 ```{r contingency}
 # Contingency table for diamond color and cut using dplyr and tidyr
-diamonds %>% 
-  count(color, cut) %>% 
-  spread(key = cut, value = n)
+titanic %>% 
+  count(sex, survived)
 ```
 
-### geom_point with position jitter
+#### Contingency table for sex and survived using dplyr and tidyr
+
+```{r continency table}
+titanic %>% 
+  count(sex, survived) %>% 
+  spread(sex, n)
+```
+
+#### geom_point with position jitter
 
 ```{r geom_point}
-diamonds %>%
-  ggplot(aes(x = cut, y = color, color = clarity)) +
+titanic %>%
+  ggplot(aes(x = sex, y = survived, color = survived)) +
   geom_point(position = "jitter",
-             alpha = 0.8,
              shape = 16,
-             size = 0.5)
+             size = 0.5,
+             show.legend = FALSE)
 ```
 
-### geom_count
+#### geom_count
 
 ```{r geom_count}
-diamonds %>%
-  ggplot(aes(x = cut, y = color)) +
-  geom_count()
+p <- titanic %>%
+  ggplot(aes(x = sex, y = survived, color = sex)) +
+  geom_count(shape = 15, show.legend = FALSE, alpha = 0.5) +
+  scale_size_area(max_size = 45) +
+  scale_color_manual(values = c("red", "royalblue"))
+ggplotly(p)
 ```
 
-### geom_tile
+#### geom_tile
 
 ```{r geom_tile}
-diamonds %>% 
-  count(color, cut) %>% 
-  ggplot(aes(x = cut, y = color)) +
-    geom_tile(aes(fill = n))
+p <- titanic %>%
+  count(sex, survived) %>%
+  ggplot(aes(x = sex, y = survived)) +
+  geom_tile(aes(fill = n))
+ggplotly(p)
 ```
 
-### Bar chart
+#### Bar chart
 
 ```{r bar chart}
-diamonds %>% 
-  ggplot(aes(x = color, fill = cut, width = color)) +
-  geom_bar(position = "fill")
+titanic %>% 
+  ggplot(aes(y = survived, fill = sex)) +
+  geom_bar(position = "fill", alpha = 0.5) +
+  labs(
+    title = "Female passengers had the highest chance for survival",
+    subtitle = "Male passengers likely perished.",
+    y = "Survival",
+    x = "Percentage",
+    caption = "Data Source: Kaggle Titanic Data"
+  )
 ```
 
-### Mosaic chart
+### Age of titanic passengers by survival
 
-```{r mosaic}
-library(ggmosaic)
-diamonds %>% 
-  ggplot() +
-  geom_mosaic(aes(x = product(color, cut), fill = color), na.rm = TRUE)
+```{r survival and age}
+titanic %>%
+  ggplot(aes(x = age, y = survived)) +
+  geom_violin(aes(fill = sex), alpha = 0.25, show.legend = FALSE) +
+  geom_boxplot(width = 0.30, fill = "grey60", show.legend = FALSE, alpha = 0.5) +
+  stat_summary(fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red") +
+  facet_grid(rows = vars(sex)) +
+  scale_fill_manual(values = c("red", "royalblue")) +
+  labs(
+    title = "Female survivors were older.",
+    subtitle = "Male survivors were younger",
+    x = "Age",
+    y = "Survived",
+    caption = "Source: Kaggle Titanic Data"
+  )
 ```
 
-## Relationship between two continuous variables
+## diamonds data set
 
-### Scatterplot of price on carat
-
-```{r scatterplot of carat and price}
-cov(diamonds$carat, diamonds$price)
-cor(diamonds$carat, diamonds$price)
-diamonds %>%
-  ggplot(aes(x = carat, y = price)) +
-  geom_point(alpha = 1)
-```
-
-### Two dimensional density
+Objective: Predict the price of a diamond based on its weight, cut, color, and clarity.
 
 ### Choose a subset of diamonds
 
 ```{r smaller diamonds}
 set.seed(1234)
 dsmall <- diamonds %>%
-  sample_n(1000)
+  sample_n(1000) %>% 
+  filter(carat < 3)
 ```
 
-### Scatterplot of price on carat for a subset of diamonds
+### Scatterplot of price on carat
+
+```{r scatterplot of carat and price}
+cov(dsmall$carat, dsmall$price)
+cor(dsmall$carat, dsmall$price)
+dsmall %>%
+  ggplot(aes(x = carat, y = price)) +
+  geom_point(alpha = 1)
+```
+
+### Fixing non linearity and heteroskedasticity with logarithmic transformation
+
+#### Scatterplot with data in original units
+
+```{r original}
+dsmall %>%
+  ggplot(aes(x = carat, y = price)) +
+  geom_point() +
+  geom_smooth(color = "blue") + 
+  geom_smooth(method = "lm", color = "red")
+```
+
+#### Logarithmic transformation
+
+```{r logarithmic transformation}
+dsmall %>%
+  ggplot(aes(x = log(carat), y = log(price))) +
+  geom_point() +
+  geom_smooth(color = "blue") + 
+  geom_smooth(method = "lm", color = "red")
+```
+
+### Two dimensional density
 
 ```{r two dimensional density}
 dsmall %>%
-  ggplot(aes(x = carat, y = price)) +
-  geom_point()
+  ggplot(aes(x = carat, y= price)) +
+  geom_density_2d_filled(show.legend = FALSE)
+```
 
+### Two dimensional density by cut of diamond
+
+```{r two dimensional density faceted by cut of diamond}
 dsmall %>%
   ggplot(aes(x = carat, y= price)) +
-  stat_density_2d(geom = "raster",
-                  aes(fill = stat(density)),
-                  contour = FALSE)
+  geom_density_2d_filled(show.legend = FALSE) +
+  facet_wrap(vars(cut))
 ```
 
-## Fixing heteroskedasticity with logarithmic transformation
+## Old Faithful data set
 
-### Heteroskedasticity
-
-```{r heteroskedasticity}
-diamonds %>%
-  filter(carat < 3) %>% 
-  ggplot(aes(x = carat, y = price)) +
-  geom_point(alpha = 1 / 100) +
-  geom_smooth(color = "blue") + 
-  geom_smooth(method = "lm", color = "red")
-```
-
-### Logarithmic Transformation
-
-```{r logarithmic transformation}
-diamonds %>%
-  filter(carat < 3) %>% 
-  ggplot(aes(x = log(carat), y = log(price))) +
-  geom_point(alpha = 1 / 100) +
-  geom_smooth(color = "blue") + 
-  geom_smooth(method = "lm", color = "red")
-```
-
-## Explore the Old Faithful data frame
+Objective: Predict the length of the eruption based on the waiting time.
 
 ### Density for eruption length
+
 ```{r density for eruption length}
 faithful %>%
-  ggplot(aes(x = eruptions)) +
-  geom_density(fill = "lightblue")
+  ggplot(aes(x = eruptions, y = factor(0))) +
+  geom_violin(fill = "lightblue", alpha = 0.5) +
+  geom_boxplot(width = 0.10, fill = "grey60") +
+  stat_summary(fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red") +
+  labs(
+    title = "Old Faithful eruption length is bi-modal.",
+    x = "Length of Eruption in Minutes",
+    caption = "Data Source: Base R data frame"
+  ) +
+  theme(
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+    )
 ```
 
-### Density for waiting
+### Density for waiting time
+
 ```{r density for waiting}
 faithful %>%
-  ggplot(aes(x = waiting)) +
-  geom_density(fill = "lightblue")
+  ggplot(aes(x = waiting, y = factor(0))) +
+  geom_violin(fill = "lightblue", alpha = 0.5) +
+  geom_boxplot(width = 0.10, fill = "grey60") +
+  stat_summary(fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red") +
+  labs(
+    title = "Old Faithful eruption length is bi-modal.",
+    x = "Length of Waiting Time in Minutes",
+    caption = "Data Source: Base R data frame"
+  ) +
+  theme(
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+    )
 ```
 
-### Scatterplot for waiting and eruptions  
+### Scatterplot for waiting and eruptions
 
 ```{r scatterplot for waiting and eruption length}
 faithful %>%
   ggplot(aes(x = waiting, y = eruptions)) +
-  geom_point()
-```
-
-### Is there a linear pattern in the scatterplot? 
-
-```{r linear pattern}
-faithful %>% ggplot(aes(x = waiting, y = eruptions)) +
-  geom_point() +
-  geom_smooth(method = "lm")
+  geom_point(position = "jitter") +
+  geom_rug(position = "jitter") +
+  labs(
+    title = "Two clusters exist for waiting and eruption time.",
+    subtitle = "Old Faithful waiting and erution times",
+    x = "Minutes",
+    y = "Minutes",
+    caption = "Data source: Base R data frame"
+  )
 ```
 
 ### Is there a nonlinear pattern in the scatterplot?
@@ -217,8 +436,15 @@ faithful %>% ggplot(aes(x = waiting, y = eruptions)) +
 ```{r nonlinear pattern}
 faithful %>%
 ggplot(aes(x = waiting, y = eruptions)) +
-  geom_point() +
-  geom_smooth() +
+  geom_point(position = "jitter") +
+  geom_smooth(color = "red", se = FALSE) +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +
+  geom_vline(xintercept = median(faithful$waiting),
+             linetype = "dashed",
+             color = "gray40") +
+  geom_hline(yintercept = median(faithful$eruptions),
+             linetype = "dashed",
+             color = "gray40") +
   labs(
     title = "Relationship between Old Faithful waiting time and eruption time",
     x = "Waiting Time in Minutes",
@@ -231,7 +457,7 @@ ggplot(aes(x = waiting, y = eruptions)) +
 ```{r two dimensional density for Old Faithful}
 faithful %>%
   ggplot(aes(x = waiting, y = eruptions)) +
-  stat_density_2d(aes(fill = stat(density)), geom = "raster", contour = FALSE) +
+  geom_density_2d_filled(show.legend = FALSE) +
   labs(
     title = "Relationship between Old Faithful waiting time and eruption time",
     x = "Waiting Time in Minutes",
@@ -239,3 +465,85 @@ faithful %>%
   )
 ```
 
+The two dimensional density for faithful uses the viridis color scheme. These colors are chosen to help those who have difficulty distinguishing colors.
+
+## cows data frame
+
+Objective: Predict the butterfat content for a cow given their wage and breed.
+
+### Investigate data frame
+
+```{r cows data frame}
+glimpse(cows)
+summary(cows)
+```
+
+### Covariation of butterfat and breed
+
+```{r covariance of butterfat and breed}
+cows %>%
+  ggplot(aes(x = butterfat, y = breed %>% fct_reorder(butterfat, median))) +
+  geom_violin(fill = "lightblue", alpha = 0.5) +
+  geom_boxplot(width = 0.10, fill = "grey60") +
+  stat_summary(fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red") +
+  labs(
+    title = "Jersey and Guernsey cows produce rich milk.",
+    subtitle = "Butterfat variability is also high for Jersey and Guernsey cows.",
+    x = "Butterfat",
+    y = "",
+    caption = "Data Source: Wilke Illustrations"
+  )
+```
+
+### Covariation of butterfat and age
+
+```{r covariance of butterfat and age}
+cows %>%
+  ggplot(aes(x = butterfat, y = age %>% fct_reorder(butterfat, median))) +
+  geom_violin(fill = "lightblue", alpha = 0.5) +
+  geom_boxplot(width = 0.10, fill = "grey60") +
+  stat_summary(fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red") +
+  labs(
+    title = "Mature and 2-year old cows have similar butterfat distribution",
+    x = "Butterfat",
+    y = "",
+    caption = "Data Source: Wilke Illustrations"
+  )
+```
+
+### Cross tabulation of breed and age
+
+```{r cross tab of breed and age}
+cows %>% 
+  count(breed, age) %>% 
+  spread(age, n)
+```
+
+### Possible effects of breed and age on butterfat content
+
+```{r covariance of butterfat with breed and age}
+cows %>%
+  ggplot(aes(x = butterfat, y = breed %>% fct_reorder(butterfat, median))) +
+  geom_boxplot(aes(fill = breed), alpha = 0.25, show.legend = FALSE) +
+  stat_summary(fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red") +
+  labs(
+    title = "Cow age interacts with breed to affect butterfat.",
+    subtitle = "Two-year olds have more variability in butterfat.",
+    x = "Butterfat",
+    y = "",
+    caption = "Data Source: Wilke Illustrations"
+  ) +
+  facet_grid(rows = vars(age %>% fct_rev()))
+```

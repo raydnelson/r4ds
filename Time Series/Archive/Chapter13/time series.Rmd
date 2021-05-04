@@ -1,0 +1,482 @@
+---
+title: "Time Series"
+author: "MPA 635: Data Visualization"
+date: "11 Feb 2021"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+library(fable)
+library(feasts)
+library(tsibble)
+library(tsbox)
+library(Quandl)
+
+load(url("http://govfinance.byu.edu/govfinance/classes/dataViz/homework/HW10.RData"))
+```
+
+## Smoothing
+
+### geom_histogram
+
+#### bins
+
+```{r histograms bins}
+mpg %>% 
+  ggplot(aes(x = hwy)) +
+  geom_histogram(bins = 30, fill = "lightblue", color = "gray40")
+```
+
+#### binwidth
+
+```{r histograms binwidth}
+mpg %>% 
+  ggplot(aes(x = hwy)) +
+  geom_histogram(binwidth = 2, fill = "lightblue", color = "gray40")
+```
+
+### geom_freqpoly
+
+#### bins
+
+```{r freqpoly bins}
+mpg %>% 
+  ggplot(aes(x = hwy)) +
+  geom_freqpoly(bins = 30)
+```
+
+binwidth
+
+```{r freqpoly binwidth}
+mpg %>% 
+  ggplot(aes(x = hwy)) +
+  geom_freqpoly(binwidth = 2)
+```
+
+#### geom_density
+
+```{r geom_density}
+mpg %>% 
+  ggplot(aes(x = hwy)) +
+  geom_density(bw = 1, fill = "lightblue")
+```
+
+### geom_violin
+
+```{r geom_violin}
+mpg %>% 
+  ggplot(aes(y = factor(0), x = hwy)) +
+  geom_violin(fill = "lightblue", bw = 1)
+```
+
+### loess (locally weighted scatterplot smoothing)
+
+```{r loess}
+mpg %>% 
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point(position = "jitter") +
+  geom_smooth(span = 0.5, se = FALSE)
+```
+
+## Sources of time series data
+
+### [FRED](https://fred.stlouisfed.org/)
+
+The Federal Reserve Economic Data website offers more than 786,000 time series.
+
+### Quandl
+
+We are using [Quandl](https://docs.quandl.com/) to access the FRED website. If you are going to use Quandl extensively, you will need to get your own personal API key.
+
+## Examples of Time Series
+
+### Provo Housing Prices
+
+#### Import data from FRED
+
+```{r import Provo-Orem Housing Prices from FRED using Quandl}
+housing <- Quandl('FRED/ATNHPIUS39340Q',
+          type = 'ts',
+          start_date = '1982-01-01')
+
+housing_rate <- housing %>% 
+  ts_pca() %>% 
+  as_tsibble() %>% 
+  rename(
+    date = index,
+    provo = value
+  )
+  
+housing <- housing %>% 
+  as_tsibble() %>% 
+  rename(
+    date = index,
+    provo = value
+  )
+```
+
+#### Time series plots
+
+##### Simple
+
+```{r simple plot Provo}
+housing %>% 
+  ggplot(aes(x = date, y = provo)) +
+  geom_line() +
+  labs(
+    title = "Housing Price Index for Provo-Orem is currently rising astronomically.",
+    subtitle = "We could currently be experiencing a housing bubble.",
+    x = "",
+    y = "Housing Index",
+    caption = "Source: U.S. Federal Housing Finance Agency "
+  )
+```
+
+##### Symbols
+
+```{r symbols}
+housing %>%
+  ggplot(aes(x = date, y = provo)) +
+  geom_point() +
+  labs(
+    title = "Provo-Orem housing prices have increased significantly this decade.",
+    subtitle = "All-Transactions House Price Index",
+    x = "",
+    y = "Price Index",
+    caption = "Source: FRED"
+  )
+```
+
+##### Area
+
+```{r area graph using geom_ribbon}
+housing %>% 
+  ggplot(aes(x = date, y = provo)) +
+  geom_area(fill = "lightblue") +
+  geom_line(color = "blue") +
+  geom_point(color = "grey60") +
+  labs(
+    title = "Provo-Orem housing prices have increased significantly this decade.",
+    subtitle = "All-Transactions House Price Index",
+    x = "",
+    y = "Price Index",
+    caption = "Source: FRED"
+  )
+```
+
+##### Drop line
+
+```{r drop line using geom_segment}
+housing %>% 
+  ggplot(aes(x = date, xend = date, y = provo, yend = 0)) +
+  geom_segment(color = "blue", alpha = 0.5) +
+  geom_point(size = 0.5, color = "blue") +
+  labs(
+    title = "Provo-Orem housing prices have increased significantly this decade.",
+    subtitle = "All-Transactions House Price Index",
+    x = "",
+    y = "Price Index",
+    caption = "Source: FRED"
+  )
+```
+
+#### Smooth trend of rate of change
+
+```{r smoothed trend}
+housing_rate %>% 
+  ggplot(aes(x = date, y = provo)) +
+  geom_line() +
+  geom_smooth(span = 0.25) +
+  geom_hline(yintercept = 0, color = "red")
+```
+
+### Retail Sales
+
+#### Import data and time plot
+
+```{r import retail sales}
+retail<- Quandl('FRED/RSAFSNA',
+          type = 'ts',
+          start_date = '1990-01-01') %>% 
+  as_tsibble() %>% 
+  rename(
+    date = index,
+    retail = value
+  )
+
+retail %>% 
+  autoplot()
+```
+
+#### Smooth of retail
+
+```{r retail sales smooth}
+retail %>% 
+  autoplot() +
+  geom_smooth(span = 0.2)
+```
+
+#### STL (Seasonal Trend with Loess)
+
+Many time series have three different components:
+
+-   Trend/cycle
+-   Seasonality
+-   Irregular or Residual
+
+The STL function decomposes a time series into these three constituent parts.
+
+```{r retail sales STL}
+retail %>% 
+  model(
+    STL(retail)
+  ) %>% 
+  components() %>% 
+  autoplot()
+```
+
+After we have discovered the structure of our time series, it is very straight forward to fit an expoential smoothing or state-space model. This is done by using Rob Hyndman's feasts and fable libraries.
+
+#### Forecast of retail sales for the next 36 months
+
+```{r retail sales ETS}
+retail %>% 
+  model(
+    ETS(retail)
+  ) %>% 
+  forecast(h = 36) %>% 
+  autoplot(retail)
+```
+
+### E-Commerce
+
+#### Import data and time plot
+
+```{r E-Commerce simple}
+ecommerce <- Quandl('FRED/ECOMNSA',
+          type = 'ts',
+          start_date = '1982-01-01') %>% 
+  as_tsibble() %>% 
+  rename(
+    date = index,
+    ecommerce = value
+  )
+
+ecommerce %>% 
+  autoplot()
+```
+
+E-Commerce is a very interesting time series because it includes:
+
+-   A nonlinear trend
+-   Evolving seasonality
+
+#### STL
+
+A season trend with loess model of the data does indeed help us discover the nonlinear trend and the evolving seasonality.
+
+```{r E-Commerce STL}
+ecommerce %>% 
+  model(
+    STL(ecommerce)
+  ) %>% 
+  components() %>% 
+  autoplot()
+```
+
+#### ETS Forecast
+
+The ETS (error, trend, seasonality) model adapts to the nonlinear trend and the evolving seasonality pattern.
+
+```{r E-Commerce ETS}
+ecommerce %>% 
+  model(
+    ETS(ecommerce) 
+  ) %>% 
+  forecast(h = 12) %>% 
+  autoplot(ecommerce)
+```
+
+### Utah total nonfarm employment
+
+#### Import data and time plot
+
+```{r simple nonfarm}
+nonfarm <- Quandl('FRED/UTNAN',
+          type = 'ts',
+          start_date = '1990-01-01') %>% 
+  as_tsibble() %>% 
+  rename(
+    date = index,
+    nonfarm = value
+  )
+
+nonfarm %>% 
+  autoplot()
+```
+
+Total Nonfarm employment is an excellent indicator of the strength of local economies.
+
+#### STL
+
+```{r nonfarm stl}
+nonfarm %>% 
+  model(
+    STL(nonfarm)
+  ) %>% 
+  components() %>% 
+  autoplot()
+```
+
+#### ETS Forecast for next 3 years (36 months)
+
+```{r nonfarm ets}
+nonfarm %>% 
+  model(
+    ETS(nonfarm)
+  ) %>% 
+  forecast(h = 36) %>% 
+  autoplot(nonfarm)
+```
+
+### Airlines
+
+#### Import data and time plot
+
+```{r airlines simple}
+airlines <- Quandl('FRED/RPM',
+          type = 'ts',
+          start_date = '1990-01-01') %>% 
+  as_tsibble() %>% 
+  mutate(
+    date = index,
+    air = value
+  )
+airlines %>% 
+  autoplot()
+```
+
+#### STL
+
+```{r airlines stl}
+airlines %>% 
+  model(
+    STL(air)
+  ) %>% 
+  components() %>% 
+  autoplot()
+```
+
+#### ETS forecast for next 2 years (h = 24)
+
+```{r airlines ETS}
+airlines %>% 
+  model(
+    ETS(air)
+  ) %>% 
+  forecast(h = 24) %>% 
+  autoplot(airlines)
+```
+
+### Food Services
+
+#### Import data and time plot
+
+```{r food simple}
+food <- Quandl('FRED/RSFSDPN',
+          type = 'ts',
+          start_date = '1990-01-01') %>% 
+  as_tsibble() %>% 
+  rename(
+    date = index,
+    food = value
+  )
+food %>% 
+  autoplot()
+```
+
+#### STL
+
+```{r food stl}
+food %>% 
+  model(
+    STL(food)
+  ) %>% 
+  components() %>% 
+  autoplot()
+```
+
+#### ETS forecast
+
+```{r food ets}
+food %>% 
+  model(
+    ETS(food)
+  ) %>% 
+  forecast(h = 24) %>% 
+  autoplot(food)
+```
+
+### Health Expenditures
+
+#### Importing time series using Excel and the clipboard
+
+Use the FRED add in for Excel to download RSHPCSN. Copy the result into the clipboard and then run the following code.
+
+```{r simple plot health, eval = FALSE}
+health <- read.table('clipboard',
+    header = TRUE,
+    sep = '\t',
+    colClasses = c("character", "numeric")) %>% 
+  mutate(date = yearmonth(date)) %>% 
+  as_tsibble() %>% 
+  rename(
+    health = value
+  )
+
+health %>% 
+  autoplot()
+```
+
+#### Get health from Quandl
+
+```{r health simple}
+health <- Quandl('FRED/RSHPCSN',
+          type = 'ts',
+          start_date = '1990-01-01') %>% 
+  as_tsibble() %>% 
+  rename(
+    date = index,
+    health = value
+  )
+health %>% 
+  autoplot()
+```
+
+#### STL
+
+```{r health stl}
+health %>% 
+  model(
+    STL(health)
+  ) %>% 
+  components() %>% 
+  autoplot()
+```
+
+#### ETS forecast
+
+```{r health ets}
+health %>% 
+  model(
+    ETS(health)
+  ) %>% 
+  forecast(h = 24) %>% 
+  autoplot(health)
+```

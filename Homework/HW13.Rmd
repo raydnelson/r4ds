@@ -1,8 +1,10 @@
 ---
 title: 'Homework #13'
 author: 'Factors'
-date: "Due: 2 Mar 2020"
-output: word_document
+date: "Due: 9 Mar 2021"
+output:
+  html_document:
+    code_folding: show
 ---
 
 ```{r setup, include=FALSE}
@@ -10,7 +12,6 @@ knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
                       message = FALSE)
 library(tidyverse)
-library(forcats)
 ```
 
 ## Concepts  
@@ -45,20 +46,18 @@ gss_cat %>%
 
 ```{r code chunk interpretation 2}
 gss_cat %>%
-  mutate(partyid = fct_collapse(
-    partyid,
+  mutate(partyid = partyid %>% fct_collapse(
     other = c("No answer", "Don't know", "Other party"),
     rep = c("Strong republican", "Not str republican"),
     ind = c("Ind, near rep", "Independent", "Ind, near dem"),
     dem = c("Not str democrat", "Strong democrat")
   )) %>%
-  ggplot(aes(x = partyid, fill = partyid)) +
+  ggplot(aes(y = partyid, fill = partyid)) +
   geom_bar(show.legend = FALSE) +
-  coord_flip() +
   labs(
     title = "Independents are the largest group of respondents",
-    x = "",
-    y = "Number of Respondents"
+    y = "",
+    x = "Number of Respondents"
   )
 ```
 
@@ -85,6 +84,6 @@ Create a boxplot for age by marital status. Sort the boxes by the median of age.
 7.  Create appropriate titles and axis labels
 ![](http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW13Graph2.png)
 
-```{r boxplot of age by marital status, warning = FALSE}
+```{r boxplot of age by marital status}
 
 ```  

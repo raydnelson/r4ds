@@ -1,104 +1,128 @@
 ---
-title: "Homework #18 Key"
-author: "Iteration"
-date: "25 March 2020"
+title: 'Homework #18 Key'
+author: "Time Series"
+date: "Due: 1 April 2021"
 output:
   html_document:
-    code_folding: "show"
+    code_folding: hide
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
-library(nycflights13)
+library(feasts)
+library(fable)
+load(url("http://govfinance.byu.edu/govfinance/classes/dataViz/homework/HW10.RData"))
 ```
 
-## Concepts  
+## Concepts
 
-Problem 1.  Explain the basic parts of a for loop.  
+Smoothing is a very important concept for data visualization. Explain how smoothing is affected in the following cases:
 
-There are three basic parts to a for loop:  
+1.  binwidth and number of bins on histograms and freqpoly
 
-1.  Output: Declaration of the object where the output of each iteration is to be stored. This is usually an atomic vector (logical, numeric, or character) or a list. This allocates a space in the computer where the results of the loop can be stored.
-1.  Sequence: A for loop interates over an index. The sequence defines the values that the index will assume for each iteration.
-1.  Body: This is where the actual calculations and manipulations occur. For each interation prescribed by the index sequence, this block of code is executed for the value of the index.  
+Smooth histograms and frequency polygons result when you have a small number of wide bins.
 
+2.  bandwidth (bw) on densities and violin plots
 
-Problem 2.  Explain how loops are different from functions.  
+Increasing the bandwidth increases the number points that are averaged. More points in an average gives smoother graphs. The larger number of points means that each one receives a smaller weight in the averaging process.
 
-Both functions and loops execute blocks of common code. Functions only execute the block of code once, when they are called. In contrast, loops execute the same block of code repeatedly. For example, we can write a line of code for each column in a tibble that calls the mean function. Alternatively, we place the mean function within the body of the loop and it then gets called repeatedly as the loop cycles through its index sequence. New arguments are passed to the same line of code during each iteration of a loop.  
-    
-## Interpretation of code  
+3.  span on loess smoothed lines
 
-Interpret the following R code chunks: 
+Increasing the span increases the number points that are averaged. More points in an average gives smoother graphs. The larger number of points means that each one receives a smaller weight in the averaging process.
 
-### Code Chunk #1 (Section 21.2.1 Exercises Problem 1.3)
+## Code Interpretation
 
-```{r number of unique values in the iris data frame}
-unique_values <- vector("integer", length(iris))
-for (i in seq_along(iris)) {
-  unique_values[[i]] <- iris[[i]] %>% 
-    unique() %>% 
-    length()
-}
-unique_values
+Problem 1: Time series plot
+
+```{r time series plot for ecommerce}
+ecommerce %>%
+  ggplot(aes(x = as.Date(date), y = ecommerce / 1000)) + 
+  geom_point() + 
+  geom_smooth(span = 0.3) +
+  labs(title = "E-Commerce sales are growing exponentially",
+       x = "",
+       y = "Billions of Dollars")
 ```
 
-Line 1: Creates an integer atomic vector called unique-values. This is where the loop will store the result of each iteration.  
+Line 2: Put the date on the x-axis and the variable ecommerce on the y-axis. Scale the ecommerce data by dividing by 1000. The as.Date function helps ggplot know how to format the labels on the x or time axis. Dividing by 1000 turns the scale of the y-axis from millions of dollars to billions of dollars.
 
-Line 2: Specifies the sequence of the loop. It creates an index that starts at 1 and ends with the number of columns in the iris data frame.  
+Line 3: Draw a scatterplot using each x and y coordinate pair specified in the aesthetics
 
-Line 3: This is the body of the function. In each iteration of the loop, it gets the ith column from the iris data frame.  
+Line 4: Look for a trend in the data using loess. Smoothing creates a line that represents the trends in the data. The span = 0.3 means that 30% of the data are used in the locally weighted scatterplot smoothing process. This process opens a window around each point. It estimates a smoothed value for each observations. The smooth is also accompanied by a confidence interval since se = TRUE by default. Choosing the span can often be very subjective.
 
-Line 4: Then it creates a vector of the possible values that the variable assumes.   
+Lines 5 - 7: Adds labels to the graph. It is especially important to give the units of measure for the y-axis.
 
-Line 5: Counts the number of different unique values found in the result from line 4.   
+Problem 2: STL decomposition
 
-Line 7: Prints out the vector unique_values. This reports the results of each iteration of the loop.  
-
-### Code Chunk #2 (Section 21.3.4)
-
-```{r while loop}
-# flip a coin function
-flip <- function() sample(c("T", "H"), 1)
-# initialize variables
-flips <- 0
-nheads <- 0
-# while loop
-while (nheads < 3) {
-  if (flip() == "H") {
-    nheads <- nheads + 1
-  } else {
-    nheads <- 0
-  }
-  flips <- flips + 1
-}
-flips
-```  
-
-Line 1: Creates the function flip which is like a fair coin. It takes one sample from the vector c("T", "H"). Heads and tails both have an equal probability of 50%.  
-
-Lines 2 - 3: The while loop must monitor the total number of flips and the number of consecutive heads. Therefore we must give them initial values which will subsequently be changed within the while loop.  
-
-Line 4: This creates the condition that will determine whether or not the while loop will continue. Loop continues as long as the condition is true. The loop will terminate as soon as the loop is false. As long as we don't have three consecutive heads, then the loop will continue.  
-
-Lines 5 - 6: The condition within the loop calls the flip function to determine whether we have a head or a tail. If the flip is a head, then it increments the variable nheads which keeps track of the number of consecutive heads.
-
-Line 7 - 8:  When the flip of the coin yields a tail, then these lines are executed. This resets the number of consecutive heads counter back to 0.  
-
-Line 9: This counts the number of flips since the game began. This adds one to the total number of flips for each time the the while loop has been executed.  
-
-Line 10:  When the number of consecutive heads finally equals 3, then the while loop terminates and the control of the program goes to the next step which is line 10. This reports the number of flips that was required to get three heads in a row.  
-
-## Write Code
-
-Compute the type for each column in the nycflights13::flights tibble. Problem 2 from Exercises 21.2.1
-
-```{r type of variables in flights}
-flights_type <- vector("character", length(flights))
-for (i in seq_along(flights)) {
-  flights_type[[i]] <- flights[[i]] %>% typeof()
-}
-flights_type
+```{r stl decomposition}
+ecommerce %>% 
+  model(
+    STL(ecommerce)
+  ) %>% 
+  components() %>% 
+  autoplot()
+  
 ```
 
+Lines 2 - 4: Fits a seasonal with trend using loess (STL) model to the time series.
+
+Line 5: Extracts the trend, season, and irregular (remainder) components from the STL model
+
+Line 6: Graphs the original data, trend, season, and irregular components using ggplot
+
+Problem 3: ETS forecast
+
+```{r ets forecast}
+ecommerce %>% 
+  model(
+    ETS(ecommerce)
+  ) %>% 
+  forecast(h = 24) %>% 
+  autoplot(ecommerce)
+```
+
+Lines 2 - 4: Fits a exponential smoothing error, trend, and seasonality (ETS) model to the time series
+
+Line 5: Uses the ETS model to create forecasts
+
+Line 6: Graphs the original data and the forecasts, along with their confidence intervals, using ggplot
+
+## Coding
+
+Problem 1
+
+Make a time series plot of Salt Lake City housing prices.
+
+```{r problem 1}
+slc %>% 
+  autoplot()
+```
+
+Problem 2
+
+Use STL to look for the trend and seasonality SLC housing prices
+
+```{r problem 2}
+slc %>% 
+  model(
+    STL()
+  ) %>% 
+  components() %>% 
+  autoplot()
+```
+
+Problem 3
+
+Forecast SLC housing prices for the next two years
+
+```{r problem 3}
+slc %>% 
+  model(
+    ETS()
+  ) %>% 
+  forecast(h = 24) %>% 
+  autoplot(slc)
+```

@@ -1,0 +1,217 @@
+---
+title: "Times Series Analysis"
+author: "MPA 634: Data Science for Managers"
+date: "30 Mar 2021"
+output:
+  html_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE)
+library(tidyverse)
+library(Quandl)
+library(fpp3)
+```
+
+### Smoothing
+
+#### Number of bins for histograms and freqpoly
+
+```{r change the number of bins}
+mpg %>% 
+  ggplot(aes(x = hwy)) +
+  geom_histogram(bins = 30, fill = "lightblue") +
+  geom_histogram(bins = 10, alpha = 0.40, fill = "lightgreen")
+```
+
+#### Bin width for histograms and freqpoly
+
+```{r change the bin width}
+mpg %>% 
+  ggplot(aes(x = hwy)) +
+  geom_histogram(binwidth = 5, fill = "lightblue") +
+  geom_histogram(binwidth = 10, alpha = 0.40, fill = "lightgreen")
+```
+
+#### Bandwidth for density
+
+```{r change the bandwidth}
+mpg %>% 
+  ggplot(aes(x = hwy)) +
+  geom_density(bw = 0.25, fill = "lightblue") +
+  geom_density(bw = 0.75, alpha = 0.40, fill = "lightgreen")
+```
+
+#### Loess smooth span
+
+```{r span in loess smooth}
+mpg %>% 
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point(size = 0.5, position = "jitter") +
+  geom_smooth(span = 0.25, color = "blue", se = FALSE) +
+  geom_smooth(span = 0.50, color = "red", se = FALSE)
+```
+
+#### Finding a trend in retail sales using loess
+
+as_tsibble()
+
+```{r trend in retail sales}
+Quandl('FRED/RSAFSNA',
+          type = 'ts',
+          start_date = '1959-01-01') %>% 
+  as_tsibble() %>% 
+  ggplot(aes(x = index, y = value)) +
+  geom_line() +
+  geom_point(size = 0.75, color = "green") +
+  geom_smooth(span = 0.15, color = "blue", se = FALSE) +
+  geom_smooth(span = 0.5, color = "red", se = FALSE)
+```
+
+### Classes of time series objects
+
+-   ts
+-   zoo
+-   xts
+-   timeSeries (S4 so \@ replaces the \$ symbol when extracting components)
+-   tsibble (compatible with tidyverse)
+
+The library tsbox help in conversions among the different classes. The new tsibble class has the advantage that they are tibbles so mutate, filter, etc all work as expected. It also gives the advantage of being very compatible with ggplot.
+
+### Functions to use in macroeconomic report
+
+```{r FRED Function, echo = FALSE}
+get_FRED <- function(fred_ticker) {
+  require(Quandl)
+  Quandl(
+    paste0("FRED/", fred_ticker),
+    type = 'ts',
+    start_date = '1959-01-01'
+  ) %>% 
+    as_tsibble()
+}
+```
+
+```{r stl decomposition, echo = FALSE}
+stl_decomposition <- function(time_series) {
+  time_series %>%
+    model(stl_model = STL()) %>%
+    components() %>%
+    autoplot() +
+    labs(x = "",
+         subtitle = "Seasonal Trend with Loess Decomposition",
+         caption = "Source: Federal Reserve Economic Data (FRED)")
+}
+```
+
+```{r ets forecast, echo = FALSE}
+ets_forecast <- function(time_series, horizon) {
+  time_series %>%
+    model(ets_model = ETS()) %>%
+    forecast(h = horizon) %>%
+    autoplot(time_series) +
+    labs(x = "",
+         subtitle = "State-Space Error Trend and Seasonal Forecasts",
+         caption = "Source: Federal Reserve Economic Data (FRED)")
+}
+```
+
+## Macroeconomic Situation for Provo-Orem
+
+### US Retail Sales
+
+```{r get retail sales, echo = FALSE}
+time_series <- get_FRED(fred_ticker = "RSAFSNA")
+```
+
+#### Time Series Components
+
+```{r stl for retail sales}
+stl_decomposition(time_series) +
+  labs(title = "Retail sales in the US economy has recovered from the initial COVID-19 shock.",
+       y = "Millions of Dollars")
+```
+
+#### Forecasts
+
+```{r ets forecast for retail sales}
+time_series %>% 
+  ets_forecast(horizon = 12) +
+  labs(title = "Retail sales show promising future growth.",
+       y = "Millions of Dollars")
+```
+
+### US Employment
+
+```{r total employment data}
+time_series <- get_FRED(fred_ticker = "PAYNSA")
+```
+
+#### Seasonal patterns
+
+```{r employment decomposition}
+time_series %>% 
+  stl_decomposition() +
+  labs(
+    title = "A persistent effect of COVID-19 exists in the job market.",
+    y = "Thousands of Workers"
+  )
+```
+
+#### Forecasts
+
+```{r employment forecast}
+time_series %>% 
+  ets_forecast(horizon = 12) +
+  labs(
+    title = "The labor market hasn't recovered from COVID-19 interruptions.",
+    y = "Thousands of Workers"
+  )
+```
+
+### Increase and Decrease in Jobs
+
+```{r increase and decrease in jobs}
+time_series <- time_series %>% 
+  mutate(value = difference(value)) %>% 
+  na.omit()
+```
+
+#### Seasonal patterns
+
+```{r jobs decomposition}
+time_series %>% 
+  stl_decomposition() +
+  labs(
+    title = "COVID-19 has caused significant lost jobs.",
+    y = "Thousands of Workers"
+  )
+```
+
+#### Forecasts
+
+```{r jobs forecast}
+time_series %>% 
+  ets_forecast(horizon = 12)  +
+  labs(
+    title = "Fiscal stimulus is aimed at fixing the anemic labor market",
+    y = "Thousands of Workers"
+  )
+```
+
+#### Housing prices
+
+```{r get Provo Orem housing index, echo = FALSE}
+time_series <- get_FRED("ATNHPIUS39340Q")
+```
+
+#### Forecasts
+
+```{r Provo Orem time series and forecasts}
+time_series %>% 
+  ets_forecast(horizon = 12) +
+  labs(title = "The Provo-Orem market might currently be experiencing a speculative bubble.",
+       y = "Millions of Dollars")
+```

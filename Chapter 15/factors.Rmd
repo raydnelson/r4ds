@@ -1,7 +1,7 @@
 ---
 title: "Factors"
 author: "MPA 634: Data Science for Managers"
-date: "26 Feb 2020"
+date: "4 March 2021"
 output:
   html_document:
     code_folding: "hide"
@@ -13,27 +13,57 @@ knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE)
 # Load libraries
 library(tidyverse)
-library(forcats)
 library(kableExtra)
-library(ggmosaic)
 ```
 
-## Value of factors in modeling
+### Value of factors in modeling
 
-```{r linear model with factors}
-mpg %>% summary()
-lm(hwy ~ drv + displ + drv * displ, data = mpg) %>% 
-  summary()
+#### Remove the five cylinder cars
 
-mpg$drv <- as.factor(mpg$drv)
-mpg %>% summary()
-lm(hwy ~ drv + displ + drv * displ, data = mpg) %>% 
+```{r remove 5 cylinder cars}
+mpg <- mpg  %>% 
+  filter(cyl != 5)
+```
+
+#### Same slopes and intercepts
+
+```{r regression by number of cyclinders}
+mpg %>% 
+  ggplot(aes(x = displ, y = hwy, color = as.factor(cyl))) +
+  geom_point(position = "jitter") +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Number of cylinders affects the slope and intercept",
+    subtitle = "Simple regression by number of cylinders.",
+    x = "Engine size in liters",
+    y = "Miles per gallon",
+    color = "Number of cylinders",
+    caption = "Data source: Tidyverse tibble"
+  )
+```
+
+#### Regression with displacement and cylinders as explanatory variables
+
+```{r linear model with cyl as an integer}
+mpg$cyl
+lm(hwy ~ cyl + displ, data = mpg) %>% 
   summary()
 ```
 
-## 15.2 Creating factors
+#### Regression with cylinders as a factor
 
-### Create two initial vectors, one of which has an error.
+```{r linear model with cyl as a factor}
+mpg <- mpg %>% 
+  mutate(cyl_factor = factor(cyl))
+mpg$cyl_factor
+         
+lm(hwy ~ cyl_factor + displ + cyl_factor * displ, data = mpg) %>%
+  summary()
+```
+
+### 15.2 Creating factors
+
+#### Create two initial vectors, one of which has an error.
 
 ```{r initial vectors}
 (x1 <- c("Dec", "Apr", "Jan", "Mar"))
@@ -43,7 +73,7 @@ sort(x1)
 class(x1)
 ```
 
-### Create a vector of labels and then create two new factors
+#### Create a vector of labels and then create two new factors
 
 ```{r create a vector of label}
 month_levels <- c(
@@ -57,13 +87,13 @@ sort(y1)
 class(y1)
 ```
 
-### Order of levels  
+### Order of levels
 
 #### Alphabetical order
 
 ```{r levels in alphabetical order}
 factor(x1)
-```  
+```
 
 #### Order of the original data
 
@@ -71,28 +101,28 @@ factor(x1)
 unique(x1)
 (f1 <- factor(x1, levels = unique(x1)))
 
-(f2 <-factor(x1) %>% fct_inorder())
+(f2 <- factor(x1) %>% fct_inorder())
 
 f2 %>% levels()
-```  
+```
 
-## 15.3 General Social Survey
+### 15.3 General Social Survey
 
-### Familiarity with the data  
+#### Familiarity with the data
 
 ```{r familiarity with data}
 ? gss_cat
-gss_cat %>% summary
-```  
+gss_cat %>% glimpse()
+```
 
-### Count the frequency in a tibble
+#### Count the frequency in a tibble
 
 ```{r factors in a tibble}
 gss_cat %>% 
   count(race)
-```  
+```
 
-### Visual representation of a factor using geom_bar
+#### Visual representation of a factor using geom_bar
 
 ```{r frequency with geom_bar}
 gss_cat$race %>% levels()
@@ -102,40 +132,30 @@ gss_cat %>%
   labs(title = "Implicit count from within geom_bar")
 ```
 
-### Counting multiple factors or traditional cross tabulations
+#### Counting multiple factors or traditional cross tabulations
 
-#### Simple count using count from dplyr
+##### Simple count using count from dplyr
 
 ```{r simple counts}
 gss_cat %>% 
   count(race, marital)
 ```
 
-#### Spread the results of count
+##### Spread the results of count
 
 ```{r spread and kable}
 gss_cat %>% 
   count(race, marital) %>% 
-  spread(marital, n) %>% 
+  pivot_wider(names_from = marital, values_from = n) %>% 
   kable() %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
-#### Mosaic plot of cross tab
+### 15.4 Modifying factor order
 
-```{r mosaic chart}
-gss_cat %>% 
-  ggplot() +
-  geom_mosaic(aes(x = product(race), fill = fct_infreq(marital)),
-          na.rm = TRUE,
-          show.legend = FALSE)
-```
+#### TV hours by religion
 
-## 15.4 Modifying factor order
-
-### TV hours by religion
-
-#### Original Order
+##### Original Order
 
 ```{r TV hours by religion}
 # Create the relig_summary tibble using summary to calculate the mean and tv hours
@@ -155,18 +175,18 @@ relig_summary %>%
        y = "")
 ```
 
-#### Religion ordered by tvhours
+##### Religion ordered by tvhours
 
 ```{r religion sorted by tvhours}
 relig_summary %>%
-  ggplot(aes(tvhours, fct_reorder(relig, tvhours))) +
+  ggplot(aes(x = tvhours, y = relig %>% fct_reorder(tvhours))) +
   geom_point() +
   labs(title = "Initial order of factors",
        x = "Hours",
        y = "")
 ```
 
-### Age by marital status in original order
+#### Age by marital status in original order
 
 ```{r age by marital status}
 # Calculate the proportion in each age and marital status category
@@ -182,11 +202,11 @@ by_age %>%
   labs(title = "Original ordering of factors")
 ```
 
-### Age by marital status with legend that matches the last observations
+#### Age by marital status with legend that matches the last observations
 
 ```{r altered legend}
 by_age %>%
-  ggplot(aes(age, prop, color = fct_reorder2(marital, age, prop))) +
+  ggplot(aes(age, prop, color = marital %>% fct_reorder2(age, prop))) +
   geom_line(na.rm = TRUE) +
   labs(title = "Lines order to match the legend order",
        x = "Age",
@@ -194,7 +214,7 @@ by_age %>%
     colour = "marital")
 ```
 
-### Pareto chart of marital status
+#### Pareto chart of marital status
 
 ```{r pareto chart of marital status}
 gss_cat %>%
@@ -209,16 +229,17 @@ gss_cat %>%
   )
 ```
 
-## 15.5 Modifying factor levels
+### 15.5 Modifying factor levels
 
-### Initial levels for party id
+#### Initial levels for party id
 
 ```{r modifying factor levels}
 # Original factor levels and labels
-gss_cat %>% count(partyid)
-``` 
+gss_cat %>%
+  count(partyid)
+```
 
-### Change the labels for some levels of a factor
+#### Change the labels for some levels of a factor
 
 ```{r change labels for some levels}
 gss_cat %>%
@@ -236,7 +257,7 @@ gss_cat %>%
   count(partyid)
 ```
 
-### Combine multiple factors levels into a single category  
+#### Combine multiple factors levels into a single category
 
 ```{r combine multiple levels into a single category}
 gss_cat %>%
@@ -257,8 +278,9 @@ gss_cat %>%
   count(partyid)
 ```
 
-### Another example of assigning multiple categories to the same category
-### Uses fct_collapse
+#### Another example of assigning multiple categories to the same category
+
+#### Uses fct_collapse
 
 ```{r factor collapse}
 gss_cat %>%
@@ -269,12 +291,11 @@ gss_cat %>%
     ind = c("Ind,near rep", "Independent", "Ind,near dem"),
     dem = c("Not str democrat", "Strong democrat")
   )) %>%
-  ggplot(aes(x = partyid)) +
+  ggplot(aes(y = partyid)) +
   geom_bar(show.legend = FALSE) +
-  coord_flip() +
   labs(
     title = "Independents are the largest group of respondents",
-    x = "",
-    y = "Number"
+    y = "",
+    x = "Number"
   )
-```  
+```

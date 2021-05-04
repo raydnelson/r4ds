@@ -1,0 +1,285 @@
+---
+title: "Function Practicum"
+author: "MPA 634: Data Science for Managers"
+date: "16 March 2021"
+output:
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+# Load libraries
+library(tidyverse)
+library(lubridate)
+library(nycflights13)
+library(leaflet)
+library(htmlwidgets)
+library(htmltools)
+```
+
+### Rock, paper, scissors game
+
+-   Function to determine rock, paper, or scissors with equal probability
+-   Function to compare to players to see who wins
+-   Report the results
+
+#### Choose rock, paper, or scissors
+
+```{r rock paper or scissors}
+choose_object <- function(){
+  x <- runif(n = 1, min = 0, max = 1)
+  if (x < 1/3){
+    "rock"
+  } else if (x > 2/3){
+    "scissors"
+  } else {
+    "paper"
+  }
+}
+choose_object()
+```
+
+#### Choose the winner function
+
+```{r winner}
+select_winner <- function(person1, person2) {
+  if (identical(person1, "rock")){ # Person 1 rock
+    if (identical(person2, "rock")){
+      outcome = "ties"
+    } else if (identical(person2, "paper")) {
+      outcome = "loses"
+    } else {
+      outcome = "wins"
+    }
+ 
+ } else if (identical(person1, "paper")) { # Person 1 paper
+      if (identical(person2, "rock")){
+        outcome = "wins"
+      } else if (identical(person2, "paper")) {
+        outcome = "ties"
+      } else {
+        outcome = "loses"
+      }
+  } else { # Person 1 rock
+      if (identical(person2, "rock")){
+        outcome = "loses"
+      } else if (identical(person2, "paper")) {
+        outcome = "wins"
+      } else {
+        outcome = "ties"
+      }
+  }
+  paste0("Person 1 ", outcome, ".")
+}
+```
+
+#### Play the game
+
+-   Choice for person 1
+-   Report choice for person 1
+-   Choice for person 2
+-   Report choice for person 2
+-   Declare the winner
+
+##### Function to play the game
+
+```{r play game function}
+play_game <- function() {
+  person1 <- choose_object()
+  paste0("Person 1 chose: ", person1) %>% print()
+  person2 <- choose_object()
+  paste0("Person 2 chose: ", person2) %>% print()
+  select_winner(person1, person2)
+}
+```
+
+##### Play the game
+
+```{r play rock paper scissors}
+play_game() 
+```
+
+### Birthday function
+
+#### R Code for the birthday function
+
+```{r birthday code}
+Jacob <- function(lubridate, mdy) {
+  birthday <- lubridate::mdy("03-16-2000")
+  if(
+    identical(today() %>% month(), birthday %>% month()) &&
+    identical(today() %>% day(), birthday %>% day())
+    ) "Congratulataions, it's your birthday." else
+      "Have a wonderful day even though it's not your birthday."
+}
+```
+
+#### Birthday function
+
+```{r birthday function}
+# Function definition
+birthday <- function(birthday) {
+  birthday <- dmy(birthday)
+  if(
+    identical(today() %>% month(), birthday %>% month() ) &&
+    identical(today() %>% day(), birthday %>% day())
+    ) "Congratulataions, it's your birthday." else
+    "Have a wonderful day even though it's not your birthday."
+}
+
+# Execution of the function
+birthday("03-15-2000")
+```
+
+### Prayer function
+
+#### Tedious prayer function
+
+```{r tedious prayer function}
+# function definition
+prayer <- function() {
+  remainder <- (today() %>% day()) %% 6
+  if (remainder == 0) {
+    "Ma"
+  } else if (remainder == 1) {
+    "Pa"
+  } else if (remainder == 2) {
+    "Jennifer"
+  } else if (remainder == 3) {
+    "Rebecca"
+  } else if (remainder == 4) {
+    "Angie"
+  } else {
+    "Jonathan"
+  }
+}
+
+# function execution
+prayer()
+```
+
+#### Switch function application
+
+```{r switch application}
+remainder <- (today() %>% day()) %% 6
+switch(remainder + 1, "Ma", "Pa", "Jennifer", "Rebecca", "Angie", "Jonathan")
+```
+
+#### Function that uses switch
+
+```{r function using the switch function}
+# Function definition
+prayer <- function(){
+  remainder <- (today() %>% day()) %% 6
+  switch(remainder + 1, "Ma", "Pa", "Jennifer", "Rebecca", "Angie", "Jonathan")
+}
+# Function executive
+prayer()
+```
+
+### Days to graduation
+
+#### Date arithmetic
+
+```{r days calculation}
+(days <- mdy("04-21-2021") - today())
+```
+
+#### Function definition using require
+
+```{r function with require}
+days_to_graduate <- function() {
+  require(lubridate)
+  days <- (mdy("04-21-2021") - today()) %>% as.numeric()
+  paste("There are", days, "until graduation. Hang in there.")
+}
+
+days_to_graduate()
+```
+
+#### Function definition that doesn't load the entire library
+
+```{r function without library reference}
+days_to_graduate <- function() {
+  days <- (lubridate::mdy("04-21-2021") - lubridate::today()) %>% as.numeric()
+  paste("There are", days, "until graduation. Hang in there.")
+}
+
+days_to_graduate()
+```
+
+### Airports and destination map
+
+#### Testing parameters
+
+```{r test parameters}
+# Test Parameters
+nyc_airport <- "JFK"
+airline <- "DL"
+```
+
+#### Find destinations
+
+```{r find the latitude and longitude of the destination airports}
+find_destinations <- function(nyc_airport, airline) {
+  destinations <- flights %>% 
+    filter(origin == nyc_airport) %>% 
+    filter(carrier == airline) %>% 
+    distinct(dest) %>% 
+    add_row(dest = nyc_airport)
+  airports %>% 
+    semi_join(destinations, by = c("faa" = "dest")) %>% 
+    select(name, lat, lon) 
+}
+
+(destinations <- find_destinations("JFK", "DL"))
+```
+
+#### Ceate the map using leaflet using the destinations a
+
+```{r draw the map}
+# Use leaflet to create a map from the results of destinations and map_title
+
+draw_map <- function(destinations) {
+  destinations %>%  
+    leaflet() %>% 
+    addProviderTiles(provider = providers$Esri.NatGeoWorldMap) %>% 
+    addCircleMarkers(
+      radius = 5,
+      color = "red",
+      stroke = FALSE,
+      fillOpacity = 0.50
+    )
+}
+
+draw_map(destinations)
+```
+
+#### Function that gets information and draws map
+
+```{r put it all together}
+destinations_map <- function(nyc_airport, airline) {
+  destinations <- find_destinations(nyc_airport, airline)
+  draw_map(destinations)
+}
+```
+
+#### RMarkdown document that shows origin, airline, and destinations
+
+We can use Shiny to let the user choose the origin airport and the airline from drop down menus.
+
+```{r origin and destination, echo = FALSE}
+nyc_airport <- "JFK"
+airline <- "DL"
+```
+
+> Origin Airport: `r nyc_airport`
+>
+> Airline: `r airline`
+
+```{r lets draw some maps}
+destinations_map(nyc_airport, airline)
+```

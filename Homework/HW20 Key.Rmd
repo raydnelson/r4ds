@@ -1,10 +1,10 @@
 ---
-title: "Homework #20"
-author: "Shiny I"
-date: "Due: 6 April 2020"
+title: "Homework #20 Key"
+author: "Graphics for Communication"
+date: "Due: 1 April 2020"
 output:
   html_document:
-    code_folding: "hide"
+    code_folding: "show"
 ---
 
 ```{r setup, include=FALSE}
@@ -14,77 +14,77 @@ knitr::opts_chunk$set(echo = TRUE,
 library(tidyverse)
 ```
 
-## Concepts  
+## Concepts
 
-Explain the function and interaction of the ui and server parts of a shiny app.  
+Explain the idea of themes within ggplot.
 
-The section ui handles the interface between the user and R. This is where the user and interact by specifying input values. It is also where the calculations completed by R are reported and depicted.  
+Themes allow us to customize the non-data elements of our plot. There are default themes that change many of the aspects of a plot with a single statement. You can also change individual elements such as tick marks, background colors, legend position, etc.
 
-The section severs is the part of the shiny app that does the work and calculations. This is where statistical routines are run, plots are created, and tables assembled.  
-    
-## Interpretation of code  
+## Interpretation of code
 
-### Interpret the following R code chunks: 
+Interpret the following R code chunks:
 
-### Code Chunk #1 UI part of a shiny app
+Code Chunk \#1 Zooming using coord_cartesian
 
-> ui <- fluidPage(
+```{r coord_cartesian zooming}
+mpg %>% 
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point(aes(color = class), position = "jitter") +
+  geom_smooth() +
+  coord_cartesian(xlim = c(5, 7), ylim = c(10, 30))
+```
 
-> titlePanel("Old Faithful Geyser Data"),
+Line 1 - 4: Create the regular scatterplot with a loess smoothed line. The points are colored by the class of the car.
 
-> sidebarLayout(
+Line 5: Plots all of the points but limits the graph to those cars with displacement between 5 and 7 and highway mileage between 10 and 30. All of the points are still considered in the plot but we only see those specified by the limits in coord_cartesian.
 
->  sidebarPanel(
+Code Chunk \#2 Zooming using filtering
 
-> sliderInput("bins",
-                       "Number of bins:",
-                       min = 1,
-                       max = 50,
-                       value = 30)
-                ),
+```{r filtered zooms}
+mpg %>%
+  filter(displ >= 5, displ <= 7, hwy >= 10, hwy <= 30) %>%
+  ggplot(aes(displ, hwy)) +
+  geom_point(aes(color = class), position = "jitter") +
+  geom_smooth()
+```
 
->  mainPanel(
+Lines 1 - 2: Limits the data to be plotted to only those observations with displacement between 5 and 7 and highway mileage between 10 and 30.
 
->  plotOutput("distPlot")
-       )
-   ) )
+Lines 3 - 5: Create the regular scatterplot with a loess smooth.
 
-Line 1: Designates the code section as the ui or user interface and declares that the app should use fluidpage. This allows the Shiny app to adapt to the size of the screen of the device used to view the app.  
+Why are the loess lines in these two graphs different?
 
-Line 2: Gives the title "Old Faithful Geyser Data" to the app.
-
-Line 3: Provides the structure for the sidebar panel which is where the input will occur in this app.
-
-Lines 4 - 9:  Creates a slider which creates a variable called bins. The title seen by the user is "Number of bins:". The slider has a minimum value of 1 and a maximum value of 50. The initial value of the slider is set to 30.
-
-Line 10: Creates the section for the output that comes from the server.
-
-Lne 11:  Plots the output distPlot. This plot was created in the server part of the app.
-
-### Code Chunk #2 Server Part of a Shiny app
-
-> server <- function(input, output) {
-
-> output$distPlot <- renderPlot({
-
->  x <- faithful[, 2]
-
->  bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
->  hist(x, breaks = bins, col = 'darkgray', border = 'white')})}
-
-Line 1:  Declares a server function that has input and output as arguments  
-
-Line 2:  Creates an object in the output list called distPlot which is the result of R code that creates a graph.  
-
-Line 3:  Assigns the variable x to the second column in the faithful tibble.  
-
-Line 4:  Creates a new variable called bins which is a sequence that starts at the minimum value of x and ends at the maximum value of x. The length of the sequence is the number of bins inputed from the slider in the ui plus 1.  
-
-Line 5:  Creates a histogram of x (the second column in faithful) with breaks that come from the sequence specified in line 4: the color of the histogram is "darkgray" and the border of the bars is "white".  
+The smoothed line in the first graph is using all of the data whereas the second using only 38 rows from mpg that satisfy the filtering condition.
 
 ## Write Code
 
-Alter the basic shiny app so that it draws a histogram with number of bins that are determined by the user for the hwy variable in the mpg tibble. Attach your R script file to your homework.
+Problem 3 from 28.2.1 Exercises
 
-For the code, see the associated R script file.
+Take an exploratory graphic that you've created during the semester, and add informative labels, annotations, scales, and themes to make it easier for others to understand.
+
+```{r diamonds}
+diamonds %>% 
+  slice_sample(n = 1000) %>% 
+  filter(carat <= 2.5) %>% 
+  ggplot(aes(carat, price / 1000)) +
+  geom_point(size = 1,
+             shape = 20,
+             position = "jitter",
+             color = "red",
+             alpha = 0.6) +
+  geom_smooth(colour = "royalblue", se = FALSE) +
+  labs(
+    title = "Diamond prices form a non-linear pattern with diamond weight
+    that has heteroskedastic variation.",
+    y = "Thousands of Dollars",
+    x = "Weight in Carats"
+  ) +
+  scale_x_continuous(breaks = seq(0, 2.5, 0.25)) +
+  theme(panel.background = element_rect(fill = "lightsteelblue1"))
+```
+
+We can fix the nonlinearity and heteroskedasticity problems with a log-log transformation.
+
+```{r log log transformation}
+
+```

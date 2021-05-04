@@ -1,0 +1,363 @@
+---
+title: "Pivoting (long and wide), Separating, and Uniting"
+author: "MPA 634: Data Science for Managers"
+date: "25 Feb 2021"
+output:
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+# Load libraries
+library(tidyverse)
+```
+
+### Possible organizations of data
+
+#### Table 1
+
+```{r table 1}
+table1
+```
+
+#### Table 2
+
+```{r table 2}
+table2
+```
+
+#### Table 3
+
+```{r table 3}
+table3
+```
+
+#### Table 4a gives the number of cases
+
+```{r tables 4a cases}
+table4a
+```
+
+#### Table 4b gives the population
+
+```{r table 4b population}
+table4b
+```
+
+### Rules for tidy data
+
+1.  Each variable must have its own column
+2.  Each observation must have its own row
+3.  Each value must have its own cell
+
+### Because table 1 is tidy, we can perform vectorized operations
+
+#### Calculate cases per 10,000 people
+
+```{r per 10000 people cases}
+table1 %>% 
+  mutate(rate = cases / population * 10000)
+```
+
+#### Compute cases per year
+
+```{r cases per year}
+table1 %>% 
+  group_by(year) %>% 
+  summarise(number_cases = sum(cases))
+```
+
+#### Alternative computation
+
+```{r alternative}
+table1 %>% 
+  count(year, wt = cases)
+```
+
+#### Visualize changes over time
+
+```{r changes over time in cases}
+table1 %>% 
+  ggplot(aes(x = year, y = cases)) +
+  geom_line(aes(group = country), color = "grey50") +
+  geom_point(aes(color = country), size = 2)
+  
+```
+
+#### Visualize Cases per 10,000
+
+```{r cases per thousand}
+table1 %>% 
+  mutate(rate = cases / population * 10000) %>% 
+  ggplot(aes(x = year, y = rate)) +
+  geom_line(aes(group = country), color = "grey50") +
+  geom_point(aes(color = country), size = 2)
+```
+
+### Pivot Longer
+
+```{r pivot longer table}
+table4a
+```
+
+Cases should be a single column (variable)
+
+```{r pivot longer for cases}
+table4a %>%
+  pivot_longer(
+    cols = c(`1999`, `2000`),
+    names_to = "year",
+    values_to = "cases"
+  )
+```
+
+Convert population to a single column
+
+```{r pivot longer for population}
+table4b %>% 
+  pivot_longer(cols = c(`1999`, `2000`),
+               names_to = "year",
+               values_to = "population")
+```
+
+Put cases and population into one tibble
+
+1.  Convert cases into a single column
+2.  Convert population into a single column
+3.  Join the two above conversions. (We will talk about joins next class)
+
+```{r join cases and population}
+tidy4a <- table4a %>% 
+  pivot_longer(cols = c(`1999`, `2000`),
+               names_to = "year",
+               values_to = "cases")
+
+tidy4b <- table4b %>% 
+  pivot_longer(cols = c(`1999`, `2000`),
+               names_to = "year",
+               values_to = "population")
+
+tidy4a %>% 
+  left_join(tidy4b)
+```
+
+### Wider
+
+```{r pivot wider table}
+table2
+```
+
+```{r wider into tidy tibble}
+table2 %>% 
+  pivot_wider(names_from = type, values_from = count)
+```
+
+### Separate
+
+```{r separate table}
+table3
+```
+
+Separate with default choice of separation character
+
+```{r default separation into cases and population}
+table3 %>% 
+  separate(col = rate, into = c("cases", "population"))
+```
+
+Separate with specified separation character
+
+```{r specific separation into variables for cases and population}
+table3 %>% 
+  separate(col = rate, into = c("cases", "population"), sep = "/")
+```
+
+Separate data by specifying the number of characters.
+
+```{r searpate year into century and year}
+(table5 <- table3 %>% 
+  separate(col = year, into = c("century", "year"), sep = 2)
+)
+```
+
+### Unite
+
+Let's put century and year back together
+
+#### Default separator
+
+```{r default year and centry back into the same variable}
+table5 %>% 
+  unite(new, century, year)
+```
+
+#### No separator
+
+```{r no separator year and centry back into the same variable}
+table5 %>% 
+  unite(new, century, year, sep = "")
+```
+
+### Case study from the WHO Global Tuberculosis Report
+
+```{r who tibble}
+who
+```
+
+Observations about the who tibble:
+
+1.  The variables country, iso2, and iso3 are redundant.
+2.  The year column is clearly a variable.
+3.  Other columns are like values not variables
+
+#### First step, use pivot longer
+
+```{r pivot longer for the columns}
+who1 <- who %>% 
+  pivot_longer(
+    cols = new_sp_m014:newrel_f65,
+    names_to = "key",
+    values_to = "cases",
+    values_drop_na = TRUE
+  )
+who1
+```
+
+#### How many observations in each value for the new key variable
+
+```{r how many cases for each key}
+who1 %>% 
+  count(key)
+```
+
+A data dictionary tells us:
+
+1.  The first three letters of each column denote whether the column contains new or old cases of TB. In this dataset, each column contains new cases.
+2.  The next two letters describe the type of TB:
+
+-   rel stands for cases of relapse ep stands for cases of extrapulmonary TB
+-   sn stands for cases of pulmonary TB that could not be diagnosed by a pulmonary smear (smear negative)
+-   sp stands for cases of pulmonary TB that could be diagnosed by a pulmonary smear (smear positive)
+-   The sixth letter gives the sex of TB patients. The dataset groups cases by males (m) and females (f).
+
+4.  The remaining numbers gives the age group. The dataset groups cases into seven age groups:
+
+-   014 is 0 -- 14 years old
+-   1524 is 15 -- 24 years old
+-   2534 is 25 -- 34 years old
+-   3544 is 35 -- 44 years old
+-   4554 is 45 -- 54 years old
+-   5564 is 55 -- 64 years old
+-   65 is 65 or older
+
+#### Fix some values so that we can use separate
+
+We need a minor fix to the key variable. The values "newrel" need to be "new_rel". We will use the str_replace function from the stringr library. (We don't have time to cover string or date manipulation in our class.)
+
+```{r ad _ to some newrel values}
+who2 <- who1 %>% 
+  mutate(key = stringr::str_replace(key, "newrel", "new_rel"))
+```
+
+#### Separate the key variable into three variables named new, type, and sexage
+
+```{r separate key into new type and sexage}
+who3 <- who2 %>% 
+  separate(col = key, into = c("new", "type", "sexage"), sep = "_")
+who3
+```
+
+#### The variable new only has one value:
+
+```{r no info in new}
+who3 %>% 
+  count(new)
+```
+
+#### Drop the redundant country variables and the new column
+
+```{r drop the variables that are not important}
+who4 <- who3 %>% 
+  select(-new, -iso2, -iso3)
+```
+
+#### Separate sexage into sex and age
+
+```{r separate sexage into sex and age}
+who5 <- who4 %>% 
+  separate(col = sexage,
+           into = c("sex", "age"), sep = 1)
+who5
+```
+
+#### Value of piping
+
+```{r value of piping}
+tidy_who <- who %>% 
+  pivot_longer(
+    cols = new_sp_m014:newrel_f65,
+    names_to = "key",
+    values_to = "cases",
+    values_drop_na = TRUE
+  ) %>% 
+  mutate(key = stringr::str_replace(key, "newrel", "new_rel")) %>%
+  separate(col = key,
+           into = c("new", "type", "sexage")) %>%
+  select(-new, -iso2, -iso3) %>% 
+  separate(
+    col = sexage,
+    into = c("sex", "age"),
+    sep = 1
+  )
+
+tidy_who
+```
+
+### Non tidy way of using pivot longer
+
+We want use boxplots to compare highway and city mileage in the mpg tibble.
+
+#### Alternative I: Use a wide tibble with two variables
+
+```{r boxplot using multiple layers}
+mpg %>% 
+  ggplot() +
+  geom_boxplot(aes(x = cty, y = factor("City"))) +
+  geom_boxplot(aes(x = hwy, y = factor("Highway"))) +
+  labs(
+    title = "Boxplot using two layers",
+    subtitle = "Can't use this approach with the mean and violin plots",
+    x = "Miles Per Gallon",
+    y = "",
+    caption = "Data Source: tidyverse mpg tibble"
+  )
+```
+
+#### Alternative II: Create a long tibble
+
+```{r create a long tibble}
+mpg %>%
+  select(hwy, cty) %>%
+  pivot_longer(everything(),
+               names_to = "type_of_driving",
+               values_to = "mileage") %>%
+  ggplot(aes(x = mileage,
+             y = type_of_driving,
+             fill = type_of_driving)) +
+  geom_boxplot(show.legend = FALSE, alpha = 0.5) +
+    stat_summary(fun = "mean",
+      geom = "point",
+      shape = 23,
+      size = 1.5,
+      fill = "red") +
+  labs(
+    title = "Boxplots using a long tibble",
+    subtitle = "All the power of ggplot available",
+    x = "Miles Per Gallon",
+    y = "",
+    caption = "Data Source: tidyverse mpg tibble"
+  )
+```

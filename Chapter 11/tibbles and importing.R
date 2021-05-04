@@ -1,6 +1,6 @@
 # Tibbles, data frames, importing, and exporting
-# Initial: October 15, 2018
-# Revision: October 15, 2018
+# Initial: 15 October 2018
+# Revision: 22 Feb 2021
 # Ray Nelson
 
 # Initial libraries

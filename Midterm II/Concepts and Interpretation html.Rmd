@@ -1,0 +1,108 @@
+---
+title: "Midterm II Winter 2021"
+author: "Data Science for Managers"
+date: "Code Interpretation"
+output: 
+  html_document:
+    code_folding: show
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+library(nycflights13)
+library(viridis)
+library(lubridate)
+```
+
+### Concepts
+
+1.  Explain why pivot_longer and pivot_wider are opposite operations.
+
+2.  Compare and contrast mutating and filtering joins.
+
+3.  First define factors and explain what is meant by a factor's level and label.
+
+4.  Explain when and why you should write an R function.
+
+5.  Explain the relationship between the cut function and if else conditional execution.
+
+### Code Interpretation
+
+As you interpret the following code, feel free to copy and paste it into RStudio so you can experiment with the outcomes for each line of code. Make sure that you explain your code by identifying which lines of code you are interpreting. Make sure that your explanation on what the code is accomplishing and doesn't just repeat the code.
+
+#### Code Chunk \#1
+
+Please recall that the faithful tibble has two columns or variables. They are the waiting time between eruptions (waiting) and the duration of the eruption of Old Faithful (eruptions).
+
+```{r code 1}
+faithful %>% 
+  pivot_longer(cols = c("waiting", "eruptions"),
+               names_to = "time_span",
+               values_to = "minutes") %>% 
+  group_by(time_span) %>% 
+  summarise(
+    Location = median(minutes),
+    Scale = IQR(minutes)
+  )
+```
+
+## Code Chunk \#2
+
+Please remember that the flights tibble reports all flights leaving from one of the three New York City airports during the year 2013. The airports tibble include information about each of the airports in the FAA database.
+
+```{r code chunk 2}
+flights %>%
+  filter(year == 2013, month == 3, day == 25) %>%
+  group_by(dest) %>%
+  summarise(delay = mean(arr_delay, na.rm = TRUE)) %>%
+  inner_join(airports, by = c("dest" = "faa")) %>%
+  ggplot(aes(x = lon, y = lat, size = delay, colour = delay)) +
+  borders("state") +
+  geom_point() +
+  coord_quickmap() +
+  scale_color_viridis()
+```
+
+## Code Chunk \#3
+
+```{r code chunk 3}
+birthday <- function(birthday) {
+  require(lubridate)
+  birthday <- mdy(birthday)
+  if(
+    identical(today() %>% month(), birthday %>% month() ) &&
+    identical(today() %>% day(), birthday %>% day())
+    ) "Congratulataions, it's your birthday." else
+    "Have a wonderful day even though it's not your birthday."
+}
+birthday("03-23-2000")
+```
+
+## Code Chunk \#4
+
+```{r code chunk 4}
+planes_gte100 <- flights %>% 
+  count(tailnum) %>%
+  filter(n >= 100)
+
+flights %>%
+  anti_join(planes_gte100, by = "tailnum")
+```
+
+## Code Chunk \#5
+
+```{r code chunk 5}
+gss_cat %>% 
+  select(marital, age) %>% 
+  na.omit() %>% 
+  ggplot(aes(x = marital %>% fct_reorder(age, median), y = age, fill = marital)) + 
+  geom_boxplot(show.legend = FALSE) +
+  labs(
+    title = 'As would be expected, "Widowed" is the oldest marital category.',
+    x = "",
+    y = "Age in Years"
+  )
+```

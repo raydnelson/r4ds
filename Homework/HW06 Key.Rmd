@@ -1,14 +1,16 @@
 ---
 title: 'Homework #6 Key'
-author: "Select and Mutate"
-date: "Due: 29 Jan 2020"
+author: "Select, Mutate, and Rename"
+date: "Due: 2 Feb 2021"
 output:
   html_document:
     code_folding: hide
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
 library(nycflights13)
 ```
@@ -32,29 +34,27 @@ flights %>%
     minutes = dep_time %% 100,
     minutes_after_midnight = 60 * hours + minutes
   ) %>%
-ggplot(aes(x = origin,
-           y = minutes_after_midnight,
-           fill = origin)) +
-  geom_boxplot(show.legend = FALSE) +
-  coord_flip()
+  ggplot(aes(y = origin,
+             x = minutes_after_midnight,
+             fill = origin)) +
+  geom_boxplot(show.legend = FALSE)
 ```
 
-The first six lines of code create a new data frame called converted_times from the data frame flights.
-
+The first 6 lines of code create a new tibble with converted times:
 *  The first calculation in the mutate function determines the number of hours from dep_time by using %/% in division of two integers. In this case, we throw away the remainder.
 *  The second calculation, dep_time %% 100, determines the number of minutes as the modulus or remainder of integer division.
 *  Finally, we calculate a new variable minutes_after_midnight which is the number of hours multiplied by 60 plus the number of minutes from the remainder.    
 
-The next 6 lines draw a boxplot based on the new data frame that was created in the first six lines of code.  
+The next 4 lines draw a boxplot based on the new data frame that was created in the first six lines of code.  
 
-*  The mapping assigns the category origin to x and minutes_after_midnight to y. The fill in all successive geometric objects or layers is mapped to the origin.
-*  The boxplot must be made narrower so that it doesn't hide the violin plot. We fill each of the rectangles in the boxplot with grey which supercedes the fill from the aes in the ggplot function call. We suppress the legend for the boxplot layer because labeling is inherent in a boxplot.
-*  Finally, we switch the x and y axes so that the orientation of the boxplot is horizontal rather than vertical.  
+*  The mapping assigns the category origin to y and minutes_after_midnight to x. The fill in all successive geometric objects or layers is mapped to the origin.
+*  We suppress the legend for the boxplot layer because labeling is inherent in a boxplot.
+
 
 ## Write your own code
 
 1.  Select only those flights going from JFK to Chicago (ORD).
-1.  Create a data frame that includes the following variables: dep_delay and arr_delay.
+1.  Include the following variables: dep_delay and arr_delay. 
 1.  Rename the variables dep_delay to departure and arr_delay to arrival.
 1.  Draw a scatterplot of arrival on departure with colored loess and linear regression smoothers without confidence intervals.
 
@@ -67,7 +67,7 @@ flights %>%
          arrival = arr_delay) %>% 
   ggplot(aes(x = departure, y = arrival)) +
   geom_point() +
-  geom_smooth(method = "loess", color = "red", se = FALSE) +
+  geom_smooth(color = "red", se = FALSE) +
   geom_smooth(method = "lm", color = "blue", se = FALSE)
 ```  
 
@@ -82,7 +82,7 @@ Use mutate and the ranking function to find the 5 most delayed flights departing
 ```{r 5 most delayed flights}
 flights %>% 
   filter(origin == "JFK") %>% 
-  mutate(delay = min_rank(desc(dep_delay))) %>% 
+  mutate(delay = dep_delay %>% desc() %>% min_rank()) %>% 
   arrange(delay) %>% 
   select(year, month, day, carrier, dep_delay) %>% 
   head(5)

@@ -1,0 +1,99 @@
+---
+title: 'Homework #14 Key'
+author: 'Functions'
+date: "Due: 11 March 2020"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+library(tidyverse)
+library(lubridate)
+library(nycflights13)
+```
+
+## Concepts  
+
+1.  Give two original examples of functions where you have the function name as a verb and the arguments as nouns.  
+
+choose_airport(destination_airport)  
+
+count_origin(origin_airport)
+
+
+2.  Explain why style is important when you are writing functions.  
+
+Using good style makes your code easier to read, just like correct punctuation. Code that is easy to read is valuable to you and anyone else who is trying to understand your programs and functions. Good style makes revisions and sharing much easier.
+
+3.  What is meant by snake_case and camelCase when you are writing functions?  
+
+The question is how do you write names when you have more than one word. There are three alternatives. The first is snake_case which just puts underscores in place of spaces. The second is camelCase which deletes the spaces but capitalizes the beginning of each new word. The third substitutes a . for each space. The last isn't recommended because in some object oriented programming this has a special meaning, it signifies that you are using a method or function on an object.
+    
+## Interpretation of code  
+
+Interpret the following R code chunk:  
+
+```{r code chunk interpretation}
+graph_dest_hours <- function(dest_airport){
+  flights %>% 
+    filter(dest == dest_airport) %>%
+    ggplot(aes(hour, fill = origin)) +
+    geom_bar() +
+    scale_x_continuous(breaks = seq(0, 24), labels = seq(0, 24)) +
+    labs(
+      title = paste("New York City Flights to", dest_airport),
+      x = "Hour of the day",
+      y = "Number of flights",
+      fill = "New York Airport"
+    )  
+}
+
+graph_dest_hours("LAX")
+```  
+
+Line 1: Declares the function name (graph_dest_hours) and specifies the argument for the function (dest_airport).  
+
+Lines 2 - 3: Chooses all of the observations that correspond to the destination airport inputed from the function call.  
+
+Line 4:  Identifies hour as the x value in anticipation of the bar chart that comes in the next line. It also anticipates the bar chart by filling each bar based on the three possibilities for origin: JFA, EWA, and LGA.  
+
+Line 5:  Counts and graphs the number of flights leaving from each of the NYC airports going to the destination specified in the function call.  
+
+Line 6:  Scales the x axis so that the bars are easy to intepret.
+
+Line 7 - 11:  Labels and titles the graph and axes. The paste function allows us to put the name of the destination airport in our graph title.  
+
+## Write Code
+
+Create a function that takes as an argument the origin airport in the flights tibble that will to accomplish the following
+
+1.  Remove observations with missing values for dep_time
+1.  Select all departing flights for origin airport
+1.  Calculate the hour from dep_time using integer division
+1.  Draw a bar chart for the new hour variable
+1.  Optionally, you can creating labeling for the graph.
+
+Run your function for the JFK airport.
+
+```{r departure function}
+graph_origin_hours <- function(departure_airport) {
+  flights %>%
+    filter(!is.na(dep_time)) %>%
+    filter(origin == departure_airport) %>%
+    mutate(departure_hour = sched_dep_time %/% 100) %>%
+    ggplot(aes(departure_hour)) +
+    geom_bar(fill = "blue") +
+    scale_x_continuous(breaks = seq(0, 24), labels = seq(0, 24)) +
+    labs(
+      title = paste("New York City Flights from", departure_airport),
+      x = "Hour of the day",
+      y = "Number of flights"
+    )  
+}
+
+graph_origin_hours("JFK")
+```

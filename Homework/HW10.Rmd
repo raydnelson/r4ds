@@ -1,8 +1,10 @@
 ---
 title: 'Homework #10'
 author: 'Data Wrangling'
-date: "Due: 24 Feb 2020"
-output: word_document
+date: "Due: 25 Feb 2021"
+output:
+  html_document:
+    code_folding: show
 ---
 
 ```{r setup, include=FALSE}

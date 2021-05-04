@@ -1,12 +1,16 @@
 ---
 title: 'Homework #7'
 author: 'Summarization by Group'
-date: "Due: 3 Feb 2020"
-output: word_document
+date: "Due: 4 Feb 2021"
+output:
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
 library(nycflights13)
 ```
@@ -17,12 +21,9 @@ Carefully explain the following:
 
 1.  The two elements that define the distribution of a random variable  
 
-
 2.  How the mean measures the location of a distribution  
 
-
 3.  How the standard deviation measures the scale or spread of a distribution  
-
 
 ## Interpretation 
 
@@ -40,7 +41,7 @@ flights %>%
 
 ## Coding Problems
 
-1.  Create a new data frame that excludes cancelled flights.
+1.  Create a new data frame that excludes canceled flights.
 
 This data frame should have 327346 observations.
 

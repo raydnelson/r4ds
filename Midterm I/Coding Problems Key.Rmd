@@ -1,0 +1,95 @@
+---
+title: "Midterm I Winter 2021 Key"
+author: "Data Science for Managers"
+date: "23 Feb 2021"
+output:
+  html_document:
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+library(nycflights13)
+```
+
+Exam Parameters
+
+-   Open book but closed other persons
+-   No time limit
+-   Due by class on 23 March
+
+Submit RMD and HTML files that contain code for the following three problems.
+
+## Problem 1
+
+Please write code that completes the following:
+
+-   Create a new variable for the departure hour from the scheduled departure time variable
+-   Calculate the number of flights that leave during each hour and each airport
+-   Draw a bar chart for each of the three New York airports
+-   Color the bars based on their origin airport
+
+Approach 1
+
+```{r problem 1 approach one}
+flights %>% 
+  mutate(
+    dep_hour = sched_dep_time %/% 100
+  ) %>% 
+  count(origin, dep_hour) %>%
+  ggplot(aes(x = dep_hour, y = n, fill = origin)) +
+  geom_col(show.legend = FALSE) +
+  facet_grid(rows = vars(origin)) +
+  labs(
+    title = "Number of flights leaving each New York airport by departure hour",
+    subtitle = "Departure hour calculated from the scheduled departure time",
+    x = "Departure hour",
+    y = "Total number of flights\n"
+  )
+```
+
+Approach 2
+
+```{r problem 1 approach 2}
+flights %>% 
+  mutate(
+    dep_hour = sched_dep_time %/% 100
+  ) %>% 
+  ggplot(aes(x = dep_hour, fill = origin)) + 
+  geom_bar(show.legend = FALSE) + 
+  facet_grid(rows = vars(origin)) +
+  labs(
+    title = "Number of flights leaving each New York airport by departure hour",
+    subtitle = "Departure hour calculated from the scheduled departure time",
+    x = "Departure hour",
+    y = "Total number of flights\n"
+  )
+```
+
+## Problem 2
+
+Please write code that completes the following:
+
+-   Determine the number of destinations for each NYC airport
+-   Create a bar chart that depicts the number of destinations
+-   Color the bars based on the departure airport
+-   Order the bars from smallest to largest number of destinations (This is called a Pareto Chart)
+
+```{r Problem 2}
+flights %>% 
+  group_by(origin) %>% 
+  summarise(
+    destinations = n_distinct(dest)
+  ) %>% 
+  ggplot(aes(x = origin %>% fct_reorder(destinations), y = destinations)) +
+  geom_col(aes(fill = origin), show.legend = FALSE) +
+  labs(
+    title = "Number of distinations for each New York airport",
+    subtitle = "Sorted by number of destinations",
+    x = "New York Airport",
+    y = "Number of Destinations"
+  )
+```

@@ -1,7 +1,7 @@
 ---
 title: "Relational Data"
 author: "MPA 634: Data Science for Managers"
-date: "24 Feb 2020"
+date: "2 March 2021"
 output:
   html_document:
     code_folding: "hide"
@@ -14,9 +14,14 @@ knitr::opts_chunk$set(echo = TRUE,
 # Load libraries
 library(tidyverse)
 library(nycflights13)
+data(flights)
+data(planes)
+data(weather)
+data(airlines)
+data(airports)
 ```
 
-## Overview of tables to be manipulated  
+## Overview of tables to be manipulated
 
 ### Flights Table
 
@@ -28,24 +33,27 @@ flights %>% glimpse()
 
 ```{r airlines tibble}
 airlines %>% glimpse()
-```  
+```
 
 ### Airports Table
 
 ```{r airports tibble}
 airports %>% glimpse()
-```  
-### Planes Table  
+```
+
+### Planes Table
 
 ```{r planes tibble}
 planes %>% glimpse()
-```  
-### Weather Table  
+```
+
+### Weather Table
 
 ```{r weather tibble}
 weather %>% glimpse()  
-```  
-## Keys: Primary and Foreign  
+```
+
+## Keys: Primary and Foreign
 
 ### Check to see if keys are unique for planes tibbles
 
@@ -53,8 +61,9 @@ weather %>% glimpse()
 planes %>% 
   count(tailnum) %>% 
   filter(n > 1)
-```  
-### Check to see if keys are unique for planes tibbles
+```
+
+#### Check to see if keys are unique for each month, day, hour, and origin airport in the weather tibble
 
 ```{r check weather}
 weather %>% 
@@ -62,25 +71,25 @@ weather %>%
   filter(n > 1)
 ```
 
-### Sometimes we don't have an explicit primary key 
+### Sometimes we don't have an explicit primary key
 
 #### Check uniqueness of flight numbers
 
-```{r unique flights}  
+```{r unique flights}
 flights %>% 
   count(year, month, day, flight) %>% 
   filter(n > 1)
-```  
+```
 
-#### Check uniquess of tail number
+#### Check uniqueness of tail number on each day
 
-```{r unique tail number}  
+```{r unique tail number}
 flights %>% 
   count(year, month, day, tailnum) %>% 
   filter(n > 1)
-``` 
+```
 
-## Mutating joins  
+## Mutating joins
 
 ### Subset of columns from flights
 
@@ -88,19 +97,19 @@ flights %>%
 (flights2 <- flights %>% 
   select(year:day, hour, origin, dest, tailnum, carrier)
 )
-```  
+```
 
-### Add the full airline name to the flights2 data.  
+### Add the full airline name to the flights2 data.
 
 ```{r full airline name}
 flights2 %>%
   select(-origin, -dest) %>% 
   left_join(airlines, by = "carrier")
-```  
+```
 
-### Understanding joins  
+### Understanding joins
 
-#### Create the two tibbles x and y  
+#### Create the two tibbles x and y
 
 ```{r join tibbles}
 (x <- tribble(
@@ -116,33 +125,37 @@ flights2 %>%
   2, "y2",
   4, "y3")
 )
-```  
+```
 
 ### inner join
+
 ```{r inner join}
 x %>% 
   inner_join(y, by = "key")
-```  
+```
 
 ### outer join
 
 #### left join
+
 ```{r left join}
 x %>% 
   left_join(y, by = "key")
-```  
+```
 
 #### right join
+
 ```{r right join}
 x %>% 
   right_join(y, by = "key")
-```  
+```
 
 #### full join
+
 ```{r full join}
 x %>% 
   full_join(y, by = "key")
-```  
+```
 
 ### Duplicate Keys
 
@@ -162,7 +175,7 @@ x %>%
   1, "y1",
   2, "y2")
 )
-``` 
+```
 
 #### Left join
 
@@ -171,28 +184,30 @@ x %>%
   left_join(y, by = "key")
 ```
 
-### Defining the key columns  
+### Defining the key columns
 
 ```{r default key}
 flights2 %>% 
   left_join(weather)
-```  
+```
 
-### Using the by  
+### Using the by
 
 ```{r use by}
 flights2 %>% 
   left_join(planes, by = "tailnum")
-```  
+```
 
-### Using the by with two different tables with different key names 
+### Using the by with two different tables with different key names
 
 #### Variables in flights2
 
 ```{r flights2 variables}
 flights2 %>%  glimpse()
 ```
+
 #### Variables in airports
+
 ```{r airports variables}
 airports %>%  glimpse()
 ```
@@ -202,42 +217,138 @@ airports %>%  glimpse()
 ```{r different key names destination}
 flights2 %>% 
   left_join(airports, c("dest" = "faa"))
-```  
+```
 
 #### Left join for origin
 
 ```{r different key names origin}
 flights2 %>% 
   left_join(airports, c("origin" = "faa"))
-```  
+```
 
-### Filtering joins 
+### Filtering joins
 
 #### Find the top 10 destinations
 
 ```{r top ten destinations}
-top_dest <- flights %>%
+(top_dest <- flights %>%
   count(dest, sort = TRUE) %>%
-  head(10)
-top_dest  
-```  
+  slice_head(n = 10)
+)
+```
 
 #### Choose all flights that go to the top ten destinations using filter
 
 ```{r top ten filter}
 flights %>% 
   filter(dest %in% top_dest$dest)
-```  
+```
 
 #### Choose all flights that go to the top ten destinations using semi_join
+
 ```{r top ten semi join}
 flights %>% 
   semi_join(top_dest)
-```  
+```
 
-#### Choose all flights that do not go to the top ten destinations using anti_join 
+#### Choose all flights that do not go to the top ten destinations using anti_join
 
 ```{r not top ten}
 flights %>%
   anti_join(top_dest)
-``` 
+```
+
+### Practice
+
+#### Exercise 1
+
+Total number of flights from each airport with full name of airport
+
+```{r total flights from each airport}
+flights %>% 
+  count(origin) %>% 
+  left_join(airports, by = c("origin" = "faa")) %>% 
+  select(
+    Airport = name,
+    Number_of_Flights = n)
+```
+
+#### Exercise 2
+
+Destination airports with the top 10 largest average arrival delays
+
+```{r largest arrival delays}
+flights %>% 
+  group_by(dest) %>% 
+  summarise(
+    delay = mean(arr_delay, na.rm = TRUE) %>% round(2)
+  ) %>% 
+  ungroup() %>% 
+  arrange(delay %>% desc()) %>% 
+  slice_head(n = 10) %>%
+  left_join(airports, by = c("dest" = "faa")) %>% 
+  select(
+    Destination = name,
+    Delay = delay
+  )
+  
+```
+
+#### Exercise 3
+
+Average departure delay by airline and departure airport
+
+```{r average departure delay}
+flights %>% 
+  group_by(carrier, origin) %>% 
+  summarise(
+    average_delay = mean(dep_delay, na.rm = TRUE) %>% round(2)
+  ) %>% 
+  ungroup() %>% 
+  left_join(airlines, by = "carrier") %>%
+  select(
+    carrier = name,
+    origin,
+    average_delay
+  ) %>% 
+  left_join(airports, by = c("origin" = "faa")) %>% 
+  select(carrier,
+         airport = name,
+         average_delay) %>% 
+  arrange(average_delay %>% desc())
+
+```
+
+#### Exercise 4
+
+-   Remove flights with missing tail numbers
+-   Top 10 planes with the most flights
+-   Add full carrier name
+
+```{r most flown aircraft}
+(top10_planes <- flights %>% 
+  filter(!is.na(tailnum)) %>% 
+  count(tailnum, sort = TRUE) %>% 
+  slice_head(n = 10)
+)
+
+top10_planes %>% 
+  left_join(flights) %>% 
+  distinct(tailnum, .keep_all = TRUE) %>% 
+  left_join(airlines) %>% 
+  select(tailnum, airline = name, number_of_flights = n)
+```
+
+#### Exercise 5
+
+Choose all flights originating at JFK going to the top 10 destinations for JFK
+
+```{r all flights from JFK to top 10 destinations}
+top10_destinations <- flights %>% 
+  filter(origin == "JFK") %>% 
+  count(dest, sort = TRUE)
+
+flights %>% 
+  filter(origin == "JFK") %>% 
+  semi_join(top10_destinations)
+```

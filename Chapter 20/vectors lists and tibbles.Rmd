@@ -1,0 +1,355 @@
+---
+title: "Vectors"
+author: "MPA 634: Data Science for Managers"
+date: "23 March 2021"
+output: 
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+# Load libraries
+library(tidyverse)
+library(Quandl)
+library(fable)
+```
+
+### Why are atomic vectors and lists important?
+
+#### Tibbles and Linear Regression
+
+##### Consider the mpg tibble which is really a list of atomic vectors:
+
+```{r mpg}
+str(mpg)
+```
+
+##### When we do a regression then we create a list
+
+```{r simple regression}
+lm_model <- lm(hwy ~ displ, data = mpg)
+```
+
+##### Structure of the regression model
+
+```{r structure of a linear model}
+str(lm_model)
+```
+
+##### Summary of the regression model
+
+```{r summary of simple regression}
+lm_model %>% summary()
+```
+
+##### Here are the coefficients of the simple regression model
+
+```{r regression coefficients}
+lm_model$coefficients
+```
+
+#### Time Series: Exponential Smoothing
+
+##### Get a time series from FRED
+
+```{r time series from FRED}
+jobs <- Quandl('FRED/PAYNSA',
+          type = 'ts',
+          start_date = '1959-01-01') %>% 
+  as_tsibble()
+```
+
+##### A plot of the data
+
+```{r time series plot using autplot}
+jobs %>% 
+  autoplot()
+```
+
+##### Fit an ETS (Error Trend and Seasonality Model)
+
+```{r ETS of jobs}
+jobs_model <- jobs %>% 
+  model(
+    ets_model = ETS()
+  )
+```
+
+##### Structure of ETS model
+
+```{r structure of ETS jobs model}
+str(jobs_model)
+```
+
+##### Use model to forecast
+
+```{r}
+jobs_model %>% 
+  forecast(h = 12)
+```
+
+##### Plot the forecast and the time series
+
+```{r time series plot with forecasts}
+jobs_model %>% 
+  forecast(h = 12) %>% 
+  autoplot(jobs)
+```
+
+### How to store information in R. We have the following possible objects:
+
+-   atomic vectors (1 dimensional: character, logical, and numeric)
+-   lists
+-   tibbles (which are a special case of lists)
+
+### Create vectors in which we place information
+
+```{r example of storing information}
+letters
+typeof(letters)
+typeof(1:10)
+
+(x <- list("a", "b", 1:10))
+length(x)
+```
+
+### Types of important atomic vectors
+
+#### Logical
+
+```{r logical}
+1:10 %% 3 == 0
+c(TRUE, TRUE, TRUE, FALSE, NA)
+```
+
+#### Numeric
+
+```{r numeric}
+typeof(1)
+typeof(1L)
+
+1.5L
+
+x <- sqrt(2) ^ 2
+x
+x - 2
+
+c(-1, 0, 1) / 0
+
+is.finite(1 / 0)
+is.infinite(1 / 0)
+is.nan(0 / 0)
+```
+
+#### Character atomic vectors
+
+##### Present students
+
+```{r favorite associated with current students}
+favorite_current <- c(
+"Jacob",
+"Lissie",
+"Kofi",
+"Batbold",
+"Alyssa Julia",
+"Kevin",
+"Alise",
+"Tanner",
+"Gui",
+"Amber",
+"Jacob",
+"Marylis",
+"Erika",
+"Hannah",
+"Chris",
+"Emily",
+"Patricia",
+"Andrew",
+"Patricia",
+"Teneia",
+"Poe",
+"Jenna",
+"Evan",
+"Liz",
+"Paul",
+"David",
+"Natalie"
+)
+```
+
+##### Character Vector: Previous students
+
+```{r previous students}
+favorite_previous <- c(
+  "Dallin",
+  "Jason",
+  "McKayla",
+  "Alyssa",
+  "Jordan",
+  "Madisyn",
+  "Moira",
+  "Spencer",
+  "Andrew",
+  "Eben",
+  "Anson",
+  "Sophie",
+  "Wilson",
+  "Jarrett",
+  "Cecily",
+  "Bruce",
+  "Alex"
+)
+```
+
+### Information about present and past students
+
+#### Programs in which favorite students can participate
+
+```{r programs}
+program_names <- c("EN", "MBA", "IS", "MPA", "MPH")
+program_codes <- c(1:5)
+```
+
+#### Programs that correspond to individuals
+
+```{r favorite in programs}
+programs_current <- c(4, 4, 4, 4, 4, 4, 5, 4, 3, 4, 4, 4, 4, 4, 1, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 2, 4)
+programs_previous <- c(4, 2, 4, 4, 2, 3, 4, 4, 2, 4, 3, 4, 2, 2, 5, 1, 2)
+```
+
+#### Types of the object that we have created
+
+```{r types of objects}
+typeof(favorite_current)
+typeof(program_names)
+typeof(program_codes)
+typeof(programs_current)
+```
+
+### Organize our information into tibbles and lists
+
+#### Programs as a tibble and a list
+
+```{r programs as a tibbles and a list}
+(programs <- tibble(program_names, program_codes))
+(programs_list <- list(program_names = program_names, program_codes = program_codes))
+```
+
+#### favorite as tibbles and lists
+
+```{r favorite as tibble I}
+length(favorite_current)
+length(favorite_previous)
+```
+
+#### Error in creating tibble
+
+```{r error in creating tibble, error = TRUE}
+(classes_tibble) <- tibble(favorite_current, favorite_previous)
+```
+
+#### Lists work because vectors of different lengths are allowed.
+
+```{r lists work}
+(class_list <- list(favorite_current = favorite_current,
+                    favorite_previous = favorite_previous))
+```
+
+#### favorite as a long tibble
+
+##### Create vectors using rep function
+
+```{r character vectros of current and previous}
+(current <- rep("current", length(favorite_current)))
+(previous <- rep("previous", length(favorite_previous)))
+```
+
+##### Tibble for current students
+
+```{r current tibble}
+current <- tibble(favorite_current, programs_current, current)
+colnames(current) <- c("individual", "program", "section")
+current
+```
+
+##### Tibble for previous students
+
+```{r previous tibble}
+previous <- tibble(favorite_previous, programs_previous, previous)
+colnames(previous) <- c("individual", "program", "section")
+previous
+```
+
+##### Combine two tibbles into a single long tibble
+
+```{r long tibble}
+(classes <- rbind(current, previous))
+```
+
+##### Add program identifier to the tibble with inner join and cleanup the tibble
+
+```{r add program identifier}
+classes %>% 
+  inner_join(programs, by = c("program" = "program_codes")) %>% 
+  select(-program) %>% 
+  rename(program = program_names)
+```
+
+### Information about objects
+
+```{r object information}
+colnames(classes)
+dim(classes)
+nrow(classes)
+ncol(classes)
+str(classes)
+```
+
+### Accessing information in lists
+
+#### Objects for use in this exercise include:
+
+-   classes (tibble that was already created)
+-   programs (tibble that was already created)
+-   favorite (list that needs to be created from favorite_previous and favorite_current)
+-   a list called rdn_teaching which is a list that includes the above three objects
+
+#### Create the sections list
+
+```{r sections list}
+favorite <- list(favorite_current = favorite_current,
+                    favorite_previous = favorite_previous)
+```
+
+#### Type of the objects
+
+```{r type of objects for rdn}
+typeof(classes)
+is_tibble(classes)
+typeof(favorite)
+is_tibble(favorite)
+typeof(programs)
+is_tibble(programs)
+```
+
+#### Create the list rdn_teaching
+
+```{r rdn_teaching creation}
+rdn_teaching <- list(classes = classes, favorite = favorite, programs = programs)
+```
+
+#### Investigate rdn_teaching
+
+```{r rdn_investigation}
+typeof(rdn_teaching)
+is_tibble(rdn_teaching)
+```
+
+#### Structure of the list
+
+```{r structure of rdn_teaching}
+str(rdn_teaching)
+```

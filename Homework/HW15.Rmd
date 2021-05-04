@@ -1,77 +1,62 @@
 ---
 title: 'Homework #15'
-author: 'Functions'
-date: "Due: 9 March 2020"
-output: word_document
+author: 'Conditional Execution'
+date: "Due: 16 March 2021"
+output:
+   html_document:
+     code_folding: show
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, 
-                      warning = FALSE,
-                      message = FALSE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 library(tidyverse)
 library(lubridate)
-library(nycflights13)
 ```
 
 ## Concepts  
 
-1.  Give two original examples of functions where you have the function name as a verb and the arguments as nouns.  
+1.  Use online documentation for the cut function to explain how it works.  
 
-2.  Explain why style is important when you are writing functions.
-
-3.  What is meant by snake_case and camelCase when you are writing functions? 
+2.  Explain how the switch function can be used as a replacement for long chains of if else statements.
     
 ## Interpretation of code  
 
-Interpret the following R code chunk:  
+Interpret the following R code chunks: 
 
-```{r code chunk interpretation}
-graph_dest_hours <- function(dest_airport){
-flights %>% 
-  filter(dest == dest_airport) %>%
-  ggplot(aes(hour, fill = origin)) +
-  geom_bar() +
-  scale_x_continuous(breaks = seq(0, 24), labels = seq(0, 24)) +
-  labs(
-    title = paste("New York City Flights to", dest_airport),
-    x = "Hour of the day",
-    y = "Number of flights",
-    fill = "New York Airport"
-  )  
+Code Chunk #1
+
+```{r code chunk for determining whether a temperature is above or below freezing}
+freezing <- function(temperature){
+  if(temperature < 32) "below"
+  else if (temperature == 32) "freezing"
+  else "above"
 }
+```
 
-graph_dest_hours("LAX")
+Code Chunk #2
+
+```{r code chunk interpretation, warning = FALSE, message = FALSE}
+# Below average and above average highway mileage using cut
+(intervals <- c(0, mean(mpg$hwy), max(mpg$hwy)))
+cut(mpg$hwy, intervals, labels = c("below average", "above average"))
 ```  
 
 ## Write Code
 
-### Problem 1  
+### Problem 1 from 19.4.4 Exercises Problem #2
 
-Write code that creates a function that takes as an argument the origin airport in the flights tibble that will to accomplish the following
+Write a greeting function that says "good morning", "good afternoon", or "good evening", depending on the time of day. (Hint: After installing the lubridate library, then the code lubridate::now() %>% lubridate::hour() code will give you the current time.)
 
-1.  Remove observations with missing values for dep_time
-1.  Select all departing flights for origin airport
-1.  Calculate the hour from dep_time using integer division
-1.  Draw a bar chart for the new hour variable
-1.  Optionally, you can creating labeling for the graph.
-
-Run your function for the JFK airport.
-
-```{r homework image, echo = FALSE}
-homework_graph <- "http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW15 Graph.png"
+```{r greeting function}
+lubridate::now() %>% lubridate::hour()
 ```
 
-![](`r homework_graph`)
+### (Optional) Problem 2 from 19.4.4 Exercises Problem #3
 
-```{r departure function}
+Implement a fizzbuzz function. It takes a single number as input. If the number is divisible by three, it returns "fizz". If it’s divisible by five it returns "buzz". If it’s divisible by three and five, it returns "fizzbuzz". Otherwise, it returns the number. Make sure you first write working code before you create the function. You should use & and | when comparing vectors. You should use && and || when comparing scalars.  
 
-```
-
-### Problem 2
-
-Write a function that calculates the number of days from today until the last day of class. Your function should take as an argument the last day of class. 
-
-```{r days until the end of the semester}
+```{r fizzbuzz function}
 
 ```

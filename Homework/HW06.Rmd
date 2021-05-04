@@ -1,12 +1,16 @@
 ---
 title: 'Homework #6'
-author: "Select and Mutate"
-date: "Due: 29 Jan 2020"
-output: word_document
+author: "Select, Mutate, and Rename"
+date: "Due: 2 Feb 2021"
+output:
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
 library(nycflights13)
 ```
@@ -26,19 +30,16 @@ flights %>%
     minutes = dep_time %% 100,
     minutes_after_midnight = 60 * hours + minutes
   ) %>%
-ggplot(aes(x = origin,
-           y = minutes_after_midnight,
-           fill = origin)) +
-  geom_boxplot(show.legend = FALSE) +
-  coord_flip()
+  ggplot(aes(y = origin,
+             x = minutes_after_midnight,
+             fill = origin)) +
+  geom_boxplot(show.legend = FALSE)
 ```
-
-The first six lines of code create a new data frame called converted_times from the data frame flights.
 
 ## Write your own code
 
 1.  Select only those flights going from JFK to Chicago (ORD).
-1.  Create a data frame that includes the following variables: dep_delay and arr_delay. 
+1.  Include the following variables: dep_delay and arr_delay. 
 1.  Rename the variables dep_delay to departure and arr_delay to arrival.
 1.  Draw a scatterplot of arrival on departure with colored loess and linear regression smoothers without confidence intervals.
 

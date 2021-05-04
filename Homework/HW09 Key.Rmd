@@ -1,7 +1,7 @@
 ---
 title: 'Homework #9 Key'
 author: 'Covariation'
-date: "Due: 10 Feb 2020"
+date: "Due: 11 Feb 2021"
 output:
    html_document:
      code_folding: hide
@@ -16,7 +16,7 @@ library(tidyverse)
 
 ## Concepts  
 
-#### 1.  Explain how Tukey's five number summary is related to the boxplot.
+#### Extra.  Explain how Tukey's five number summary is related to the boxplot.
 
 The boxplot contains each of the element that comprise Tukey's five number summary:
 
@@ -26,14 +26,14 @@ The boxplot contains each of the element that comprise Tukey's five number summa
 4. *Third quartile* is the upper hinge on the box part of the boxplot
 5. *Maximum* is either the largest outlier or largest value included in the right or upper whisker. 
 
-#### 2.  Identify at least five geom's that help you explore the covariation between two variables
+#### 1.  Identify at least five geom's that help you explore the covariation between two variables
 
 1. Categorical and continuous
   * geom_boxplot
   * geom_violin
   * geom_freqpoly
 2. Two categorical
-  * geom_hex
+  * geom_count
   * geom_tile
 3. Two continuous variables
   * geom_point
@@ -41,7 +41,7 @@ The boxplot contains each of the element that comprise Tukey's five number summa
   * geom_path
   * geom_line
   
-#### 3. Explain how you can use violin plots to determine whether a distribution is symmetrical.
+#### 2. Explain how you can use violin plots to determine whether a distribution is symmetrical.
 
 You can use boxplots to detect asymmetry in a distribution of a continuous variable in the following four ways:
 
@@ -50,7 +50,7 @@ You can use boxplots to detect asymmetry in a distribution of a continuous varia
 3. The left and right whiskers aren't the same length.
 4. Outliers exist only in either the left or right tail.
 
-#### 4. Explain how you can use violin plots to determine whether a distribution has fat tail relative to the normal.
+#### 3. Explain how you can use violin plots to determine whether a distribution has fat tail relative to the normal.
 
 The thickness of the tails of a distribution are measured relative to the normal distribution. Tail thickness and kurtosis are an indicator of outliers. In the boxplot, the presence of a large number of outliers probably suggests thick tails.
     
@@ -58,7 +58,7 @@ The thickness of the tails of a distribution are measured relative to the normal
 
 ```{r code chunk interpretation I}
 mpg %>%
-  ggplot(aes(x = reorder(class, cty, FUN = IQR), y = cty)) +
+  ggplot(aes(x = class %>% fct_reorder(cty, IQR), y = cty)) +
   geom_violin(fill = "lightgreen") +
   geom_boxplot(width = 0.1, fill = "lightblue") +
   labs(
@@ -68,7 +68,7 @@ mpg %>%
   coord_flip()
 ```  
 
-Lines 1 - 2: initialize the ggplot by using the mpg data frame. Because we are going to draw a violin plot, we need a categorical variable for our x axis and a numerical variable for our y axis. The reordering in the aes specification means that we can to sort the order of our class variables based on the interquartile range of the city miles per gallon. We assign city miles per gallon to the y or numerical variable. The clause reorder(class, cty, FUN = IQR) means that we should reoder class using the IQR function applied to cty.  
+Lines 1 - 2: initialize the ggplot by using the mpg data frame. Because we are going to draw a violin plot, we need a categorical variable for our x axis and a numerical variable for our y axis. The reordering in the aes specification means that we can to sort the order of our class variables based on the interquartile range of the city miles per gallon. We assign city miles per gallon to the y or numerical variable. The clause class class %>% fct_reorder(cty, IQR) means that we should reorder class using the IQR function applied to cty.  
 
 Lines 3 - 4: create two layers, one for the violin shape and the other for the boxplot. The fill colors are light green and light blue. The width of the boxplot is diminished to 0.1 so that that the boxplots fit within the violin shapes.  
 
@@ -91,9 +91,7 @@ mpg %>%
 
 mpg %>%
   ggplot(aes(x = cty, y = hwy)) +
-  stat_density_2d(aes(fill = stat(density)),
-                  geom = "raster",
-                  contour = FALSE) +
+  geom_density_2d_filled(show.legend = FALSE) +
   labs(
     title = "Relationship between city and highway miles per gallon",
     x = "City Miles Per Gallon",
@@ -105,12 +103,11 @@ mpg %>%
 
 ```{r relationship betwen highway and drive train}
 mpg %>% 
-  ggplot(aes(x = reorder(drv, hwy, FUN = median), y = hwy, fill = drv)) +
-  geom_boxplot(show.legend = FALSE) +
-  coord_flip() +
+  ggplot(aes(y = drv %>% fct_reorder(hwy, median), x = hwy, fill = drv)) +
+  geom_boxplot(show.legend = FALSE, alpha = 0.5) +
   labs(
     title = "Front wheel drive cars get better highway mileage.",
-    x = "Type of Drive Train",
-    y = "Miles per gallon"
+    y = "Type of Drive Train",
+    x = "Miles per gallon"
   )
 ```

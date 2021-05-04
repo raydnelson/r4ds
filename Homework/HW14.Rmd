@@ -1,93 +1,65 @@
 ---
 title: 'Homework #14'
-author: 'Dates and Times'
-date: "Due: 4 March 2020"
-output: word_document
+author: 'Functions'
+date: "Due: 11 March 2021"
+output:
+  html_document:
+    code_folding: show
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
-library(lubridate)
 library(nycflights13)
 ```
 
-## Concepts  
+## Concepts
 
-1.  Software packages often use a reference date for their date-time functions. Excel uses January 1, 1900. One alternative for R is "Unix Epoch", which is 1970-01-01. Explain how these systems represent date and date-time values as numbers.  
+1.  Give two original examples of functions where you have the function name as a verb and the arguments as nouns.
 
-2.  Time spans can be measured as durations, periods, or intervals. Compare and contrast these three ways of considering time.  
-    
-## Interpretation of code  
+2.  Explain why style is important when you are writing functions.
 
-Interpret the following two R code chunks:  
+3.  What is meant by snake_case and camelCase when you are writing functions?
 
-### Code chunk #1  
+## Interpretation of code
 
-```{r code chunk interpretation 1, warning = FALSE, message = FALSE}
-# Create a Function
-make_datetime_100 <- function(year, month, day, time){
-  make_datetime(year, month, day, time %/% 100, time %% 100)
-}
-# Convert departure and arrival times into date-time variables
-flights_dt <- flights %>%
-  filter(!is.na(dep_time), !is.na(arr_time)) %>% 
-  mutate(
-    dep_time = make_datetime_100(year, month, day, dep_time),
-    arr_time = make_datetime_100(year, month, day, arr_time),
-    sched_dep_time = make_datetime_100(year, month, day, sched_dep_time),
-    sched_arr_time = make_datetime_100(year, month, day, sched_arr_time)
-  ) %>% 
-  select(origin, dest, ends_with("delay"), ends_with("time"))
+Interpret the following R code chunk:
 
-flights_dt %>% print()
-```  
-
-### Code chunk #2
-
-```{r code chunk interpretation 2, message = FALSE}
-# Uses the flights_dt from the first code chunk
-flights_dt %>% 
-  filter(dep_time >= ymd(20131225)) %>%
-  filter(dep_time < ymd(20131226)) %>% 
-  ggplot(aes(dep_time)) +
-  geom_freqpoly(binwidth = 900, color = "blue") +
+```{r code chunk interpretation}
+graph_dest_hours <- function(dest_airport){
+flights %>% 
+  filter(dest == dest_airport) %>%
+  ggplot(aes(hour, fill = origin)) +
+  geom_bar(alpha = 0.5) +
+  scale_x_continuous(breaks = seq(0, 24), labels = seq(0, 24)) +
   labs(
-    title = "Flights Departing from New York City",
-    subtitle = "Number every 15 seconds on Christmas Day 2013",
-    x = "Departure Time",
-    y = "Number of Flights"
-  )
+    title = paste("New York City Flights to", dest_airport),
+    x = "Hour of the day",
+    y = "Number of flights",
+    fill = "New York Airport"
+  )  
+}
+
+graph_dest_hours("LAX")
 ```
 
-## Write code
+## Write Code
 
-Problem 1
+Create a function that takes as an argument the origin airport in the flights tibble that will to accomplish the following
 
 1.  Remove observations with missing values for dep_time
-1.  Select origin, year, month, day, and dep_time from the flights data set
-1.  Convert dep_time into a time-date variable using the make_datetime function
-1.  Use the hour function to create a new hour variable from the dep_time
-1.  Draw a bar chart for the new hour variable
-1.  Use faceting to create a chart for each airport
+2.  Select all departing flights for origin airport
+3.  Calculate the hour from sched_dep_time using integer division
+4.  Draw a bar chart for the new hour variable
+5.  Recreate the labeling for the graph
 
-```{r departure hour}
+Run your function for the JFK airport. It should generate a graph like the following:
+
+![Desired result shown above.](http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW14 Graph.png)
+
+
+```{r departure function}
 
 ```
-
-```{r homework image, echo = FALSE}
-homework_graph <- "http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW14 Graph.png"
-```
-
-![](`r homework_graph`)
-
-Problem 2
-
-Use durations, periods, and intervals to calculate your age today. The functions as.duration, as.period, years, and the %--% operator will be helpful.
-
-```{r age}
-
-```  
-
-
-

@@ -1,0 +1,46 @@
+---
+title: "Geospatial Visualization"
+author: "MPA 635: Data Visualization"
+date: "22 Feb 2021"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+library(leaflet)
+load(url("http://govfinance.byu.edu/govfinance/classes/dataViz/lectures/workspaces/geospatial II.RData"))
+```
+
+### Where do dataviz students live?
+
+#### Create a simple graph using leaflet
+
+```{r simple students}
+students %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  addMarkers()
+```
+
+#### Create graph using leaflet
+
+```{r where do dataviz students live}
+students %>%
+  leaflet() %>%
+  addProviderTiles(provider = providers$CartoDB.Positron) %>%
+  addCircleMarkers(
+    popup = ~ name,
+    label = ~ name,
+    radius = 5,
+    color = "red",
+    stroke = FALSE,
+    fillOpacity = 0.5
+  )
+```
+
+

@@ -1,0 +1,432 @@
+---
+title: "Lists, Classes, and Methods"
+author: "MPA 634: Data Science for Managers"
+date: "25 Mar 2021"
+output:
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+library(tidyverse)
+library(nycflights13)
+library(Quandl)
+library(fable)
+library(feasts)
+Quandl.api_key("RsNxG2zxLwi5foym2YWH")
+```
+
+### Why learn about lists, classes, and methods?
+
+#### Filter all the flights going to Chicago, Atlanta, and Los Angeles
+
+```{r code that works}
+destinations_3 <- c("ORD", "ATL", "LAX")
+
+flights %>% 
+  filter(dest %in% destinations_3) %>% 
+  select(dest, carrier, dep_time, sched_dep_time)
+```
+
+#### Top ten destinations from NYC airports
+
+```{r top ten destinations}
+destinations_10 <- flights %>% 
+  count(dest, sort = TRUE) %>% 
+  slice_head(n = 10) %>% 
+  select(dest)
+
+flights %>% 
+  filter(dest %in% destinations_10) %>% 
+  select(dest, carrier, dep_time, sched_dep_time)
+```
+
+#### destinations_3 is a character atomic vector of length 3
+
+```{r what is destinations_3}
+destinations_3 %>% typeof()
+destinations_3 %>% class()
+destinations_3 %>% is_atomic()
+destinations_3 %>% str()
+destinations_3 %>% length()
+```
+
+#### destinations_10 is a tibble and therefore a list
+
+```{r top 10 as a tibble}
+destinations_10 %>% typeof()
+destinations_10 %>% class()
+destinations_10 %>% is_atomic()
+destinations_10 %>% str()
+destinations_10 %>% length()
+```
+
+#### Code that works
+
+```{r convert into a vector using as_vector or pull}
+destinations_10 <- flights %>% 
+  count(dest, sort = TRUE) %>% 
+  slice_head(n = 10) %>% 
+  select(dest) %>% 
+  as_vector()
+
+destinations_10 %>% typeof()
+destinations_10 %>% class()
+destinations_10 %>% is_atomic()
+destinations_10 %>% str()
+destinations_10 %>% length()
+```
+
+#### Flights going to the top 10 destinations
+
+```{r success top 10 destination flights}
+destinations_10 <- flights %>% 
+  count(dest, sort = TRUE) %>% 
+  slice_head(n = 10) %>% 
+  select(dest) %>% 
+  pull()
+
+flights %>% 
+  filter(dest %in% destinations_10) %>% 
+  select(dest, carrier, dep_time, sched_dep_time)
+```
+
+### Selection from an vector
+
+#### Create a character atomic vector
+
+```{r create the list}
+(x <- c("one", "two", "three", "four", "five"))
+x %>% typeof()
+x %>% is_atomic()
+```
+
+#### Select the first, second, and fifth positions
+
+```{r selection by number}
+x[c(1, 2, 5)]
+```
+
+### logical selection
+
+```{r logical selection}
+logical_selector <- x == "three"
+x[logical_selector]
+```
+
+### Lists can contain many types of information
+
+#### Create objects
+
+```{r variety of objects}
+logical <- 1:10 %% 3 == 0 # Those numbers between 1 and 10 that are divisible by 3
+integer <- 10L
+double <-  20
+number <- list(integer = integer, double = double)
+character <- "Data Science"
+```
+
+#### MPA 634 list
+
+```{r list in a list}
+ta_list <- list(laurel = "Laurel",
+                moira = "Moira",
+                sophie = "Sophie")
+student_list <- list(jacob = "Jacob",
+                     lissie = "Lissie",
+                     kofi = "Kofi")
+mpa634_list <- list(ta_list = ta_list,
+                    student_list = student_list)
+```
+
+#### ggplot graph as a list
+
+```{r ggplot creates a list}
+figure <- mpg %>% 
+  ggplot(aes(x = displ, y = hwy, color = drv)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  theme(legend.position = "none")
+figure %>% str()
+
+```
+
+#### linear model as a list
+
+```{r lm creates a list}
+linear_model <- lm(hwy ~ displ, data = mpg)
+linear_model %>% str()
+```
+
+#### Create a named master list
+
+```{r create the list called variety}
+master_list <- list(
+                     slot_one = logical,
+                     slot_two = integer,
+                     slot_three = double,
+                     slot_four = number,
+                     slot_five = character,
+                     slot_six = mpa634_list,
+                     slot_seven = mpg,
+                     slot_eight = figure,
+                     slot_nine = linear_model
+                     )
+```
+
+### Investigate the structure of master list
+
+```{r structure of variety}
+master_list %>% str()
+master_list %>% length()
+master_list %>% names()
+```
+
+### Access the list
+
+```{r accessing the list}
+master_list$slot_one
+master_list$slot_two
+master_list$slot_three
+master_list$slot_four
+master_list$slot_five
+master_list$slot_six
+master_list$slot_six$ta_list
+master_list$slot_six$ta_list$moira
+master_list$slot_six$student_list
+master_list$slot_six$student_list$lissie
+master_list$slot_seven %>%
+  select(hwy, displ, drv)
+```
+
+Access information by position and [ ]
+
+```{r using brackets}
+master_list[3]
+master_list[[3]]
+
+master_list[4]
+master_list[[4]][1]
+master_list[[4]][[1]]
+```
+
+### Special types of lists
+
+#### ggplot graph
+
+```{r ggplot as a list}
+figure <- mpg %>% 
+  ggplot(aes(x = displ, y = hwy, color = drv)) +
+  geom_point() +
+  geom_smooth(method = "lm")+
+  theme(legend.position = "none")
+figure
+figure %>% typeof()
+figure %>% class()
+```
+
+### Linear model
+
+```{r linear model as a list}
+linear_model <- lm(hwy ~ displ, data = mpg)
+linear_model
+linear_model %>% typeof()
+linear_model %>% class()
+```
+
+#### Parts of a linear model
+
+```{r parts of a linear model}
+linear_model$fitted.values %>% 
+  as_tibble
+linear_model %>% coefficients()
+linear_model %>% summary()
+linear_model %>%
+  summary() %>%
+  str()
+summary(linear_model)$r.squared
+linear_model %>%
+  summary() %>%
+  coefficients()
+```
+
+### Factors as atomic vectors with attributes
+
+#### Create a new tibble mpg_new that has drv as a factor
+
+```{r create a new tibble with drv as a factor}
+mpg_new <- mpg %>% 
+  mutate(drv = factor(drv, levels = c("f", "r", "4"),
+                      labels = c("front", "rear", "four-wheel")))
+```
+
+#### What are the attributes of the drv variable
+
+```{r attributes of drv}
+mpg_new$drv %>% typeof()
+mpg_new$drv %>% class()
+mpg_new$drv %>% str()
+mpg_new$drv %>% attributes()
+mpg_new$drv %>% levels()
+```
+
+#### Applications using drv as a factor
+
+##### Frequency table
+
+```{r frequency table}
+mpg_new %>% 
+  count(drv)
+```
+
+##### Legend in scatterplot
+
+```{r legend in scatterplot}
+mpg_new %>% 
+  ggplot(aes(x = displ, y = hwy, color = drv)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(
+    title = "Factor Example",
+    color = "Type of Drive Train" 
+  )
+```
+
+### Methods
+
+#### Summary
+
+```{r multiple uses of summary}
+mpg %>% 
+  select(hwy, displ, drv) %>% 
+  summary
+mpg_new %>% 
+  select(hwy, displ, drv) %>% 
+  summary
+linear_model %>% summary()
+```
+
+#### Methods for summary function
+
+```{r methods for summary}
+methods(summary)
+```
+
+### Example of retail sales forecast
+
+#### Retail sales as a ts object
+
+```{r retail sales as ts object, error = TRUE}
+retail <- Quandl('FRED/RSAFSNA',
+          type = 'ts',
+          start_date = '1959-01-01')
+retail %>% class()
+
+retail %>% 
+  autoplot()
+```
+
+#### Retail sales as a tsibble
+
+```{r retail as a tsibble}
+retail <- retail %>% 
+  as_tsibble()
+retail %>% class()
+
+retail %>% 
+  autoplot()
+```
+
+#### ETS model class
+
+```{r ets model class}
+retail_ets_model <- retail %>% 
+  model(
+    ets_model = ETS()
+  )
+
+retail %>% class()
+retail_ets_model %>% class()
+```
+
+#### ETS forecast class
+
+```{r class of ets forecasts}
+retail_forecast <- 
+ retail_ets_model %>% 
+  forecast(h = 12)
+
+retail_forecast %>% class()
+```
+
+#### The function autoplot uses ggplot
+
+```{r ts series plot with forecast}
+retail_forecast %>% 
+  autoplot(retail) +
+  labs(
+    title = "The effect of COVID-19 has disappeared.",
+    subtitle = "Advanced Retail Sales",
+    x = "",
+    y = "Millions of Dollars",
+    caption = "Source: US Census Bureau"
+  )
+```
+
+#### This code doesn't work.
+
+```{r faulty code, error = TRUE}
+retail %>% 
+  slice_head(n = 10)
+retail %>% 
+  ggplot(aes(x = index, y = value)) +
+  geom_line() +
+  geom_smooth(span = 0.2)
+```
+
+#### What are the characteristics of retail and index
+
+```{r what are the characteristics of index}
+retail %>% typeof()
+retail %>% class()
+retail %>% is_tibble()
+retail$index %>% typeof()
+```
+
+#### Create a graph with ggplot
+
+```{r plot code that does work}
+retail %>% 
+  ggplot(aes(x = index %>% as.Date, y = value / 1000)) +
+  geom_line() +
+  geom_smooth(span = 0.25) +
+  labs(
+    title = "The effect of COVID-19 has disappeared.",
+    subtitle = "Advanced Retail Sales",
+    x = "",
+    y = "Billions of Dollars",
+    caption = "Source: US Census Bureau"
+  )
+```
+
+#### Combine autoplot and ggplot
+
+```{r plot using ggplot and autoplot together}
+retail_forecast %>% 
+  autoplot(color = "red") +
+  geom_line(data = retail,
+            aes(x = index %>% as.Date, y = value)) +
+  geom_smooth(data = retail,
+              aes(x = index %>% as.Date, y = value),
+              span = 0.25) +
+  labs(
+    title = "The effect of COVID-19 has disappeared from retail sales.",
+    subtitle = "Advanced Retail Sales",
+    x = "",
+    y = "Millions of Dollars",
+    caption = "Source: US Census Bureau"
+  )
+```

@@ -1,0 +1,50 @@
+---
+title: "Midterm I Winter 2021"
+author: "Data Science for Managers"
+date: "23 Feb 2021"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(nycflights13)
+```
+
+Exam Parameters
+
+-   Open book but closed other persons
+-   No time limit
+-   Due by class on 23 Feb
+
+Submit RMD and HTML files that contain code for the following two problems.
+
+## Problem 1
+
+Please write code that completes the following:
+
+-   Create a new variable for the departure hour from the scheduled departure time variable
+-   Calculate the number of flights that leave during each hour and each airport
+-   Draw a bar chart for each of the three New York airports
+-   Color the bars based on their origin airport
+
+```{r problem 1}
+# Put your code here
+```
+
+![Create a similar graph](http://govfinance.byu.edu/govfinance/classes/dataScience/exams/Midterm%20I/Problem%201.png) \#\# Problem 2
+
+Please write code that completes the following:
+
+-   Determine the number of destinations for each NYC airport
+-   Create a bar chart that depicts the number of destinations
+-   Color the bars based on the departure airport
+-   Order the bars from smallest to largest number of destinations (Pareto Chart)
+
+```{r Problem 2}
+# Put your code here
+```
+
+![Create a similar graph](http://govfinance.byu.edu/govfinance/classes/dataScience/exams/Midterm%20I/Problem%202.png)

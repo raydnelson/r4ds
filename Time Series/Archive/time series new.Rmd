@@ -1,0 +1,178 @@
+---
+title: "Time Series"
+author: "MPA 634: Data Science for Managers"
+date: "30 Mar 2021"
+output:
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+library(tidyverse)
+library(nycflights13)
+library(Quandl)
+library(fable)
+library(feasts)
+Quandl.api_key("RsNxG2zxLwi5foym2YWH")
+```
+
+### Factors as atomic vectors with attributes
+
+#### Create a new tibble mpg_new that has drv as a factor
+
+```{r create a new tibble with drv as a factor}
+mpg_new <- mpg %>% 
+  mutate(drv = factor(drv, levels = c("f", "r", "4"),
+                      labels = c("front", "rear", "four-wheel")))
+```
+
+#### What are the attributes of the drv variable
+
+```{r attributes of drv}
+mpg_new$drv %>% typeof()
+mpg_new$drv %>% class()
+mpg_new$drv %>% str()
+mpg_new$drv %>% attributes()
+mpg_new$drv %>% levels()
+```
+
+#### Applications using drv as a factor
+
+##### Frequency table
+
+```{r frequency table}
+mpg_new %>% 
+  count(drv)
+```
+
+##### Legend in scatterplot
+
+```{r legend in scatterplot}
+mpg_new %>% 
+  ggplot(aes(x = displ, y = hwy, color = drv)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(
+    title = "Factor Example",
+    color = "Type of Drive Train" 
+  )
+```
+
+### Retail sales forecast
+
+#### Retail sales as a ts object
+
+```{r retail sales as ts object, error = TRUE}
+retail <- Quandl('FRED/RSAFSNA',
+          type = 'ts',
+          start_date = '1959-01-01')
+retail %>% class()
+
+retail %>% 
+  autoplot()
+```
+
+#### Retail sales as a tsibble
+
+```{r retail as a tsibble}
+retail <- retail %>% 
+  as_tsibble()
+retail %>% class()
+
+retail %>% 
+  autoplot()
+```
+
+#### ETS model class
+
+```{r ets model class}
+retail_ets_model <- retail %>% 
+  model(
+    ets_model = ETS()
+  )
+
+retail %>% class()
+retail_ets_model %>% class()
+```
+
+#### ETS forecast class
+
+```{r class of ets forecasts}
+retail_forecast <- 
+ retail_ets_model %>% 
+  forecast(h = 12)
+
+retail_forecast %>% class()
+```
+
+#### The function autoplot uses ggplot
+
+```{r ts series plot with forecast}
+retail_forecast %>% 
+  autoplot(retail) +
+  labs(
+    title = "The effect of COVID-19 has disappeared.",
+    subtitle = "Advanced Retail Sales",
+    x = "",
+    y = "Millions of Dollars",
+    caption = "Source: US Census Bureau"
+  )
+```
+
+#### This code doesn't work.
+
+```{r faulty code, error = TRUE}
+retail %>% 
+  slice_head(n = 10)
+retail %>% 
+  ggplot(aes(x = index, y = value)) +
+  geom_line() +
+  geom_smooth(span = 0.2)
+```
+
+#### What are the characteristics of retail and index
+
+```{r what are the characteristics of index}
+retail %>% typeof()
+retail %>% class()
+retail %>% is_tibble()
+retail$index %>% typeof()
+```
+
+#### Create a graph with ggplot
+
+```{r plot code that does work}
+retail %>% 
+  ggplot(aes(x = index %>% as.Date, y = value / 1000)) +
+  geom_line() +
+  geom_smooth(span = 0.25) +
+  labs(
+    title = "The effect of COVID-19 has disappeared.",
+    subtitle = "Advanced Retail Sales",
+    x = "",
+    y = "Billions of Dollars",
+    caption = "Source: US Census Bureau"
+  )
+```
+
+#### Combine autoplot and ggplot
+
+```{r plot using ggplot and autoplot together}
+retail_forecast %>% 
+  autoplot(color = "red") +
+  geom_line(data = retail,
+            aes(x = index %>% as.Date, y = value)) +
+  geom_smooth(data = retail,
+              aes(x = index %>% as.Date, y = value),
+              span = 0.25) +
+  labs(
+    title = "The effect of COVID-19 has disappeared from retail sales.",
+    subtitle = "Advanced Retail Sales",
+    x = "",
+    y = "Millions of Dollars",
+    caption = "Source: US Census Bureau"
+  )
+```

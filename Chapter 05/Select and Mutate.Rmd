@@ -13,9 +13,30 @@ knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE)
 library(tidyverse)
 library(nycflights13)
+# data(flights)
+# View(flights)
 ```
 
-## Give multiple ways to select dep_time, dep_delay, arr_time, and arr_delay from the flights data frame.  
+### Review Problem (Breakout Rooms with mentors)
+
+Choose those flights
+
+-   Leave from JFK
+-   Fly to Los Angeles (LAX), San Francisco (SFO), or Boston (BOS)
+-   Departed early and arrived early
+-   Top 10 flights that departed earliest
+
+```{r on-time flights from JFK to LAX, SFO or BOS}
+flights %>% 
+  filter(origin == "JFK") %>%
+  filter(dest %in% c("LAX", "SFO", "BOS")) %>% 
+  filter(dep_delay <= 0) %>% 
+  filter(arr_delay <= 0) %>% 
+  arrange(dep_delay) %>% 
+  head(10)
+```
+
+### Give multiple ways to select dep_time, dep_delay, arr_time, and arr_delay from the flights data frame.
 
 ```{r column selection alternatives}
 variables <- c("dep_time", "dep_delay", "arr_time", "arr_delay")
@@ -31,11 +52,120 @@ departures_delays <- flights %>%
   select(4, 6:7, 9)
 ```
 
-## Calculate the difference between dep_time and sched_dep_time and compare the result with dep_delay. How do we explain the difference? 
+### Select and rename
 
-*  Use transmute to calculate the new time difference
-*  Compare dep_time with your calculation to see where they are different
-*  Choose the first 20 observations
+-   Create a new tibble called delays
+-   Remove those observations that have missing values for departure and arrival delay
+-   Select dep_delay and arr_delay
+-   Change the name of dep_delay to departure and arr_delay to arrival.
+
+```{r select and rename}
+(delays <- flights %>% 
+  filter(!is.na(dep_delay)) %>% 
+  filter(!is.na(arr_delay)) %>%
+  select(dep_delay, arr_delay) %>% 
+  rename(departure = dep_delay, arrival = arr_delay) %>% 
+  tail(5)
+)
+
+(delays <- flights %>% 
+  filter(!is.na(dep_delay)) %>% 
+  filter(!is.na(arr_delay)) %>%
+  select(departure = dep_delay, arrival = arr_delay) %>% 
+  tail(5)
+)
+```
+
+### Use mutate, select,  and head to create the following table:
+
+Deviations from the mean arrival delay
+
+```{r deviations from the center using mutate}
+flights %>% 
+  mutate(
+    arr_mean = mean(arr_delay, na.rm = TRUE),
+    arr_mean_deviation = arr_delay - arr_mean
+  ) %>% 
+  select(arr_delay, arr_mean, arr_mean_deviation) %>% 
+  head(5)
+```
+
+### Use transmute and head to create the following table:
+
+Deviations from the mean arrival delay
+
+```{r deviations from the center using transmute}
+flights %>% 
+  transmute(
+    arr_delay,
+    arr_mean = mean(arr_delay, na.rm = TRUE),
+    arr_mean_deviation = arr_delay - arr_mean
+  ) %>% 
+  head(5)
+```
+
+### Integer arithmetic:
+
+-   Integer division (%/%)
+-   Remainder or modulus (%%)
+
+```{r integer arithmetic}
+# Extract the hour from a time given as an integer
+630 %/% 100
+floor(630 / 100)
+
+# Extract the minutes from a time given as an integer
+630 %% 100
+630 - floor(630 / 100) * 100
+
+# Calculate the number of minutes since midnight
+630 %/% 100 * 60 + 630 %% 100
+```
+
+#### Nelson prayer algorithm
+
+```{r prayer algorithm}
+day_of_month <- 12
+# No remainder: Pamela
+# Remainder of one: Jonathan
+# Remainder of two: Ray
+
+day_of_month %% 3
+```
+
+#### Nelson prayer function
+
+```{r Nelson prayer function}
+prayer <- function(day_of_month){
+  modulus <- day_of_month %% 3
+  if (modulus == 0){
+    "Pamela"
+  } else if (modulus == 1){
+    "Jonathan"
+  } else {
+    "Ray"
+  }
+}
+
+prayer(14)
+```
+
+#### Nelson prayer function using switch
+
+```{r Nelson prayer function brief}
+prayer <- function(day_of_month){
+  turn <- (day_of_month %% 3) + 1
+  switch(turn, "Pamela", "Jonathan", "Ray")
+}
+
+prayer(13)
+```
+
+### Calculate the difference between dep_time and sched_dep_time and compare the result with dep_delay. How do we explain the difference?
+
+-   Use transmute to calculate the new time difference
+-   Compare dep_time with your calculation to see where they are different
+-   Choose the first 20 observations
 
 ```{r departure comparison}
 departure_comparison <- flights %>%
@@ -49,12 +179,14 @@ departure_comparison <- flights %>%
 head(departure_comparison, 20)
 ```
 
-## Replicate the calculation of dep_delay
+### Replicate the calculation of dep_delay
 
-*  Create a new data frame (departure_calculations) from flights that  
-   +  Converts dep_time into minutes from midnight
-   +  Converts sched_dep_time into minutes from midnight  
-*  View dep_time, sched_dep_time, del_delay and their calculated equivalents
+-   Create a new data frame (departure_calculations) from flights that
+
+    -   Converts dep_time into minutes from midnight
+    -   Converts sched_dep_time into minutes from midnight
+
+-   View dep_time, sched_dep_time, del_delay and their calculated equivalents
 
 ```{r conversion of times}
 departure_calculations <- flights %>% 
@@ -68,50 +200,38 @@ departure_calculations <- flights %>%
   )
 departure_calculations %>% 
   head(5)
-```  
+```
 
-## Transform scatterplot of diamonds
+### Transform scatterplot of diamonds
 
-### Draw a scatter plot of price on diamond weights
+#### Draw a scatter plot of price on diamond weights
 
-*  Use the diamonds data frame  
-*  The price of diamonds is given by price  
-*  The weight of the diamonds is given by carat  
-*  Use transparency to help with the overplotting of so many observations  
-*  Add a loess smooth without the confidence interval  
-*  Add a simple regression line without the confidence interval  
+-   Use the diamonds data frame
 
-```{r original scatterplot, message = FALSE}
+-   The price of diamonds is given by price
+
+-   The weight of the diamonds is given by carat
+
+-   Use transparency to help with the overplotting of so many observations
+
+-   Add a gam smooth without the confidence interval (A generalized additive model or gam as the default is used because we have so many observations)
+
+-   Add a simple regression line without the confidence interval
+
+```{r original scatterplot}
 diamonds %>%
-  ggplot(mapping = aes(x = carat, y = price)) +
+  ggplot(aes(x = carat, y = price)) +
   geom_point(alpha = 1 / 100) +
   geom_smooth(color = "red", se = FALSE) +
   geom_smooth(method = "lm", color = "blue", se = FALSE)
 ```
 
-### Scale price and carat by subtracting the mean and dividing by the standard deviation
+#### Try a logarithmic transformation of price and carat
 
-*  Create a new data frame that includes scaled values for price and carat
-*  Draw a scatterplot with transparency, loess, and simple regression as before
+-   Create a new data frame that includes logarithmic transformed variables for price and carat
+-   Draw a scatterplot with transparency, loess, and simple regression as before
 
-```{r scaling, message = FALSE}
-diamonds %>%
-  transmute(
-    scale_price = (price - mean(price, na.rm = TRUE)) / sd(price, na.rm = TRUE),
-    scale_carat = (carat - mean(carat, na.rm = TRUE)) / sd(carat, na.rm = TRUE)
-  ) %>%
-  ggplot(aes(x = scale_carat, y = scale_price)) +
-  geom_point(alpha = 1 / 100) +
-  geom_smooth(color = "red", se = FALSE) +
-  geom_smooth(method = "lm", color = "blue", se = FALSE)
-```
-
-### Try a logarithmic transformation of price and carat
-
-*  Create a new data frame that includes logarithmic transformed variables for price and carat
-*  Draw a scatterplot with transparency, loess, and simple regression as before
-
-```{r logarithmic transformation, message = FALSE}
+```{r logarithmic transformation}
 diamonds %>%
   transmute(log_price = log(price),
             log_carat = log(carat)) %>%
@@ -121,14 +241,9 @@ diamonds %>%
   geom_smooth(method = "lm", color = "blue", se = FALSE)
 ```
 
-### We often don't need to create new variables because we have functions that accomplish transformations. Two of these often used transformations are the functions scale and log. We can actually use these transformations within ggplot.
+#### We often don't need to create new variables because we have functions that accomplish transformations. Two of these often used transformations are the functions scale and log. We can actually use these transformations within ggplot.
 
-```{r scatterplots of transformed variables, message = FALSE}
-diamonds %>% 
-  ggplot(aes(x = scale(carat), y = scale(price))) +
-  geom_point(alpha = 1/100) +
-  geom_smooth(color = "red", se = FALSE) +
-  geom_smooth(method = "lm", color = "blue", se = FALSE)
+```{r scatterplots of transformed variables}
 
 diamonds %>% 
   ggplot(aes(x = log(carat), y = log(price))) +
@@ -137,26 +252,68 @@ diamonds %>%
   geom_smooth(method = "lm", color = "blue", se = FALSE)
 ```
 
-## Rank the diamonds by weight and price
+### Scale price and carat by subtracting the mean and dividing by the standard deviation
 
-*  Create two new variables called size_rank and price_rank where 1 means the largest
-*  View the largest diamonds by size
-*  View the largest diamonds by price
+Using boxplots to compare the distributions of price and weight doesn't provide a meaningful graph because price is measured in dollars and weight is measured in carats
+
+```{r price and carat distributions}
+diamonds %>% 
+  ggplot() +
+  geom_boxplot(aes(x = price, y = factor("Price")), fill = "lightgreen") +
+  geom_boxplot(aes(x = carat, y = factor("Carat")), fill = "lightblue") +
+  labs(
+    y = ""
+  )
+```
+
+Use boxplots to compare scaled price and carat. We scale a variable (turn in into something like a z-score) by subtracting the mean and dividing by the standard deviation.
+
+```{r scaling}
+diamonds %>%
+  transmute(
+    scale_price = (price - mean(price, na.rm = TRUE)) / sd(price, na.rm = TRUE),
+    scale_carat = (carat - mean(carat, na.rm = TRUE)) / sd(carat, na.rm = TRUE)
+  ) %>%
+  ggplot() +
+  geom_boxplot(aes(x = scale_price, y = factor("Price")), fill = "lightgreen") +
+  geom_boxplot(aes(x = scale_carat, y = factor("Carat")), fill = "lightblue") +
+  labs(
+    y = ""
+  )
+```
+
+Once again, we can actually skip creating new variables by using a function. The scale function subtracts the mean and divides by the standard deviation.
+
+```{r no transmute}
+diamonds %>% 
+  ggplot() +
+  geom_boxplot(aes(x = scale(price), y = factor("Price")), fill = "lightgreen") +
+  geom_boxplot(aes(x = scale(carat), y = factor("Carat")), fill = "lightblue") +
+  labs(
+    y = ""
+  )
+```
+
+### Rank the diamonds by weight and price (Breakout rooms with mentors)
+
+-   Create two new variables called size_rank and price_rank where 1 means the largest
+-   View the 10 largest diamonds by size
+-   View the 10 largest diamonds by price
 
 ```{r rank the diamonds and find the largest}
 largest <- diamonds %>%
-  mutate(size_rank = min_rank(desc(carat)),
-         price_rank = min_rank(desc(price)))
+  mutate(size_rank = carat %>% desc() %>% min_rank(),
+         price_rank = price %>% desc() %>% min_rank())
 
 # Largest by size
 largest %>%
   arrange(size_rank) %>%
-  select(carat, size_rank)
-head(10)
+  select(carat, size_rank) %>% 
+  head(10)
 
 # Largest by price
 largest %>%
   arrange(price_rank) %>%
-  select(price, price_rank)
-head(10)
-```  
+  select(price, price_rank) %>% 
+  head(10)
+```

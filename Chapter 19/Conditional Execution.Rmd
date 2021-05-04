@@ -1,7 +1,7 @@
 ---
 title: "Conditional Execution"
 author: "MPA 634: Data Science for Managers"
-date: "9 March 2020"
+date: "11 March 2021"
 output:
   html_document:
     code_folding: "hide"
@@ -14,76 +14,95 @@ knitr::opts_chunk$set(echo = TRUE,
 # Load libraries
 library(tidyverse)
 library(nycflights13)
-library(conflicted)
-conflict_prefer("filter", "dplyr")
-conflict_prefer("lag", "dplyr")
 ```
 
-# Syntax for conditional branching
+### Syntax for conditional branching
 
-## Traditional syntax
+#### Traditional syntax
 
 ```{r traditional syntax}
 gender <- "female"
 
 if (gender == "female"){
   1
-} else{
+} else {
   0
 }
 ```
 
-## Compact syntax
+#### Compact syntax
 
 ```{r compact syntax}
 if (identical(gender, "female")) 1 else 0
 ```
 
-# Attendance Quiz
+### Attendance Quiz
 
-## Basic code
+### Basic code
 
 ```{r attendance quiz}
 random_draw <- runif(n = 1, min = 0, max = 1) 
 if (random_draw <= 0.5) "Attendance" else "Regular"
 ```
 
-## Does this procedure give an appropriate number of attendance quizzes?
+#### Attendance Quiz
+
+```{r attendance function}
+attendance <- function() {
+  random_draw <- runif(n = 1, min = 0, max = 1)
+  if (random_draw <= 0.5)
+    "Attendance"
+  else
+    "Regular"
+}
+attendance()
+```
+
+#### Does this procedure give an appropriate number of attendance quizzes?
 
 ```{r attendance quiz fair}
 results <- vector("character", 10000)
 for (i in 1:10000){
-  results[i] <- if (runif(1, min = 0, max = 1) <= 0.5) "Attendance" else "Regular"
+  results[i] <- attendance()
 }
+
 tibble(results) %>% 
   count(results)
 ```
 
-# Roll dice to see if we get doubles
+### Roll dice to see if we get doubles
 
-## Basic calculation of roll of die
+#### Basic calculation of roll of die
 
 ```{r basic die}
 runif(n = 1, min = 0, max = 6) %>% ceiling()
-``` 
+```
 
-## What is the distribution of 10,000 throws of a die
+#### die function
+
+```{r}
+die <- function() {
+  runif(n = 1, min = 0, max = 6) %>% ceiling()
+}
+die()
+```
+
+#### What is the distribution of 10,000 throws of a die
 
 ```{r fair die}
 results <- vector("integer", 10000)
 for (i in 1:10000){
-  results[i] <- runif(n = 1, min = 0, max = 6) %>%
-    ceiling()
+  results[i] <- die()
 }
 tibble(results) %>% 
   count(results)
 ```
 
-## Do you roll doubles?
+#### Do you roll doubles?
 
 ```{r doubles}
-outcome1 <- runif(n = 1, min = 0, max = 6) %>% ceiling()
-outcome2 <- runif(n = 1, min = 0, max = 6) %>% ceiling()
+outcome1 <- die()
+outcome2 <- die()
 if (identical(outcome1, outcome2)) {
     "doubles"
   } else {
@@ -91,30 +110,39 @@ if (identical(outcome1, outcome2)) {
   } 
 ```
 
-## Does the law of large number work for two dies
+#### Function to compare dices
+
+```{r compare dices}
+compare_dice <- function() {
+  outcome1 <- die()
+  outcome2 <- die()
+  if (identical(outcome1, outcome2)) {
+      "doubles"
+    } else {
+      "different"
+    } 
+}
+compare_dice()
+```
+
+#### Does the law of large number work for two dies
 
 ```{r fair for doubles}
 results <- vector("character", 10000)
 for (i in 1:10000){
-  outcome1 <- runif(n = 1, min = 0, max = 6) %>% ceiling()
-  outcome2 <- runif(1, min = 0, max = 6) %>% ceiling()
-  results[i] <- if (identical(outcome1, outcome2)){
-    "doubles"
-  } else {
-    "different"
-  } 
+  results[i] <- compare_dice()
 }
 tibble(results) %>% 
   count(results)
 ```
 
-## Rock, paper, scissors game  
+### Rock, paper, scissors game
 
-*  Function to determine rock, paper, or scissors with equal probability
-*  Function to compare to players to see who wins
-*  Report the results
+-   Function to determine rock, paper, or scissors with equal probability
+-   Function to compare to players to see who wins
+-   Report the results
 
-### Choose rock, paper, or scissors
+#### Choose rock, paper, or scissors
 
 ```{r rock paper or scissors}
 choose_object <- function(){
@@ -129,7 +157,7 @@ choose_object <- function(){
 }
 ```
 
-### Test the function
+#### Test the function
 
 ```{r test of choice function}
 results <- vector("character", 10000)
@@ -140,7 +168,7 @@ tibble(results) %>%
   count(results)
 ```
 
-### Choose the winner function
+#### Choose the winner function
 
 ```{r winner}
 select_winner <- function(person1, person2) {
@@ -173,15 +201,15 @@ select_winner <- function(person1, person2) {
 }
 ```
 
-### Play the game  
+#### Play the game
 
-*  Choice for person 1
-*  Report choice for person 1
-*  Choice for person 2
-*  Report choice for person 2
-*  Declare the winner 
+-   Choice for person 1
+-   Report choice for person 1
+-   Choice for person 2
+-   Report choice for person 2
+-   Declare the winner
 
-#### Function to play the game
+##### Function to play the game
 
 ```{r play game function}
 play_game <- function() {
@@ -193,34 +221,39 @@ play_game <- function() {
 }
 ```
 
-#### Play the game
+##### Play the game
 
 ```{r play rock paper scissors}
 play_game() 
 ```
 
-# Use cut to create a factor
+### Use cut to create a factor
 
 ```{r how to use the cut function}
 # Create category
-flights$early_late <-
-  cut(flights$arr_delay, c(-Inf, -60, 0, 60, +Inf), c("very early",
-                                             "early",
-                                             "late",
-                                             "very late"))
 flights %>% 
+  filter(!is.na(arr_delay)) %>% 
+  mutate(early_late = cut(
+    arr_delay,
+    c(-Inf,-60, 0, 60,+Inf),
+    c("very early",
+      "early",
+      "late",
+      "very late")
+  )) %>% 
+  select(arr_delay, early_late) %>% 
   count(early_late)
 ```
 
-# Use switch to execute multiple if else logic
+### Use switch to execute multiple if else logic
 
-## Switch using a number for position
+#### Switch using a number for position
 
 ```{r switch with position}
 switch(2, "red", "green", "blue", "yellow")
 ```
 
-## Switch using a number and a function
+#### Switch using a number and a function
 
 ```{r function and a number}
 switch_colors <- function(x){
@@ -229,7 +262,7 @@ switch_colors <- function(x){
 switch_colors(3)
 ```
 
-## Switch using characters
+#### Switch using characters
 
 ```{r switch using characters}
 switch("shape",
@@ -238,7 +271,7 @@ switch("shape",
        "length" = 5)
 ```
 
-## Switch in a string and a function
+#### Switch in a string and a function
 
 ```{r function and string}
 switch_colors <- function(x){
@@ -251,18 +284,18 @@ switch_colors <- function(x){
 switch_colors("one")
 ```
 
-# Create a new attendance quiz selector
+### Create a new attendance quiz selector
 
-*  Choose type of quiz
-*  Change the probability of the quiz based on number of days since previous attendance quiz
+-   Choose type of quiz
+-   Change the probability of the quiz based on number of days since previous attendance quiz
 
-## Necessary components
+#### Necessary components
 
-1. Function that determines the probability of an attendance quiz that takes the number of days since an attendance quiz as an argument.
-2. Function that determines attendance or regular quiz which has probability as an argument
-3. Function that combines the above two functions to determine the type of quiz
+1.  Function that determines the probability of an attendance quiz that takes the number of days since an attendance quiz as an argument.
+2.  Function that determines attendance or regular quiz which has probability as an argument
+3.  Function that combines the above two functions to determine the type of quiz
 
-### Choose the probability of an attendance based on number of days since last attendance quiz
+#### Choose the probability of an attendance based on number of days since last attendance quiz
 
 ```{r probability function of quiz}
 probability_attendance <- function(days_since_attendance) {
@@ -282,13 +315,13 @@ probability_attendance <- function(days_since_attendance) {
 }
 ```
 
-### Test the Function
+#### Test the Function
 
 ```{r}
 probability_attendance(3)
 ```
 
-### Simplier version of the function
+#### Simplier version of the function
 
 ```{r simplier version of the probability function}
 probability_attendance <- function(days_since_attendance) {
@@ -303,13 +336,13 @@ probability_attendance <- function(days_since_attendance) {
 }
 ```
 
-### Test the Function
+#### Test the Function
 
 ```{r test the new version}
 probability_attendance(3)
 ```
 
-### Attendance or regular quiz function
+#### Attendance or regular quiz function
 
 ```{r type of quiz}
 choose_quiz <- function(probability_attendance){
@@ -317,13 +350,13 @@ choose_quiz <- function(probability_attendance){
 }
 ```
 
-### Test the function
+#### Test the function
 
 ```{r test quiz function}
 choose_quiz(.6)
 ```
 
-### Simulation to see if the function is fair
+#### Simulation to see if the function is fair
 
 ```{r simulation of quiz}
 results <- vector()
@@ -335,13 +368,13 @@ tibble(results) %>%
   count(results)
 ```
 
-### Function that chooses the quiz
+#### Function that chooses the quiz
 
-*  Input of days since last attendance
-*  Calculates the probability
-*  Reports the probability
-*  Determines the type of quiz
-*  Reports the type of quiz  
+-   Input of days since last attendance
+-   Calculates the probability
+-   Reports the probability
+-   Determines the type of quiz
+-   Reports the type of quiz
 
 ```{r attendance quiz function}
 attendance_or_regular <- function(days_since_attendance) {
@@ -352,7 +385,7 @@ attendance_or_regular <- function(days_since_attendance) {
 }
 ```
 
-### Test the Function
+#### Test the Function
 
 ```{r test the attendance quiz function}
 attendance_or_regular(0)

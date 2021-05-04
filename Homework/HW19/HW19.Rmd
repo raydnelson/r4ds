@@ -1,0 +1,55 @@
+---
+title: "Homework #19"
+author: "Geospatial"
+date: "Due: 6 April 2021"
+output:
+   html_document:
+     code_folding: show
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+library(tidyverse)
+library(leaflet)
+```
+
+## Concepts
+
+1.  Explain how an object of sf class is related to a data frame.
+2.  Use Google to compare and contrast choropleths with cartograms.
+
+## Interpretation of code
+
+### Code chunk 1
+
+```{r First code chunk}
+sf::st_as_sf(maps::map('state', plot = FALSE, fill = TRUE)) %>% 
+  ggplot(aes(fill = ID)) +
+  geom_sf(alpha = 0.5, show.legend = FALSE) +
+  colorspace::scale_fill_discrete_qualitative(palette = "cold")
+```
+
+### Code chunk 2
+
+```{r Second code chunk}
+quakes %>% 
+  slice_head(n = 20) %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  addCircleMarkers(
+    radius = 5,
+    color = "red",
+    stroke = FALSE, fillOpacity = 0.5
+  )
+```
+
+## Write Code
+
+Airbnb
+
+-   Download an airbnb dataset from Kaggle and import the data into R.
+-   Use leaflet to plot the locations of some of the properties.
+-   Choose a map from <http://leaflet-extras.github.io/leaflet-providers/preview/index.html> .
+-   Draw a second map that clusters the points like we did with the quakes data frame.

@@ -1,0 +1,219 @@
+---
+title: "Time Series Components"
+author: "MPA 635: Data Visualization"
+date: "02/18/2020"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+library(forecast)
+load(url("http://govfinance.byu.edu/govfinance/classes/dataViz/lectures/illustrations/trends/trends.RData"))
+```
+
+# US Retail Sales
+
+Retail sales in the United States constitute a well-behaved time series that illustrate the basic components of a time series.
+
+## Use ggplot to create a time series plot
+
+We use smoothing to discover trends in our data. In the example that follows, the geom_smooth defaults to loess because we have a reasonably small sample size.  
+
+
+```{r explore retail sales, message = TRUE}
+retail_tibble %>% 
+  ggplot(aes(x = time, y = sales)) +
+  geom_line() +
+  geom_smooth(span = 0.20) +
+  labs(
+    title = "US Retail Sales",
+    subtitle = "Nominal Dollars",
+    x = "",
+    y = "Billions of Dollars",
+    caption = "Source: US Census Bureau"
+  )
+```
+
+## Use Seasonal Trend with Loess (STL)
+
+Many time series have three different components:
+
+1. Trend/cycle
+2. Seasonality
+3. Irregular or Residual
+
+The STL function decomposes a time series into these three constituent parts.
+
+```{r retail sales time series components}
+retail %>% 
+  stl(s.window = "periodic")  %>% 
+  autoplot() +
+  labs(
+    title = "Season-Trend with Loess Decomposition of Retail Sales",
+    x = "",
+    y = "Billions of Dollars"
+  )
+```
+After we have discovered the structure of our time series, it is very straight forward to fit an expoential smoothing or state-space model. This is done by using the forecast function from Rob Hyndmans forecast library. More recently, he as developed two new libraries, fable and feasts which improve upon the forecast library.
+
+## Forecast of retail sales for the next 36 months
+
+```{r forecast for retail sales}
+retail %>% 
+  forecast(h = 36) %>% 
+  autoplot() +
+  labs(
+    title = "Forecast for US Retail Sales for next 36 months.",
+    x = "",
+    y = "Billions of Dollars"
+  )
+```
+
+# E-Commerce
+
+E-Commerce is a very interesting time series because it includes:
+1. A nonlinear trend
+2. Evolving seasonality
+
+We first draw a time series plot of the data in order to discover patterns that might characterize the data.
+
+## Use ggplot to create a time series plot
+
+```{r time series plot of ecommerce}
+ecommerce_tibble %>% 
+  ggplot(aes(x = time, y = sales)) +
+  geom_line() +
+  geom_smooth(span = 0.4) +
+  labs(
+    title = "US E-Commerce Sales",
+    x = "",
+    y = "Billions of Dollars"
+  )
+```
+
+## STL of ecommerce
+
+A season trend with loess model of the data does indeed help us discover the nonlinear trend and the evolving seasonality.
+
+
+```{r stl of ecommerce}
+ecommerce %>% 
+  stl(s.window = 7) %>% 
+  autoplot() +
+  labs(
+    title = "US E-Commerce Sales",
+    x = "",
+    y = "Billions of Dollars"
+  )
+```
+The ETS (error, trend, seasonality) model adapts to the nonlinear trend and the evolving seasonality pattern.
+
+## Forecast of ecommerce 3 years (12 quarters) ahead
+```{r forecast of ecommerce}
+ecommerce %>% 
+  forecast(h = 12) %>% 
+  autoplot() +
+  labs(
+    title = "US E-Commerce Sales",
+    x = "",
+    y = "Billions of Dollars"
+  )
+```
+
+# Housing Prices in Seattle
+
+The trend and seasonality Seattle housing prices is especially important to those taking jobs in the Northwest.
+
+Once again we start with a time series plot.
+
+## Use ggplot to create a time series plot
+
+```{r time series plot of seattle}
+seattle_tibble %>% 
+  ggplot(aes(x = time, y = sales)) +
+  geom_line() +
+  geom_smooth(span = 0.2) +
+  labs(
+    title = "Seattle Housing Price Index",
+    x = "",
+    y = "S&P/Case-Shiller Index"
+  )
+```
+
+## STL of Seattle
+
+STL gives us an idea about the current trends and seasonality in the data.
+
+
+```{r stl of seattle}
+seattle %>% 
+  stl(s.window = 11) %>% 
+  autoplot() +
+  labs(
+    title = "Seattle Housing Price Index",
+    x = "",
+    y = "S&P/Case-Shiller Index"
+  )
+```
+The forecast for the Seattle housing market is flat.
+
+## Forecast of Seattle 3 years (36 months) ahead
+```{r forecast of seattle}
+seattle %>% 
+  forecast(h = 36) %>% 
+  autoplot() +
+  labs(
+    title = "Seattle Housing Price Index",
+    x = "",
+    y = "S&P/Case-Shiller Index"
+  )
+```
+
+
+# Total Nonfarm Employment in Utah
+
+Total Nonfarm employment is an excellent indicator of the strength of local economies.
+
+## Use ggplot to create a time series plot
+
+```{r time series plot of nonfarm}
+nonfarm_tibble %>% 
+  ggplot(aes(x = time, y = sales)) +
+  geom_line() +
+  geom_smooth(span = 0.2) +
+  labs(
+    title = "Utah Total Non Farm Employment",
+    x = "",
+    y = "Thousands of Persons"
+  )
+```
+
+## STL of nonfarm
+
+```{r stl of nonfarm}
+nonfarm %>% 
+  stl(s.window = 11) %>% 
+  autoplot() +
+  labs(
+    title = "Utah Total Non Farm Employment",
+    x = "",
+    y = "Thousands of Persons"
+  )
+```
+
+## Forecast of Utah Non Farm Employment, 3 years (36 months) ahead
+```{r forecast of nonfarm}
+nonfarm %>% 
+  forecast(h = 36) %>% 
+  autoplot() +
+  labs(
+    title = "Utah Total Non Farm Employment",
+    x = "",
+    y = "Thousands of Persons"
+  )
+```

@@ -1,0 +1,184 @@
+---
+title: "Wrangling"
+author: "MPA 634: Data Science for Managers"
+date: "23 Feb 2021"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      messages = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+library(leaflet)
+```
+
+### [Kaggle](https://www.kaggle.com/)
+
+Download the NYC [airbnb](https://www.kaggle.com/dgomonov/new-york-city-airbnb-open-data/download) csv file
+
+If that doesn't work then load the workspace.
+
+```{r load the workspace}
+load(url("http://govfinance.byu.edu/govfinance/classes/dataScience/lectures/illustrations/NYC.RData"))
+```
+
+### Preliminary investigation of data
+
+What is NYC? Is it a tibble, data frame, or both?
+
+```{r class of NYC}
+class(NYC)
+```
+
+Is our data clean?
+
+```{r summary of variables}
+summary(NYC)
+```
+
+### Management tibble size
+
+Let's sample 1,000 properties so we can make our analysis less computer intensive.
+
+```{r sample from the sample}
+set.seed(1234)
+NYC_small  <- NYC %>% 
+  sample_n(1000)
+  
+```
+
+### Distributions of individual variables
+
+#### Analysis of categorical variable
+
+How many neighbourhoods are there?
+
+```{r how many neighbourhoods}
+NYC %>% 
+  distinct(neighbourhood)
+```
+
+Which neighbourhood groups have the largest number of neighborhoods?
+
+Calculate using count
+
+```{r neighbourhood group count}
+NYC %>% 
+  count(neighbourhood_group) %>% 
+  arrange(desc(n))
+```
+
+Calculate using geom_bar
+
+```{r bar chart of neighbourhood group}
+NYC_small %>% 
+  ggplot(aes(y = neighbourhood_group %>% fct_infreq() %>% fct_rev())) +
+  geom_bar()
+```
+
+#### Analysis of numerical variable
+
+```{r violin plot of price}
+NYC_small %>%
+  ggplot(aes(x = price, y = factor(0))) +
+  geom_violin(fill = "lightblue", alpha = 0.5) +
+  geom_boxplot(width = 0.10, fill = "grey60") +
+  stat_summary(fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red")
+```
+
+#### Price by neighborhood group
+
+```{r price by neighbourhood group}
+NYC_small %>%
+  ggplot(aes(x = price, y = neighbourhood_group)) +
+  geom_violin(fill = "lightblue", alpha = 0.5) +
+  geom_boxplot(width = 0.10, fill = "grey60") +
+  stat_summary(fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red")
+```
+
+#### Two numerical variables
+
+```{r price by length of stay, message = FALSE}
+NYC_small %>% 
+   ggplot(aes(x = minimum_nights, y = price)) +
+  geom_point() +
+  geom_smooth()
+```
+
+### Where are properties located?
+
+#### Simple map
+
+```{r simple map, message = FALSE}
+NYC_small %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  addMarkers()
+```
+
+#### Change the marker
+
+```{r map with a different map set and marker, message = FALSE}
+NYC_small %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  addCircleMarkers(
+    radius = 5,
+    color = "red",
+    stroke = FALSE, fillOpacity = 1 / 10
+  )
+```
+
+Change the map
+
+```{r change the map, message = FALSE}
+NYC_small %>% 
+  leaflet() %>% 
+  addProviderTiles(provider = providers$CartoDB.Positron) %>% 
+  addCircleMarkers(
+    radius = 5,
+    color = "red",
+    stroke = FALSE, fillOpacity = 1 / 10
+  )
+```
+
+#### Is price related to location?
+
+What are high priced properties?
+
+```{r distribution of all prices}
+NYC %>%
+  ggplot(aes(x = price, y = factor(0))) +
+  geom_violin(fill = "lightblue", alpha = 0.5) +
+  geom_boxplot(width = 0.10, fill = "grey60") +
+  stat_summary(fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red")
+```
+
+Where are the high priced properties located?
+
+```{r location of high priced properties, message = FALSE}
+NYC %>%
+  filter(price > 1000) %>% 
+  leaflet() %>% 
+  addProviderTiles(provider = providers$CartoDB.Positron) %>% 
+  addCircleMarkers(
+    radius = 5,
+    color = "red",
+    stroke = FALSE, fillOpacity = 1 / 10
+  )
+```

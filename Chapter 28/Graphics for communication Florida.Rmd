@@ -1,0 +1,324 @@
+---
+title: "Graphics for Communication II"
+author: "MPA 634: Data Science"
+date: "6 April 2021"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(maps)
+library(ggspatial)
+library(tools)
+library(ggrepel)
+load(url("http://govfinance.byu.edu/govfinance/classes/dataViz/lectures/workspaces/geospatial II.RData"))
+```
+
+### Florida choropleth
+
+#### Data and Map Preparation
+
+```{r data and map preparation}
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+sites <- tibble(longitude = c(-80.144005, -80.109),
+                latitude = c(26.479005, 26.83)) %>%
+  st_as_sf(
+    coords = c("longitude", "latitude"),
+    crs = 4326,
+    agr = "constant"
+  )
+
+states <- st_as_sf(maps::map("state", plot = FALSE, fill = TRUE)) %>% 
+  mutate(ID = ID %>% as.character() %>% toTitleCase())
+states <- cbind(states, st_coordinates(st_centroid(states)))
+
+counties <- st_as_sf(maps::map("county", plot = FALSE, fill = TRUE)) %>% filter(grepl('florida', ID))
+counties$area <- as.numeric(st_area(counties))
+
+flcities <- tibble(
+  state = rep("Florida", 5),
+  city = c("Miami",
+           "Tampa",
+           "Orlando",
+           "Jacksonville",
+           "Sarasota"),
+  lat = c(25.7616798,
+          27.950575,
+          28.5383355,
+          30.3321838,
+          27.3364347),
+  lng = c(-80.1917902,
+          -82.4571776,
+          -81.3792365,
+          -81.655651,
+          -82.5306527)
+) %>%
+  st_as_sf(
+    coords = c("lng", "lat"),
+    remove = FALSE,
+    crs = 4326,
+    agr = "constant"
+  )
+```
+
+#### Finished product
+
+```{r finished choropleth}
+world %>%
+  ggplot() +
+  geom_sf(fill = "antiquewhite1") +
+  geom_sf(data = counties, aes(fill = area)) +
+  geom_sf(data = states, fill = NA) +
+  geom_sf(
+    data = sites,
+    size = 4,
+    shape = 23,
+    fill = "darkred"
+  ) +
+  geom_sf(data = flcities) +
+  geom_text_repel(
+    data = flcities,
+    aes(x = lng, y = lat, label = city),
+    fontface = "bold",
+    nudge_x = c(1, -1.5, 2, 2, -1),
+    nudge_y = c(0.25, -0.25, 0.5, 0.5, -0.5)
+  ) +
+  geom_label(
+    data = states,
+    aes(X, Y, label = ID),
+    size = 5,
+    fontface = "bold",
+    nudge_y = states$nudge_y
+  ) +
+  scale_fill_viridis_c(trans = "sqrt", alpha = .4) +
+  annotation_scale(location = "bl", width_hint = 0.4) +
+  annotation_north_arrow(
+    location = "bl",
+    which_north = "true",
+    pad_x = unit(0.75, "in"),
+    pad_y = unit(0.5, "in"),
+    style = north_arrow_fancy_orienteering
+  ) +
+  coord_sf(xlim = c(-88, -78),
+           ylim = c(24.5, 33),
+           expand = FALSE) +
+  labs(
+    title = "Observation Sites",
+    subtitle = "(2 sites in Palm Beach County, Florida)",
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+  theme(
+    panel.grid.major = element_line(
+      color = gray(0.5),
+      linetype = "dashed",
+      size = 0.5
+    ),
+    panel.background = element_rect(fill = "aliceblue")
+  )
+```
+
+#### Draw the basic map
+
+```{r basic map}
+world %>% 
+  ggplot() +
+  geom_sf()
+```
+
+#### Zoom in on Florida
+
+```{r zoom in}
+world %>% 
+  ggplot() +
+  geom_sf() +
+  coord_sf(xlim = c(-88, -78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+```
+
+#### Graph sites
+
+```{r graph the sites of interest}
+world %>%
+  ggplot() +
+  geom_sf() +
+  geom_sf(
+    data = sites,
+    size = 4,
+    shape = 23,
+    fill = "darkred"
+  ) +
+  coord_sf(xlim = c(-88,-78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+```
+
+#### Add states
+
+```{r Add states}
+world %>%
+  ggplot() +
+  geom_sf() +
+  geom_sf(data = states, fill = NA) +
+  geom_text(data = states, aes(X, Y, label = ID), size = 5) +
+  coord_sf(xlim = c(-88,-78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+```
+
+#### Move the state labels
+
+```{r move the state labels}
+states$nudge_y <- -1
+states$nudge_y[states$ID == "Florida"] <- 0.5
+states$nudge_y[states$ID == "South Carolina"] <- -1.5
+
+world %>% 
+  ggplot() +
+  geom_sf() +
+  geom_sf(data = states, fill = NA) +
+  geom_label(data = states,
+             aes(x = X, y = Y, label = ID),
+             size = 5,
+             fontface = "bold",
+             nudge_y = states$nudge_y) +
+  coord_sf(xlim = c(-88,-78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+```
+
+#### County borders
+
+```{r counties data and overlay}
+world %>% 
+  ggplot() +
+  geom_sf() +
+  geom_sf(data = counties, fill = NA, color = gray(0.5)) +
+  coord_sf(xlim = c(-88,-78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+```
+
+#### Fill based on their area
+
+```{r fill counties}
+world %>% 
+  ggplot() +
+  geom_sf() +
+  geom_sf(data = counties, aes(fill = area)) +
+  scale_fill_viridis_c(trans = "sqrt", alpha = 0.4) +
+  coord_sf(xlim = c(-88, -78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+```
+
+#### Simple Cities
+
+```{r simple cities}
+ggplot(data = world) +
+  geom_sf() +
+  geom_sf(data = counties,
+          fill = NA,
+          color = gray(.5)) +
+  geom_sf(data = flcities) +
+  geom_text(
+    data = flcities,
+    aes(x = lng, y = lat, label = city),
+    size = 3.9,
+    col = "black",
+    fontface = "bold"
+  ) +
+  coord_sf(xlim = c(-88,-78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+```
+
+#### Cities using ggrepel
+
+```{r label cities using ggrepel}
+ggplot(data = world) +
+  geom_sf() +
+  geom_sf(data = counties,
+          fill = NA,
+          color = gray(.5)) +
+  geom_sf(data = flcities) +
+  geom_text_repel(
+    data = flcities,
+    aes(x = lng, y = lat, label = city),
+    fontface = "bold",
+    nudge_x = c(1,-1.5, 2, 2,-1),
+    nudge_y = c(0.25,-0.25, 0.5, 0.5,-0.5)
+  ) +
+  coord_sf(xlim = c(-88,-78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+```
+
+#### Final graph with compass orientation and scale
+
+Orientation and scale are inserted using annotations.
+
+```{r final graph with orientation and scale}
+world %>%
+  ggplot() +
+  geom_sf(fill = "antiquewhite1") + # World
+  geom_sf(data = counties, aes(fill = area)) + # Counties
+  geom_sf(data = states, fill = NA) + #States
+  geom_sf(
+    data = sites,
+    size = 4,
+    shape = 23,
+    fill = "darkred"
+  ) + # Sites
+  geom_sf(data = flcities) + # location of Florida Cities
+  geom_text_repel(
+    data = flcities,
+    aes(x = lng, y = lat, label = city),
+    fontface = "bold",
+    nudge_x = c(1, -1.5, 2, 2, -1),
+    nudge_y = c(0.25, -0.25, 0.5, 0.5, -0.5)
+  ) + # City labels
+  geom_label(
+    data = states,
+    aes(X, Y, label = ID),
+    size = 5,
+    fontface = "bold",
+    nudge_y = states$nudge_y
+  ) + # State Labels
+  scale_fill_viridis_c(trans = "sqrt", alpha = .4) + # Fill Counties
+  annotation_scale(location = "bl", width_hint = 0.4) + # Map Scale
+  annotation_north_arrow(
+    location = "bl",
+    which_north = "true",
+    pad_x = unit(0.75, "in"),
+    pad_y = unit(0.5, "in"),
+    style = north_arrow_fancy_orienteering
+  ) + # North arrow for map orientation
+  coord_sf(xlim = c(-88, -78),
+           ylim = c(24.5, 33),
+           expand = FALSE) + # Map Focus
+  labs(
+    title = "Observation Sites",
+    subtitle = "(2 sites in Palm Beach County, Florida)",
+    x = "Longitude",
+    y = "Latitude"
+  ) + # Labeling for the map
+  theme(
+    panel.grid.major = element_line(
+      color = gray(0.5),
+      linetype = "dashed",
+      size = 0.5
+    ),
+    panel.background = element_rect(fill = "aliceblue")
+  ) # Change the overall appearance of the map using a theme
+```

@@ -1,8 +1,10 @@
 ---
 title: 'Homework #11'
-author: 'Gathering'
-date: "Due: 24 Feb 2020"
-output: word_document
+author: 'Tidy Tibbles'
+date: "Due: 2 March 2021"
+output:
+  html_document:
+    code_folding: show
 ---
 
 ```{r setup, include = FALSE}
@@ -10,55 +12,47 @@ knitr::opts_chunk$set(echo = TRUE,
                       message = FALSE,
                       warning = FALSE)
 library(tidyverse)
+library(readxl)
 ```
 
-## Concepts  
+## Concepts
 
-1.  Explain the difference between wide and long data frames.
+1.  Explain why pivot_longer and pivot_wider are opposite operations.
+2.  Explain why separate and unite are opposite operations.
 
-2.  Explain why you need a long data frame when using ggplot.
-    
-## Code Interpretation  
+## Code Interpretation
 
-Compare and interpret the following two R code chunks: 
-
-### Code chunk #1
+Interpret the following R code chunk:
 
 ```{r code chunk interpretation 1}
-mpg %>% 
-  select(cty, hwy) %>% 
-  gather(key = type_of_driving, value = mileage) %>% 
-  group_by(type_of_driving) %>% 
-  summarise(
-    Means= mean(mileage),
-    Medians = median(mileage),
-    IQRs = IQR(mileage),
-    Standard_Deviations = sd(mileage)
-  )
-```  
-
-### Code chunk #2
-
-```{r code chunk interpretation 2}
-mpg %>%
-  summarise(
-    mean_city = mean(cty),
-    mean_highway = mean(hwy),
-    median_city = median(cty),
-    median_highway = median(hwy),
-    IQR_city = IQR(cty),
-    IQR_highway = IQR(hwy),
-    sd_city = sd(cty),
-    sd_highway = sd(hwy)
+who %>% 
+  pivot_longer(
+    cols = new_sp_m014:newrel_f65,
+    names_to = "key",
+    values_to = "cases",
+    values_drop_na = TRUE
+  ) %>% 
+  mutate(key = stringr::str_replace(key, "newrel", "new_rel")) %>%
+  separate(col = key,
+           into = c("new", "type", "sexage")) %>%
+  select(-new, -iso2, -iso3) %>% 
+  separate(
+    col = sexage,
+    into = c("sex", "age"),
+    sep = 1
   )
 ```
 
-## Write code  
+## Write code
 
-With the mpg data set, use select and gather to create horizontal violin plot that allows you to compare city and highway mileage. Your graph should be similar to the following:  
+Complete the following steps:
 
-![](http://govfinance.byu.edu/govfinance/classes/dataScience/homework/graphs/HW11Graph.png)
+1.  Import the excel file interest_rates into R.
+2.  Use pivot_longer to create a long tibble.
+3.  Draw a time series plot with both interest rates on the same graph. Put date on the x-axis. Put mortgage and treasury on the y-axis.
+4.  Use a boxplot to compare the distributions of the 30 year mortgage and 30 year Treasury bonds.
 
-```{r relationship between highway and city mileage}
+```{r interest rates}
+interest_rates <- read_excel("Interest rates.xlsx")
 
-```  
+```

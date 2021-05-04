@@ -1,55 +1,86 @@
 ---
 title: 'Homework #9'
 author: 'Covariation'
-date: "Due: 10 Feb 2020"
-output: word_document
+date: "Due: 11 Feb 2021"
+output:
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
 library(tidyverse)
+library(plotly)
 ```
 
-## Concepts  
+## Concepts
 
-#### 1.  Explain how Tukey's five number summary is related to the boxplot.
+##### 1. Identify at least five geom's that help you explore the covariation between two variables.
 
-#### 2.  Identify at least five geom's that help you explore the covariation between two variables.
-  
-#### 3. Explain how you can use violin plots to determine whether a distribution is symmetrical.
+##### 2. Explain how you can use violin plots to determine whether a distribution is symmetrical.
 
-#### 4. Explain how you can use violin plots to determine whether a distribution has fat tail relative to the normal.
-    
-## Interpretation of code  
+##### 3. Explain how you can use violin plots to determine whether a distribution has fat tails relative to the normal.
 
-```{r code chunk interpretation}
-mpg %>%
-  ggplot(aes(x = reorder(class, cty, FUN = IQR), y = cty)) +
-  geom_violin(fill = "lightgreen") +
-  geom_boxplot(width = 0.1, fill = "lightblue") +
+## Interpretation of code
+
+##### Problem 1
+
+```{r Problem 1 code chunk interpretation}
+faithful %>%
+  ggplot(aes(x = eruptions, y = factor(0))) +
+  geom_violin(fill = "lightblue", alpha = 0.5) +
+  geom_boxplot(width = 0.10, fill = "grey60") +
+  stat_summary(fun = "mean",
+    geom = "point",
+    shape = 23,
+    size = 1.5,
+    fill = "red") +
   labs(
-    title = "Violin Plot of City Miles Per Gallon",
-    x = "Class of Vehicle",
-    y = "Miles Per Gallon") +
-  coord_flip()
-```  
+    title = "Old Faithful eruption length is bi-modal.",
+    x = "Length of Eruption in Minutes",
+    caption = "Data Source: Base R data frame"
+  ) +
+  theme(
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+    )
+```
 
-## Write code  
+##### Problem 2
+
+```{r Problem 2 code chunk interpretation}
+p <- mtcars %>%
+  ggplot(aes(x = wt, y = mpg, color = as.factor(cyl))) +
+  geom_point(size = 2) +
+  geom_smooth(color = "blue", se = FALSE) +
+  geom_smooth(method = "lm", color = "red", se = FALSE) +
+  labs(
+    title = "Weight and MPG are inversely related.",
+    subtitle = "Nonlinear relationship",
+    x = "Weight in 1000 pounds",
+    y = "Miles Per Gallon",
+    color = "Cylinders",
+    caption = "Data Source: Core R"
+  )
+
+ggplotly(p)
+```
+
+## Write code
 
 Use the mpg data frame and ggplot to investigate the covariation between
 
-#### 1. Highway (hwy) and city (cty) mileage
+##### 1. Highway (hwy) and city (cty) mileage
 
 ```{r relationship between highway and city mileage}
-
+# put your code here
 ```
 
-#### 2. Highway mileage and drive train
+##### 2. Highway mileage and drive train
 
 ```{r relationship betwen highway and drive train}
-
+# put your code here
 ```
-
-
-
-

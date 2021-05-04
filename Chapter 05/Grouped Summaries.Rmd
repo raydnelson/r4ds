@@ -1,7 +1,7 @@
 ---
 title: "Grouped Summaries"
 author: "MPA 634: Data Science for Managers"
-date: "29 Jan 2020"
+date: "2 Feb 2021"
 output:
   html_document:
     code_folding: hide
@@ -17,10 +17,46 @@ library(nycflights13)
 
 ## Average and median delay for all airports
 
+The distribution of a numerical random variable has two parts:
+
+-   Range of values
+-   Probability
+
+We can represent the distribution of the departure delay numerical variable by overlaying geom_histogram and geom_density.
+
+```{r density of departure delays}
+flights %>% 
+  ggplot(aes(x = dep_delay, y = ..density..)) +
+  geom_histogram(fill = "gray40", fill = "gray30") +
+  geom_density(fill = "gray60", alpha = 0.5)
+```
+
+There seem to be some outliers, so let's look at only those flights that were delayed less than an hour.
+
+```{r density of some departure delays}
+flights %>%
+  filter(dep_delay < 60) %>% 
+  ggplot(aes(x = dep_delay, y = ..density..)) +
+  geom_histogram(fill = "gray40", fill = "gray30") +
+  geom_density(fill = "gray60", alpha = 0.5)
+```
+
+The center or location of this distribution can be measured by the median and the mean.
+
 ```{r average delay}
 flights %>% summarise(
   mean_delay = mean(dep_delay, na.rm = TRUE),
   median_delay = median(dep_delay, na.rm = TRUE) 
+)
+```
+
+Because of the large positive outliers, the mean and the median are very different. This happens because means are not resistant to outliers whereas the median is.
+
+The scale or spread of a distribution is measured by the standard deviation. It is the average deviation from the mean.
+
+```{r measure the scale}
+flights %>% summarise(
+  scale_delay = sd(dep_delay, na.rm = TRUE) 
 )
 ```
 
@@ -31,12 +67,23 @@ flights %>%
   group_by(origin) %>%
   summarize(
     mean_delay = mean(dep_delay, na.rm = TRUE),
-    median_delay = median(dep_delay, na.rm = TRUE
+    standard_deviation_delay = sd(dep_delay, na.rm = TRUE
     )
 )
 ```
 
 ## Smoothed scatterplot of average distance and average delay for each location
+
+We are interested in the possible relationship between arrival delay and the distance traveled. We think that longer distance flights can make up the time deficit caused by departure delays.
+
+Steps
+
+1.  Calculations are for each destination leaving from New York City so group our observations by destination
+2.  Count the number of flights
+3.  Find the mean distance traveled to each destination
+4.  Find the average arrival delay
+5.  Draw a bubble plot with average distance on the x-axis and average arrival delay on the y-axis. Plot the points based on the number of flights.
+6.  Smooth the bubble chart using loess. Suppress the confidence interval.
 
 ```{r distance and average arrival delay using piping}
 flights %>%
@@ -52,6 +99,7 @@ flights %>%
 ```
 
 ## Location and spread for arrival delays of American, Delta, or United flights and going to Atlanta, Chicago, or Los Angeles from each of the New York Airports
+
 ```{r delta flights from JFK}
 flights %>%
   filter(dest %in% c("ATL", "ORD", "LAX")) %>%
@@ -64,17 +112,20 @@ flights %>%
   )
 ```
 
-## Create a new data frame that includes not cancelled flights
+## Create a new data frame that includes only not canceled flights
 
-```{r only not cancelled flights}
-not_cancelled <- flights %>%
-  filter(!is.na(dep_delay), !is.na(arr_delay))
+```{r only not canceled flights}
+not_canceled <- flights %>%
+  filter(!is.na(dep_delay)) %>% 
+  filter(!is.na(arr_delay)) 
 ```
 
 ## Are there some planes that have significantly longer delays?
 
+Each plane is identified by a unique tail number. It will also be important to know how many times the plane has completed a flight.
+
 ```{r delayed planes}
-not_cancelled %>% 
+not_canceled %>% 
   group_by(tailnum) %>% 
   summarize(
     delay = mean(arr_delay),
@@ -84,6 +135,8 @@ not_cancelled %>%
 ```
 
 ## Bar graph of the number of destinations for each airport
+
+When used in conjunction with group_by, the n_distinct function counts the number of unique categories. We need to use geom_col rather than geom_bar because we already completed the counting.
 
 ```{r destinations by airport}
 flights %>%
@@ -95,50 +148,90 @@ flights %>%
 
 ## Bar graph of number of destinations by airline and origin
 
+Steps
+
+1.  Group observations by origin and carrier
+2.  Calculate the number of distinction destinations for each NY airport and carrier
+3.  Choose only those observations that have nonzero counts
+4.  Draw a stacked horizontal bar chart
+5.  Put each airport in its own subplot
+
 ```{r number of destinations by airline}
 flights %>%
   group_by(origin, carrier) %>%
   summarize(destinations = n_distinct(dest)) %>% 
-  ggplot(aes(x = carrier, y = destinations, fill = carrier)) +
+  filter(destinations > 0) %>% 
+  ggplot(aes(y = carrier, x = destinations, fill = carrier)) +
   geom_col(show.legend = FALSE) +
-  coord_flip() +
   facet_grid(rows = vars(origin))
 ```
 
-## Total Number of flights by NYC airport and carrier
+## Total number of flights by NYC airport and carrier
+
+Draw a proportional horizontal bar chart so we can see the proportion of flights for each carrier that leave from each of the three different airports.
+
+Steps
+
+1.  Group the observations by airport
+2.  Calculate the number of flights for each carrier using the count function
+3.  Draw a proportional horizontal bar chart
+
 ```{r total flights by airport and carrier}
-not_cancelled %>% 
+not_canceled %>% 
   group_by(origin) %>% 
-  count(carrier)
+  count(carrier) %>% 
+  ggplot(aes(x = n, y = carrier, fill = origin)) +
+  geom_col(position = "fill")
 ```
 
 ## Number of flights that left before 5am for each day
 
+There are two ways to accomplish this. The first uses count after filtering:
+
 ```{r early morning flights}
-not_cancelled %>% 
+not_canceled %>% 
   filter(dep_time < 500) %>% 
   count(month, day)
+```
 
-not_cancelled %>% 
+The second uses a very clever programming trick to accomplish the filter. We count the number of times that a statement is true. The comparison dep_time \< 500 will evaluate as either TRUE (1) or FALSE (0).
+
+```{r TRUE or FALSE}
+true_or_false <- not_canceled$dep_time < 500
+head(true_or_false, 10)
+sum(true_or_false)
+```
+
+```{r alternative count}
+not_canceled %>% 
   group_by(month, day) %>% 
   summarize(n_early = sum(dep_time < 500)) %>% 
   filter(n_early > 0)
 ```
 
-## Proportion of flights were delayed by more than an hour from the three different airports
+## Proportion of flights that were delayed by more than an hour from the three different airports
+
+We can use mean rather than sum to calculate the proportion of occurrences that a condition is TRUE.
 
 ```{r proportion of flights with long delay}
-not_cancelled %>% 
+not_canceled %>% 
   group_by(origin) %>% 
   summarize(proportion = mean(dep_delay > 60))
 ```
 
 ## Worst departure delayed flights for each airport
 
+Steps
+
+1.  Group observations for each airport
+2.  Create a new variable that ranks each flight by their departure delay. The rank of 1 is the flight that had the largest delay.
+3.  Choose only those observations that have the longest delay.
+4.  Include only origin, carrier, departure delay, month, day, and schedule departure time in the tibble or data frame.
+
 ```{r worse departure delays}
 flights %>% 
   group_by(origin) %>%
-  mutate(departure_rank = min_rank(desc(dep_delay))) %>% 
+  mutate(departure_rank = dep_delay %>% desc() %>% min_rank) %>%
   filter(departure_rank == 1) %>% 
   select(origin, carrier, dep_delay, month, day, sched_dep_time)
 ```

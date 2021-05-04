@@ -1,60 +1,56 @@
 ---
 title: 'Homework #16'
-author: 'Conditional Execution'
-date: "Due: 11 March 2020"
-output: word_document
+author: 'Vectors, Lists, and Tibbles'
+date: "Due: 25 March 2021"
+output:
+   html_document:
+     code_folding: show
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       message = FALSE,
                       warning = FALSE)
 library(tidyverse)
-library(lubridate)
 ```
 
-## Concepts  
+## Concepts
 
-1.  Use online documentation for the cut function to explain how it works.  
+1.  Compare and contrast atomic vectors and lists.
 
-2.  Explain how the switch function can be used as a replacement for long chains of if else statements.
-    
-## Interpretation of code  
+2.  Compare and contrast implicit and explicit coercion.
 
-Interpret the following R code chunks: 
+## Interpretation of code
 
-Code Chunk #1
+### Code Chunk \#1
 
-```{r code chunk for determining whether a temperature is above or below freezing}
-freezing <- function(temperature){
-  if(temperature < 32) "below"
-  else if (temperature == 32) "freezing"
-  else "above"
-}
+```{r atomic vectors into a list and tibble}
+age <- c(24L, 30L)
+income <- c(24, 50)
+first_name <- rep("BYU", 2)
+last_name <- paste0("Student", 1:2)
+list(first_name, last_name, age, income)
+tibble(first_name, last_name, age, income)
 ```
 
-Code Chunk #2
+### Code Chunk \#2
 
-```{r code chunk interpretation, warning = FALSE, message = FALSE}
-# Below average and above average highway mileage using cut
-(intervals <- c(0, mean(mpg$hwy), max(mpg$hwy)))
-cut(mpg$hwy, intervals, labels = c("below average", "above average"))
-```  
+```{r character integers and numbers}
+(character_numbers <- rep(c("1", "2", "3", "4"), 3))
+character_numbers %>% as.integer()
+character_numbers %>% as.integer() %>% typeof()
+(integers <- rep(1:4, 3))
+typeof(integers)
+(real_numbers <- as.numeric(integers))
+typeof(real_numbers)
+```
 
 ## Write Code
 
-### Problem 1 from 19.4.4 Exercises Problem #2
+For your family,
 
-Write a greeting function that says "good morning", "good afternoon", or "good evening", depending on the time of day. (Hint: use a time argument that defaults to lubridate::now(). That will make it easier to test your function.)
-
-```{r greeting function}
-
-```
-
-### (Optional) Problem 2 from 19.4.4 Exercises Problem #3
-
-Implement a fizzbuzz function. It takes a single number as input. If the number is divisible by three, it returns "fizz". If it’s divisible by five it returns "buzz". If it’s divisible by three and five, it returns "fizzbuzz". Otherwise, it returns the number. Make sure you first write working code before you create the function. You should use & and | when comparing vectors. You should use && and || when comparing scalars.  
-
-```{r fizzbuzz function}
-
-```
+-   Create a vector that includes the first name of each member.
+-   Create a vector that includes their birthdays.
+-   Create a vector of the addresses where your family has lived.
+-   Create a list of the first names, birthdays, and addresses.
+-   Create a tibble of the first names and birthdays.

@@ -37,30 +37,26 @@ Interpret the following R code:
 
 ```{r code chunk}
 flights %>%
-  filter(month == 5 | month == 9,
-         carrier == "DL",
-         dep_delay < 90) %>%
+  filter(month == 5 | month == 9) %>% 
+  filter(carrier == "DL") %>% 
   ggplot(aes(
-    x = as.factor(month),
-    y = dep_delay,
+    y = as.factor(month),
+    x = dep_delay,
     fill = as.factor(month)
   )) +
   geom_boxplot(show.legend = FALSE) +
-  coord_flip() +
   facet_grid(rows = vars(origin))
 ```
 
 Line 1: Identifies the initial data frame as flights
 
-Lines 2 - 4: Creates a new data frame that includes all of the Delta flights in August or September with departure delays of less than 90 minutes
+Lines 2 - 3: Creates a new data frame that includes all of the Delta flights in August or September
 
-Lines 5 - 9: Pipes the data frame into the ggplot function. The variable month is mapped as the category value for the boxplots. Month must be converted into a factor in order for the geoms to work properly. The y or numerical value is the departure delay. We also use month as a category assigned to the fill aesthetic, which must also be converted into a factor since it is an integer.  
+Lines 4 - 8: Pipes the data frame into the ggplot function. The variable month is mapped as the category value for the boxplots. Month must be converted into a factor in order for the geoms to work properly. The x or numerical value is the departure delay. We also use month as a category assigned to the fill aesthetic, which must also be converted into a factor since it is an integer.  
 
-Line 10: Creates a layer for the boxplot, fills the box with a lightblue background, and suppresses the legend.
+Line 9: Creates a layer for the boxplot, fills the box with a lightblue background, and suppresses the legend.
 
-Line 11: Flips the x and y axes  
-
-Line 12: Creates three different plots, one for each of the three origin airports in New York City.
+Line 10: Creates three different plots, one for each of the three origin airports in New York City.
 
 ## Coding Problem
 

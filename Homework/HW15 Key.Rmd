@@ -1,0 +1,172 @@
+---
+title: 'Homework #15 Key'
+author: 'Conditional Execution'
+date: "Due: 16 March 2021"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+library(lubridate)
+```
+
+## Concepts  
+
+1.  Use online documentation for the cut function to explain how it works.  
+
+Rdocumentation.org states that "cut divides the range of x into intervals and codes the values in x according to which interval they fall. The leftmost interval corresponds to level one, the next leftmost to level two and so on."
+
+There are two essential parts to the cut function. The first argument gives the numerical data that you want to classify into intervals. The second gives the boundaries of the intervals.
+
+For example, if you have a numerical variable x that takes on integer values between 0 and 100 and you want to create categories for values between 0 and 20 and 21 to 100, then the function call would be cut(x, breaks = c(0, 20, 100)).
+
+Two other arguments to the function can also be useful First there are labels, in case you want to give the intervals names. Second, you have the argument right = TRUE, if you want an open interval on the left and a closed interval on the right. This means that values that equal the upper bound are included in that interval. The opposite occurs when right = FALSE.
+
+2.  Explain how the switch function can be used as a replacement for long chains of if else statements. 
+
+The switch function tests expressions just like the if statement. In the switch function, if the value being tested matches one of the values in the list, then it returns the appropriate value.
+
+For example in the case of numerical arguments for x, when x = 2, then switch(x, "red", "green", "blue) will return "green" because it is the second element. The corresponding if-else code would be:  
+
+```{r example of if-else logic with a number}
+x <- 2
+if(x == 1){
+  "red"
+} else if (x == 2){
+  "green"
+} else if (x == 3){
+  "blue"
+}
+```
+
+When the function argument is a character, the switch function works differently. When x = "color", then switch(x, "color" = "red", shape = "square", "length = 5") will return "red".
+
+The if-else logic would be the following
+
+```{r example of if-else logic with a character}
+x <- "color"
+if(x == "color"){
+  "red"
+} else if(x == "shape"){
+  "square"
+} else if(x == "length"){
+  5
+} else {
+  "none of the above"
+}
+```
+    
+## Interpretation of code  
+
+Interpret the following R code chunks: 
+
+Code Chunk #1
+
+```{r code chunk for determining whether a temperature is above or below freezing}
+freezing <- function(temperature) {
+  if (temperature < 32) {
+    "below"
+  }
+  else if (temperature == 32) {
+    "freezing"
+  }
+  else {
+    "above"
+  }
+}
+freezing(32)
+freezing(0)
+freezing(40)
+```
+
+Line 1: Names the function freezing and specifies the function parameter of temperature.  
+
+Lines 2 - 4: If the tempature variable passed from the function is less than 32, then the value "below" is returned by the function.  
+
+Lines 5 - 7: If temperature equals 32, then the function returns "freezing"  
+
+Lines 8 - 10: All other values for temperature return the value "above"  
+
+Lines 12 - 14: Test the function for various temperatures to make sure that it is working correctly.  
+
+Code Chunk #2
+
+```{r code chunk interpretation, warning = FALSE, message = FALSE}
+# Below average and above average highway mileage using cut
+(intervals <- c(0, mean(mpg$hwy), max(mpg$hwy)))
+cut(mpg$hwy, intervals, labels = c("below", "above"))
+```  
+
+Line 1: Creates an object with three elements: 0, the mean of highway miles per gallon, and the maximum miles per galloon for hwy.  
+
+Line 2: Creates a factor based on the numerical values in hwy. If the observation is in the interval (0, mean of hwy], then the factor has a level equal to "below". If the value for hwy is in the interval (mean of hwy, maximum of hwy], then it takes on a value of "above".  
+
+
+## Write Code
+
+### Problem 1 from 19.4.4 Exercises Problem #2
+
+Write a greeting function that says "good morning", "good afternoon", or "good evening", depending on the time of day. (Hint: use a time argument that defaults to lubridate::now(). That will make it easier to test your function.)
+
+```{r greeting function}
+greet_now <- function() {
+  Time <- now() %>% lubridate::hour()
+  if (Time < 12) {
+    "Good morning"
+  }
+  else if (Time < 17) {
+    "Good afternoon"
+  }
+  else {
+    "Good evening"
+  }
+}
+
+greet_now()
+
+greet_time <- function(time) {
+  Time <- time %>% lubridate::hour()
+  if (Time < 12){
+    "Good morning"
+    }
+  else if (Time < 17){
+    "Good afternoon"
+    }
+  else {
+    "Good evening"
+    }
+}
+
+greet_time(ymd_h("2019-03-11:11"))
+```
+
+### (Optional) Problem 2 from 19.4.4 Exercises Problem #3
+
+Implement a fizzbuzz function. It takes a single number as input. If the number is divisible by three, it returns "fizz". If it’s divisible by five it returns "buzz". If it’s divisible by three and five, it returns "fizzbuzz". Otherwise, it returns the number. Make sure you first write working code before you create the function. You should use & and | when comparing vectors. You should use && and || when comparing scalars.
+
+```{r fizzbuzz function}
+fizzbuzz <- function(number){
+  if (number %% 3 == 0 && number %% 5 == 0){
+    "fizzbuzz"
+    }
+  else if (number %% 3 == 0){
+    "fizz"
+    }
+  else if (number %% 5 == 0){
+    "buzz"
+    }
+  else{
+    number
+    }
+}
+
+fizzbuzz(6)
+fizzbuzz(10)
+fizzbuzz(15)
+fizzbuzz(13)
+```

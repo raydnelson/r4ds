@@ -1,30 +1,382 @@
 ---
 title: "Graphics for Communication"
-author: "MPA 634: Data Science for Managers"
-date: "4 December 2019"
-output: 
+author: "MPA 634: Data Science"
+date: "6 April 2021"
+output:
   html_document:
-    code_folding: "hide"
+    code_folding: hide
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       message = FALSE,
                       warning = FALSE)
-# Load libraries
 library(tidyverse)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(maps)
+library(ggspatial)
+library(tools)
 library(ggrepel)
-library(viridis)
-library(gridExtra)
-library(RColorBrewer)
-```  
+load(url("http://govfinance.byu.edu/govfinance/classes/dataViz/lectures/workspaces/geospatial II.RData"))
+```
 
-## 28.2 Labels
+## The grammar of graphics includes the following seven elements:
 
-```{r putting labels on graphs}
-mpg %>% ggplot(aes(displ, hwy)) +
+1.  **Data**
+2.  **Mapping or aesthetics**
+3.  **Geometric object**
+4.  **Facets**
+5.  Position
+6.  Stats
+7.  Coordinate system
+
+## Possible aesthetics
+
+1.  color
+2.  fill
+3.  shape
+4.  linetype
+5.  alpha (transparency)
+6.  size
+7.  stroke
+
+## [Geometric objects](https://ggplot2.tidyverse.org/reference/index.html#section-layers)
+
+1.  bar
+2.  col
+3.  histogram
+4.  freqpoly
+5.  density
+6.  boxplot
+7.  violin
+8.  point
+9.  smooth
+10. rug
+11. count
+12. tile
+13. density_2d
+14. sf
+
+### Florida choropleth
+
+#### Data and Map Preparation
+
+```{r data and map preparation}
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+sites <- tibble(longitude = c(-80.144005, -80.109),
+                latitude = c(26.479005, 26.83)) %>%
+  st_as_sf(
+    coords = c("longitude", "latitude"),
+    crs = 4326,
+    agr = "constant"
+  )
+
+states <- st_as_sf(maps::map("state", plot = FALSE, fill = TRUE)) %>% 
+  mutate(ID = ID %>% as.character() %>% toTitleCase())
+states <- cbind(states, st_coordinates(st_centroid(states)))
+
+counties <- st_as_sf(maps::map("county", plot = FALSE, fill = TRUE)) %>% filter(grepl('florida', ID))
+counties$area <- as.numeric(st_area(counties))
+
+flcities <- tibble(
+  state = rep("Florida", 5),
+  city = c("Miami",
+           "Tampa",
+           "Orlando",
+           "Jacksonville",
+           "Sarasota"),
+  lat = c(25.7616798,
+          27.950575,
+          28.5383355,
+          30.3321838,
+          27.3364347),
+  lng = c(-80.1917902,
+          -82.4571776,
+          -81.3792365,
+          -81.655651,
+          -82.5306527)
+) %>%
+  st_as_sf(
+    coords = c("lng", "lat"),
+    remove = FALSE,
+    crs = 4326,
+    agr = "constant"
+  )
+```
+
+#### Finished product
+
+```{r finished choropleth}
+world %>%
+  ggplot() +
+  geom_sf(fill = "antiquewhite1") +
+  geom_sf(data = counties, aes(fill = area)) +
+  geom_sf(data = states, fill = NA) +
+  geom_sf(
+    data = sites,
+    size = 4,
+    shape = 23,
+    fill = "darkred"
+  ) +
+  geom_sf(data = flcities) +
+  geom_text_repel(
+    data = flcities,
+    aes(x = lng, y = lat, label = city),
+    fontface = "bold",
+    nudge_x = c(1, -1.5, 2, 2, -1),
+    nudge_y = c(0.25, -0.25, 0.5, 0.5, -0.5)
+  ) +
+  geom_label(
+    data = states,
+    aes(X, Y, label = ID),
+    size = 5,
+    fontface = "bold",
+    nudge_y = states$nudge_y
+  ) +
+  scale_fill_viridis_c(trans = "sqrt", alpha = .4) +
+  annotation_scale(location = "bl", width_hint = 0.4) +
+  annotation_north_arrow(
+    location = "bl",
+    which_north = "true",
+    pad_x = unit(0.75, "in"),
+    pad_y = unit(0.5, "in"),
+    style = north_arrow_fancy_orienteering
+  ) +
+  coord_sf(xlim = c(-88, -78),
+           ylim = c(24.5, 33),
+           expand = FALSE) +
+  labs(
+    title = "Observation Sites",
+    subtitle = "(2 sites in Palm Beach County, Florida)",
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+  theme(
+    panel.grid.major = element_line(
+      color = gray(0.5),
+      linetype = "dashed",
+      size = 0.5
+    ),
+    panel.background = element_rect(fill = "aliceblue")
+  )
+```
+
+#### Draw the basic map
+
+```{r basic map}
+world %>% 
+  ggplot() +
+  geom_sf()
+```
+
+#### Zoom in on Florida
+
+```{r zoom in}
+world %>% 
+  ggplot() +
+  geom_sf() +
+  coord_sf(xlim = c(-88, -78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+```
+
+#### Graph sites
+
+```{r graph the sites of interest}
+world %>%
+  ggplot() +
+  geom_sf() +
+  geom_sf(
+    data = sites,
+    size = 4,
+    shape = 23,
+    fill = "darkred"
+  ) +
+  coord_sf(xlim = c(-88,-78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+```
+
+#### Add states
+
+```{r Add states}
+world %>%
+  ggplot() +
+  geom_sf() +
+  geom_sf(data = states, fill = NA) +
+  geom_text(data = states, aes(X, Y, label = ID), size = 5) +
+  coord_sf(xlim = c(-88,-78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+```
+
+#### Move the state labels
+
+```{r move the state labels}
+states$nudge_y <- -1
+states$nudge_y[states$ID == "Florida"] <- 0.5
+states$nudge_y[states$ID == "South Carolina"] <- -1.5
+
+world %>% 
+  ggplot() +
+  geom_sf() +
+  geom_sf(data = states, fill = NA) +
+  geom_label(data = states,
+             aes(x = X, y = Y, label = ID),
+             size = 5,
+             fontface = "bold",
+             nudge_y = states$nudge_y) +
+  coord_sf(xlim = c(-88,-78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+```
+
+#### County borders
+
+```{r counties data and overlay}
+world %>% 
+  ggplot() +
+  geom_sf() +
+  geom_sf(data = counties, fill = NA, color = gray(0.5)) +
+  coord_sf(xlim = c(-88,-78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+```
+
+#### Fill based on their area
+
+```{r fill counties}
+world %>% 
+  ggplot() +
+  geom_sf() +
+  geom_sf(data = counties, aes(fill = area)) +
+  scale_fill_viridis_c(trans = "sqrt", alpha = 0.4) +
+  coord_sf(xlim = c(-88, -78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+```
+
+#### Simple Cities
+
+```{r simple cities}
+ggplot(data = world) +
+  geom_sf() +
+  geom_sf(data = counties,
+          fill = NA,
+          color = gray(.5)) +
+  geom_sf(data = flcities) +
+  geom_text(
+    data = flcities,
+    aes(x = lng, y = lat, label = city),
+    size = 3.9,
+    col = "black",
+    fontface = "bold"
+  ) +
+  coord_sf(xlim = c(-88,-78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+```
+
+#### Cities using ggrepel
+
+```{r label cities using ggrepel}
+ggplot(data = world) +
+  geom_sf() +
+  geom_sf(data = counties,
+          fill = NA,
+          color = gray(.5)) +
+  geom_sf(data = flcities) +
+  geom_text_repel(
+    data = flcities,
+    aes(x = lng, y = lat, label = city),
+    fontface = "bold",
+    nudge_x = c(1,-1.5, 2, 2,-1),
+    nudge_y = c(0.25,-0.25, 0.5, 0.5,-0.5)
+  ) +
+  coord_sf(xlim = c(-88,-78),
+           ylim = c(24.5, 33),
+           expand = FALSE)
+```
+
+#### Final graph with compass orientation and scale
+
+Orientation and scale are inserted using annotations.
+
+```{r final graph with orientation and scale}
+world %>%
+  ggplot() +
+  geom_sf(fill = "antiquewhite1") + # World
+  geom_sf(data = counties, aes(fill = area)) + # Counties
+  geom_sf(data = states, fill = NA) + #States
+  geom_sf(
+    data = sites,
+    size = 4,
+    shape = 23,
+    fill = "darkred"
+  ) + # Sites
+  geom_sf(data = flcities) + # location of Florida Cities
+  geom_text_repel(
+    data = flcities,
+    aes(x = lng, y = lat, label = city),
+    fontface = "bold",
+    nudge_x = c(1, -1.5, 2, 2, -1),
+    nudge_y = c(0.25, -0.25, 0.5, 0.5, -0.5)
+  ) + # City labels
+  geom_label(
+    data = states,
+    aes(X, Y, label = ID),
+    size = 5,
+    fontface = "bold",
+    nudge_y = states$nudge_y
+  ) + # State Labels
+  scale_fill_viridis_c(trans = "sqrt", alpha = .4) + # Fill Counties
+  annotation_scale(location = "bl", width_hint = 0.4) + # Map Scale
+  annotation_north_arrow(
+    location = "bl",
+    which_north = "true",
+    pad_x = unit(0.75, "in"),
+    pad_y = unit(0.5, "in"),
+    style = north_arrow_fancy_orienteering
+  ) + # North arrow for map orientation
+  coord_sf(xlim = c(-88, -78),
+           ylim = c(24.5, 33),
+           expand = FALSE) + # Map Focus
+  labs(
+    title = "Observation Sites",
+    subtitle = "(2 sites in Palm Beach County, Florida)",
+    x = "Longitude",
+    y = "Latitude"
+  ) + # Labeling for the map
+  theme(
+    panel.grid.major = element_line(
+      color = gray(0.5),
+      linetype = "dashed",
+      size = 0.5
+    ),
+    panel.background = element_rect(fill = "aliceblue")
+  ) # Change the overall appearance of the map using a theme
+```
+
+### Mileage Graph from MPG
+
+#### Finished Graph
+
+```{r MPG end product}
+best_in_class <- mpg %>%
+  group_by(class) %>%
+  arrange(desc(hwy)) %>%
+  slice_head(n = 1)
+
+mpg %>%
+  ggplot(aes(x = displ, y = hwy)) +
   geom_point(aes(color = class), position = "jitter") +
-  geom_smooth(se = FALSE) +
+  geom_smooth(se = FALSE, color = "green") +
+  geom_point(size = 4, shape = 1, data = best_in_class) +
+  theme(legend.position = "bottom") +
+  ggrepel::geom_label_repel(data = best_in_class, aes(label = model)) +
   labs(
     title = "Fuel efficiency generally decreases with engine size",
     subtitle = "Two seaters (sports cars) are an exception because of their light weight",
@@ -32,292 +384,226 @@ mpg %>% ggplot(aes(displ, hwy)) +
     x = "Engine displacement (L)",
     y = "Highway fuel economy (mpg)",
     color = "Car type"
-  )
-```  
+  ) 
+```
 
-## 28.3 Annotations
+#### Step by Step
 
-### Create tibble that has the name of the best in class
+##### First create this graph
 
-```{r identification of best cars in class}
-## Best MPG in each car class
-(best_in_class <- mpg %>%
-  group_by(class) %>%
-  filter(row_number(desc(hwy)) == 1)
+```{r MPG basic graph}
+(basic_plot <- mpg %>%
+  ggplot(aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE)
 )
 ```
 
-### Scatterplot using geom_text
+##### Now annotate your graph so that it identifies the best car in each class
 
-```{r geom_text}
-mpg %>%
-  ggplot(aes(displ, hwy)) +
-  geom_point(aes(colour = class), position = "jitter") +
+1.  Create a new tibble called best_in_class by
+2.  Grouping by class
+3.  Sort observations for each group so that the best mileage is the first observations
+4.  Use slice_head to select the first observation in each group
+
+```{r find the best cars in each class}
+## Best MPG in each car class
+best_in_class <- mpg %>%
+  group_by(class) %>%
+  arrange(desc(hwy)) %>%
+  slice_head(n = 1)
+
+best_in_class %>% 
+  select(manufacturer, model, hwy, class)
+```
+
+##### Put circles around the best cars
+
+```{r identify the best cars}
+(best_cars <- basic_plot +
+  geom_point(data = best_in_class,
+             size = 3,
+             shape = 1)
+)
+```
+
+##### Control the breaks on the y axis
+
+```{r control the breaks on the y-axis}
+(y_breaks <- best_cars +
+    scale_y_continuous(breaks = seq(15, 40, by = 5))
+)
+```
+
+##### Legend to the bottom
+
+```{r legend to the bottom}
+(new_basic <- y_breaks +
+    theme(legend.position = "bottom")
+)
+```
+
+##### Label the best cars in the diagram using geom_text
+
+```{r use geom_text, message = FALSE}
+new_basic +
   geom_text(data = best_in_class, aes(label = model))
 ```
 
-### Scatterplot using geom_label
-```{r geom_label}
-mpg %>%
-  ggplot(aes(displ, hwy)) +
-  geom_point(aes(colour = class), position = "jitter") +
-  geom_label(data = best_in_class,
-             aes(label = model),
-             nudge_y = 2,
-             alpha = 0.5)
+##### Label the best cars in the diagram using geom_label
+
+```{r use geom_label, message = FALSE}
+new_basic +
+  geom_label(data = best_in_class, aes(label = model), nudge_y = 2, alpha = 0.5)
 ```
 
-### Scatterplot using geom_label_repel
+##### Label the best cars in the diagram using geom_label_repel
 
-```{r geom_label_repel}
-mpg %>%
-  ggplot(aes(displ, hwy)) +
-  geom_point(aes(colour = class), position = "jitter") +
-  geom_point(size = 3, shape = 1, data = best_in_class) +
-  ggrepel::geom_label_repel(aes(label = model), data = best_in_class)
+```{r use geom_label_repel, message = FALSE}
+(with_labels <- new_basic +
+  ggrepel::geom_label_repel(data = best_in_class, aes(label = model))
+)
 ```
 
-### Create a tibble of medians for displacement and highway mpg
+##### Add titles and labels
 
-```{r medians}
-(class_avg <- mpg %>%
-  group_by(class) %>%
-  summarise(
-    displ = median(displ),
-    hwy = median(hwy)
+```{r MPG titles and labels}
+with_labels +
+    labs(
+    title = "Fuel efficiency generally decreases with engine size",
+    subtitle = "Two seaters (sports cars) are an exception because of their light weight",
+    caption = "Data from fueleconomy.gov",
+    x = "Engine displacement (L)",
+    y = "Highway fuel economy (mpg)",
+    color = "Car type"
+  ) 
+```
+
+### Presidential Graph
+
+Presidential tibble
+
+```{r who are the most recent presidents}
+presidential %>% 
+  slice_tail(n = 5)
+```
+
+#### Add Presidents Trump and Biden
+
+```{r add recent presidents}
+recent <- tibble(name = c("Trump", "Biden"),
+                start = as.Date(c("2017-01-20", "2021-01-20")),
+                end = as.Date(c("2021-01-20", "2025-01-20")),
+                party = c("Republican", "Democratic")
+)
+
+Presidential <- rbind(presidential, recent)
+```
+
+Here is the graph that we are going to create step by step
+
+```{r presidential}
+Presidential %>%
+  mutate(id = 33 + row_number()) %>%
+  ggplot(aes(start, id, color = party)) +
+  geom_point(size = 4) +
+  geom_segment(aes(xend = end, yend = id), size = 3) +
+  scale_x_date(breaks = Presidential$start, date_labels = "'%y") +
+  scale_y_continuous(breaks = seq(34, 46, 1), labels = Presidential$name) +
+  scale_colour_manual(values = c("Republican" = "red", "Democratic" = "blue")) +
+  theme(
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    legend.position = "bottom"
+  ) +
+  labs(
+    title = "The political party of the elected US president regularly changes.",
+    x = "",
+    y = "",
+    color = "Political Party"
+  )
+```
+
+#### What does the presidential tibble look like?
+
+```{r glimpse presidential}
+Presidential %>% 
+  slice_head(n = 5)
+```
+
+#### Presidential id number
+
+Add the presidential id number to the presidential tibble. Eisenhower was the 34th president.
+
+```{r president id number}
+Presidential %>%
+  mutate(id = 33 + row_number())
+```
+
+#### Basic graph
+
+Draw the basic graph
+
+```{r basic presidential graph}
+(basic <- Presidential %>%
+  mutate(id = 33 + row_number()) %>%
+  ggplot(aes(start, id, color = party)) +
+    geom_point(size = 4)
+)
+```
+
+#### Add the line segment that shows duration of each administration by using geom_segment
+
+```{r add duration}
+(add_duration <- basic +
+    geom_segment(aes(xend = end, yend = id), size = 3)
+)
+```
+
+#### Change the scale of the x axis so that it labels the beginning of each administration.
+
+```{r x-axis labels}
+(x_axis <- add_duration +
+    scale_x_date(breaks = Presidential$start, date_labels = "'%y")
+)
+```
+
+#### Change the scale of the y axis so that it corresponds to each president and use each President's last name as the label
+
+```{r Presidential names}
+(y_axis <- x_axis +
+  scale_y_continuous(breaks = seq(34, 46, 1), labels = Presidential$name)
+)
+```
+
+#### Change the color of the bars to be red for Republican and blue for Democrat
+
+```{r blue for democratic and red for republican}
+(blue_red <- y_axis +
+  scale_colour_manual(values = c("Republican" = "red", "Democratic" = "blue"))
+)
+```
+
+#### Alter the grid lines so that the graph isn't so complex and busy and put the legend at the bottom of the graph.
+
+```{r alter the grid lines}
+(alter_grid <- blue_red +
+  theme(
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    legend.position = "bottom"
   )
 )
 ```
 
-### Place the labels at the medians of displ and hwy
+#### Add titles and label to the graph so that it is informative
 
-```{r labels at the medians}
-mpg %>%
-  ggplot(aes(displ, hwy, colour = class)) +
-  ggrepel::geom_label_repel(
-    data = class_avg,
-    aes(label = class),
-    size = 6,
-    label.size = 0,
-    segment.color = NA
-  ) +
-  geom_point(position = "jitter") +
-  theme(legend.position = "none")
+```{r presidential titles and labels}
+alter_grid +
+  labs(
+    title = "The political party of the elected US president regularly changes.",
+    x = "",
+    y = "",
+    color = "Political Party"
+  )
 ```
-
-### Placement of text in upper right corner
-
-```{r placement of text in upper right}
-(label <- mpg %>%
-  summarise(displ = max(displ),
-            hwy = max(hwy),
-            label = "Increasing engine size is \nrelated to decreasing fuel economy.")
-)
-
-ggplot(mpg, aes(displ, hwy)) +
-  geom_point(position = "jitter") +
-  geom_text(data = label,
-            aes(label = label),
-            vjust = "top",
-            hjust = "right")
-```
-
-### Placement of text in extreme upper right corner
-
-```{r placement of text at extreme upper right}
-label <- tibble(displ = Inf,
-                hwy = Inf,
-                label = "Increasing engine size is \nrelated to decreasing fuel economy.")
-
-ggplot(mpg, aes(displ, hwy)) +
-  geom_point(position = "jitter") +
-  geom_text(data = label,
-            aes(label = label),
-            vjust = "top",
-            hjust = "right")
-```
-
-## 28.4.1 Axis ticks and legend keys
-
-### Change the breaks in the y-axis
-
-```{r control breaks on the y axis}
-ggplot(mpg, aes(displ, hwy)) +
-  geom_point() +
-  scale_y_continuous(breaks = seq(15, 40, by = 5))
-```
-
-### Time line of presidential terms
-
-```{r presidential}
-presidential %>%
-  mutate(id = 33 + row_number()) %>%
-  ggplot(aes(start, id, color = party)) +
-    geom_point(size = 4) +
-    geom_segment(aes(xend = end, yend = id), size = 3) +
-    scale_x_date(breaks = presidential$start, date_labels = "'%y") +
-    scale_y_continuous(breaks = seq(34, 44, 1), labels = presidential$name) +
-    labs(
-      title = "The political party of the elected US president regularly changes.",
-      x = "",
-      y = "",
-      color = "Political Party"
-    ) +
-    theme(panel.grid.minor.x = element_blank(),
-          panel.grid.minor.y = element_blank(),
-          legend.position = "bottom") +
-    scale_colour_manual(values = c("Republican" = "red", "Democratic" = "blue"))
-```  
-
-## 28.4.2 Legend Layout
-
-## Changing the numerical scale
-
-```{r log transformation of diamond weight and price}
-diamonds %>% 
-  ggplot(aes(carat, price)) +
-  geom_hex()
-
-diamonds %>% 
-  ggplot(aes(log10(carat), log10(price))) +
-  geom_hex()
-
-diamonds %>% 
-  ggplot(aes(carat, price)) +
-  geom_hex() +
-  scale_x_log10() +
-  scale_y_log10()
-```
-
-## Changing the color scale
-
-```{r changes in the color scale}
-mpg %>%
-  ggplot(aes(displ, hwy)) +
-  geom_point(aes(color = drv), position = "jitter")
-
-mpg %>%
-  ggplot(aes(displ, hwy)) +
-  geom_point(aes(color = drv), position = "jitter") +
-  scale_colour_brewer(palette = "Set1")
-
-mpg %>%
-  ggplot(aes(displ, hwy)) +
-  geom_point(aes(color = drv, shape = drv), position = "jitter") +
-  scale_colour_brewer(palette = "Set1")
-```
-
-### Color scaling using the viridis package
-
-```{r}
-df <- tibble(
-  x = rnorm(10000),
-  y = rnorm(10000)
-)
-
-regular_plot <- df %>%
-  ggplot(aes(x, y)) +
-  geom_hex() +
-  coord_fixed()
-
-viridis_plot <- df %>%
-  ggplot(aes(x, y)) +
-  geom_hex() +
-  viridis::scale_fill_viridis() +
-  coord_fixed()
-
-grid.arrange(regular_plot, viridis_plot, nrow = 1)
-```
-
-### Zooming  
-
-There are three ways to control the plot limits:
-
-1.  Adjust what data is plotted
-2.  Set the limits in each scale
-3.  Set xlim and ylim in coord_caartesian()  
-
-
-```{r use filtering, message = FALSE}
-# Original plot
-original <- mpg %>% 
-  ggplot(aes(displ, hwy)) +
-  geom_point(aes(color = class)) +
-  geom_smooth()
-
-filtered <- mpg %>% 
-  filter(displ >= 5, displ <= 7, hwy >= 10, hwy <= 30) %>% 
-  ggplot(aes(displ, hwy)) +
-  geom_point(aes(color = class)) +
-  geom_smooth()
-  
-axis_scaled <- ggplot(mpg, mapping = aes(displ, hwy)) +
-  geom_point(aes(color = class)) +
-  geom_smooth() +
-  coord_cartesian(xlim = c(5, 7), ylim = c(10, 30))
-
-grid.arrange(original, filtered, axis_scaled, nrow = 3)
-```
-
-### Share common scales  
-
-```{r scaling problem}
-suv <- mpg %>% 
-  filter(class == "suv")
-compact <- mpg %>% 
-  filter(class == "compact")
-
-suv_plot <- suv %>% 
-  ggplot(aes(displ, hwy, colour = drv)) +
-  geom_point()
-
-compact_plot <- compact %>% 
-  ggplot(aes(displ, hwy, color = drv)) +
-  geom_point()
-
-grid.arrange(suv_plot, compact_plot, nrow = 1)
-```
-
-### Solution to the scaling problem
-
-```{r scaling solution}
-x_scale <- scale_x_continuous(limits = range(mpg$displ))
-y_scale <- scale_y_continuous(limits = range(mpg$hwy))
-col_scale <- scale_colour_discrete(limits = unique(mpg$drv))
-
-suv_plot <- suv %>%
-  ggplot(aes(displ, hwy, color = drv)) +
-  geom_point() +
-  x_scale +
-  y_scale +
-  col_scale
-
-compact_plot <- compact %>%
-  ggplot(aes(displ, hwy, color = drv)) +
-  geom_point() +
-  x_scale +
-  y_scale +
-  col_scale
-
-grid.arrange(suv_plot, compact_plot, nrow = 1)
-```
-
-### Themes
-
-```{r themes, message = FALSE}
-mpg %>% 
-  ggplot(aes(displ, hwy)) +
-  geom_point(aes(color = class)) +
-  geom_smooth(se = FALSE) +
-  theme_minimal()
-```
-
-
-
-
-
-
-
-
-
-

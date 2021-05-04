@@ -1,0 +1,116 @@
+---
+title: "Homework #19 Key"
+author: "Geospatial"
+date: "Due: 6 April 2021"
+output:
+   html_document:
+     code_folding: show
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+library(tidyverse)
+library(leaflet)
+load(url("http://govfinance.byu.edu/govfinance/classes/dataViz/lectures/workspaces/geospatial I.RData"))
+```
+
+## Concepts
+
+1.  Explain how an object of sf class is related to a data frame.
+
+    An sf object is a data frame that has an extra column that stores spatial attributes as a list
+
+2.  Use Google to compare and contrast choropleths with cartograms.
+
+    **Choropleth**: A map with preassigned areas colored, shaded, or patterned so that it is proportional to a statistical variable.
+
+    **Cartogram**: A map of preassigned areas where the size of the areas are altered to be proportional to a statistical variable.
+
+## Interpretation of code
+
+### Code chunk 1
+
+```{r First code chunk}
+sf::st_as_sf(maps::map('state', plot = FALSE, fill = TRUE)) %>% 
+  ggplot(aes(fill = ID)) +
+  geom_sf(alpha = 0.5, show.legend = FALSE) +
+  colorspace::scale_fill_discrete_qualitative(palette = "cold")
+```
+
+Line 1: uses the st_as_sf function from the sf library. It also uses the map function from the maps library. The map function gets the geometric polygons or map shapes for the United States. The st_as_sf function converts them into an sf object which will be usable by ggplot.
+
+Line 2: the ggplot call sets up the coordinate system to draw the map and maps the fill aesthetic to each state by using the ID variable
+
+Line 3: uses geom_sf to create a graphical layer. These are the outlines for each state filled with colors based on the ID variable
+
+Line 4: uses the scale_fill_discrete_qualitative function from the colorspace library to determine the fill color for each state. The "cold" palette from the colorspace library gives the fill colors.
+
+### Code chunk 2
+
+```{r Second code chunk}
+quakes %>% 
+  slice_head(n = 20) %>% 
+  leaflet() %>% 
+  addProviderTiles(provider = providers$Esri.WorldImagery)%>% 
+  addCircleMarkers(
+    radius = 5,
+    color = "red",
+    stroke = FALSE,
+    fillOpacity = 0.5
+  )
+```
+
+Lines 1 and 2: Chooses the first 10 observations from the quakes tibble.
+
+Line 3: the leaflet function sets up a blank graph and prepares the coordinate system for the layers that follow.
+
+Line 4: the addTiles adds a layer which includes the map outlines from the default set of maps
+
+Lines 5 - 9: Marks the location on the map of each of the first 10 earthquakes using a circle symbol with a radius of 3. The fill color is red with opacity of 50%.
+
+## Write Code
+
+Airbnb
+
+-   Download an airbnb dataset from Kaggle and import the data into R. In order to make the knitting process easier, create a new folder for the rmd file and put your csv file into the same folder.
+-   Use leaflet to plot the locations of some of the properties.
+-   Choose a map from <http://leaflet-extras.github.io/leaflet-providers/preview/index.html> .
+-   Draw a second map that clusters the points like we did with the quakes data frame.
+
+
+```{r import the Boston Data}
+boston <- read.csv("listings.csv") %>% 
+  select(latitude, longitude, price)
+```
+
+
+```{r some of the properties}
+boston %>%
+  slice_sample(n = 500) %>%
+  leaflet() %>%
+  addProviderTiles(provider = providers$OpenStreetMap) %>%
+  addCircleMarkers(
+    label = ~price,
+    popup = ~price,
+    radius = 5,
+    color = "red",
+    stroke = FALSE,
+    fillOpacity = 0.5
+  )
+```
+
+```{r with clusters}
+boston %>%
+  slice_sample(n = 500) %>%
+  leaflet() %>%
+  addProviderTiles(provider = providers$OpenStreetMap) %>%
+  addCircleMarkers(
+    radius = 5,
+    color = "red",
+    stroke = FALSE,
+    fillOpacity = 1 / 10,
+    clusterOptions = markerClusterOptions()
+  )
+```
