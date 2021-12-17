@@ -67,7 +67,7 @@ str_c("|-", x, "-|")
 str_c("|-", str_replace_na(x), "-|")
 ```
 
-Strings are vectorized
+Strings are vectorized so recycling occurs with combining
 
 ```{r vectorized strings}
 str_c("prefix-", c("a", "b", "c"), "-suffix")
@@ -94,3 +94,485 @@ str_c(c("x", "y", "z"), collapse = ", ")
 ```
 
 14.2.3 Subsetting strings
+
+```{r subsets from strings}
+x <- c("Apple", "Banana", "Pear")
+str_sub(x, 1, 3)
+str_sub(x, -3, -1)
+```
+
+What happens if the strings are too short
+
+```{r short strings}
+str_sub("a", 1, 5)
+```
+
+Use subsetting to modify strings
+
+```{r modification through subsetting}
+str_sub(x, 1, 1) <- str_to_lower(str_sub(x, 1, 1))
+```
+
+14.2.4 Locales
+
+Capitalization can depend on the locale
+
+```{r case changes for different locales}
+# Turkisk has two i's: with and without a dot and it
+# has a different rule for capitalising them:
+str_to_upper(c("i", "I"))
+str_to_upper(c("i", "I"), locale = "tr")
+```
+
+Sorting can also depend on the locale
+
+```{r sorting with different locations}
+x <- c("apple", "eggplant", "banana")
+str_sort(x, locale = "en")
+str_sort(x, locale = "haw")
+```
+
+### 14. 3 Matching patterns with regular expressions
+
+#### 14.3.1 Basic matches
+
+```{r simple patterns}
+x <- c("apple", "banana", "pear")
+str_view(x, "an")
+```
+
+The period matches anything
+
+```{r how the period works}
+str_view(x, ".a.")
+```
+
+How to match a period
+
+```{r matching a period}
+dot <- "\\."
+writeLines(dot)
+
+str_view(c("abc", "a.c", "bef"), "a\\.c")
+```
+
+How to match a backslash? You need to use four backslashes?
+
+```{r backslash matching}
+x <- "a\\b"
+writeLines(x)
+str_view(x, "\\\\")
+```
+
+#### 14.3.2 Anchors
+
+```{r start}
+x <- c("apple", "banana", "pear")
+str_view(x, "^a")
+```
+
+```{r end}
+str_view(x, "a$")
+```
+
+```{r only a complete string}
+x <- c("apple pie", "apple", "apple cake")
+str_view(x, "apple")
+str_view(x, "^apple$")
+```
+
+14.3.3 Character classes and alternatives
+
+```{r character classes}
+x <- c("abc", "a.c", "a*c", "a c")
+str_view(x, "a[.]c")
+str_view(x, ".[*].")
+str_view(x, "a[ ]")
+str_view(c("grey", "gray"), "gr(e|a)y")
+```
+
+#### 14.3.4 Repetition
+
+```{r number of matches}
+x <- "1888 is the longest year in Roman numerals: MDCCCLXXXVIII"
+str_view(x, "CC?")
+str_view(x, "CC+")
+str_view(x, "C[LX]+")
+```
+
+We can also specify the exact number of greedy matches
+
+```{r greedy exact number of matches}
+str_view(x, "C{2}")
+str_view(x, "C{2,}")
+str_view(x, "C{2,3}")
+```
+
+We can also specify the exact number of lazy matches using ?
+
+```{r lazy matches}
+str_view(x, "C{2,3}?")
+str_view(x, "C[LX]+?")
+```
+
+#### 14.3.5 Grouping and backreferences
+
+```{r grouping}
+str_view(fruit, "(..)\\1", match = TRUE)
+```
+
+### 14.4 Tools
+
+#### 14.4.1 Detect matches
+
+```{r match detection}
+x <- c("apple", "banana", "pear")
+str_detect(x, "e")
+```
+
+Counting matches
+
+```{r number of matches using sum}
+words |>
+  str_detect("^t") |> 
+  sum()
+```
+
+Proportion of matches
+
+```{r proportions of matches using mean}
+library(magrittr)
+words |> 
+  str_detect("[aeiou]$") |> 
+  mean()  |>  
+  multiply_by(100) |> 
+  round(digits = 2)
+  
+```
+
+Negation to find words with no vowels
+
+```{r no vowels}
+no_vowels_1 <- !str_detect(words, "[aeiou]")
+no_vowels_2 <- str_detect(words, "^[^aeiou]+$")
+identical(no_vowels_1, no_vowels_2)
+```
+
+Use subset to find words
+
+```{r subseting}
+words[str_detect(words, "x$")]
+str_subset(words, "x$")
+words |> 
+  str_subset("x$")
+```
+
+Use with a tibble
+
+```{r words in the column of a tibble}
+df <- tibble(
+  word = words,
+  i = seq_along(word)
+)
+df |> 
+  filter(str_detect(word, "x$"))
+```
+
+Counting the number of matches
+
+```{r counting the number of matches}
+x <- c("apple", "banana", "pear")
+str_count(x, "a")
+```
+
+On average, how many vowels per word?
+
+```{r average number of vowels}
+words |> 
+  str_count("[aeiou]") |> 
+  mean()
+```
+
+Use str_count with mutate
+
+```{r str_count with mutate}
+df |> 
+  mutate(
+    vowels = str_count(word, "[aeiou]"),
+    consonants = str_count(word, "[^aeiou]")
+  )
+```
+
+Matches don't overlap
+
+```{r no overlap}
+str_count("abababa", "aba")
+str_view_all("abababa", "aba")
+```
+
+14.4.2 Extract matches
+
+The sentences object from stringr
+
+```{r sentences object}
+length(sentences)
+sentences |>
+  as_tibble() |> 
+  slice_head(n = 10)
+```
+
+We want to find all of the sentences that contain the word "colour"
+
+```{r vector of colour names}
+colours <- c("red", "orange", "yellow", "green",
+             "blue", "purple")
+(colour_match <- str_c(colours, collapse = "|"))
+```
+
+Find the sentences which contain a colour
+
+```{r which sentences have colours}
+has_colour <- str_subset(sentences, colour_match)
+matches <- str_extract(has_colour, colour_match)
+head(matches)
+```
+
+The function str_extract only extracts the first match
+
+```{r extract the first match}
+more <- sentences[str_count(sentences, colour_match) > 1]
+```
+
+We want to get all of the matches
+
+```{r all matches}
+str_view_all(more, colour_match)
+str_extract(more, colour_match)
+str_extract_all(more, colour_match)
+```
+
+More simple version of extract_all
+
+```{r simple output}
+str_extract_all(more, colour_match, simplify = TRUE)
+
+x <- c("a", "a b", "a b c")
+str_extract_all(x, "[a-z]", simplify = TRUE)
+```
+
+14.4.3 Grouped matches
+
+```{r nouns from grouped match}
+noun <- "(a|the) ([^ ]+)"
+
+(has_noun <- sentences |> 
+  str_subset(noun) |> 
+  head(10)
+  )
+
+has_noun |> 
+  str_extract(noun)
+
+has_noun |> 
+  str_match(noun)
+```
+
+Extract nouns using tibbles
+
+```{r using tibbles}
+tibble(sentence = sentences) |> 
+  tidyr::extract(
+    sentence, c("article", "noun"), "(a|the) ([^ ]+)",
+    remove = FALSE
+  )
+```
+
+14.4.4 Replacing matches
+
+```{r replacing matches}
+x <- c("apple", "pear", "banana")
+x |> str_replace("[aeiou]", "-")
+x |> str_replace_all("[aeiou]", "-")
+```
+
+Multiple replacement using a vector
+
+```{r multiple replacements using a vector}
+x <- c("1 house", "2 cars", "3 people")
+x |> str_replace_all(c("1" = "one",
+                   "2" = "two",
+                   "3" = "three"))
+```
+
+Backreferences to change the order
+
+```{r backreferences for order change}
+sentences |> 
+  head(5)
+sentences |> 
+  str_replace("([^ ]+) ([^ ]+) ([^ ]+)", "\\1 \\3 \\2") |> 
+  head(5)
+```
+
+14.4.5 Splitting
+
+```{r splitting}
+sentences |> 
+  head(5) |> 
+  str_split(" ")
+```
+
+Split a vector of length one
+
+```{r split vector of length one}
+"a|b|c|d" |> 
+  str_split("\\|")|>  
+  as_vector()
+
+"a|b|c|d" |> 
+  str_split("\\|", simplify = TRUE)
+```
+
+Return a matrix
+
+```{r return a matrix}
+sentences |> 
+  head(5) |> 
+  str_split(" ", simplify = TRUE)
+```
+
+Maximum number of pieces
+
+```{r maximum number of pieces}
+fields <- c("Name: Hadley", "Country: NZ", "Age: 35")
+fields |> 
+  str_split((": "), n = 2, simplify = TRUE)
+fields |> 
+  str_split((": "), simplify = TRUE)
+```
+
+Split by boundary
+
+```{r split by boundary}
+x <- "This is a sentence. This is another sentence."
+str_view_all(x, boundary("word"))
+```
+
+```{r examples of splitting by boundary}
+str_split(x, " ") |> 
+  as_vector()
+
+x |> 
+  str_split(boundary("word")) |> 
+  as_vector()
+```
+
+### 14.5 Other types of pattern
+
+Regular function call
+
+```{r regular function call}
+str_view(fruit, "nana")
+str_view(fruit, regex("nana"))
+```
+
+Ignore case
+
+```{r ignore case}
+bananas <- c("banana", "Banana", "BANANA")
+str_view(bananas, regex("banana"))
+str_view(bananas, regex("banana", ignore_case = TRUE))
+```
+
+Multiline
+
+```{r multiline}
+x <- "Line 1\nLine 2\nLine 3"
+x |> 
+  str_extract_all("^Line") |> 
+  as_vector()
+x |> 
+  str_extract_all(regex("^Line", multiline = TRUE)) |> 
+  as_vector()
+```
+
+Use comments with regular expressions
+
+```{r comments in regular expressions}
+phone <- regex("
+               \\(? # optional opening parens
+               (\\d{3}) # area code
+               [) -]? # optional closing parens, space, dash
+               (\\d{3}) # another three numbers
+               [ -]? # optional space or dash
+               (\\d{3}) # three more numbers
+               ", comments = TRUE)
+str_match("514-791-8141", phone)
+```
+
+Other functions than regex
+
+```{r alternatives to regex}
+fixed <- sentences |> 
+  str_detect(fixed("the"))
+regex <- sentences |> 
+  str_detect("the")
+```
+
+Care should be exercised when using fixed with non-English languages
+
+```{r care with non_English}
+a1 <- "\u00e1"
+a2 <- "a\u0301"
+c(a1, a2)
+a1 == a2
+```
+
+The use of the function coll() to find differences
+
+```{r use the function coll}
+str_detect(a1, a2)
+str_detect(a1, fixed(a2))
+str_detect(a1, coll(a2))
+```
+
+The coll function stands for collation rules
+
+```{r coll function}
+# That means you also need to be aware of the difference
+# when doing case insensitive matches:
+i <- c("I", "İ", "i", "ı")
+i
+
+str_subset(i, coll("i", ignore_case = TRUE))
+
+str_subset(i, coll("i", ignore_case = TRUE, locale = "tr"))
+```
+
+stringr depends on stringi and is much simplier. The default locale is given as:
+
+```{r default locale}
+stringi::stri_locale_info()
+```
+
+Use boundary to specify the boundaries for matching
+
+```{r the use of boundary}
+x <- "This is a sentence."
+str_view_all(x, boundary("word"))
+str_extract_all(x, boundary("word"))
+```
+
+14.6 Other uses of regular expressions
+
+```{r apropos}
+apropos("replace")
+```
+
+dir lists all the files in a directory
+
+```{r dir function}
+dir()
+dir(pattern = "\\.Rmd$") |> 
+  head()
+```
